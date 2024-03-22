@@ -1,36 +1,36 @@
-import Admin from "../../models/admin.model";
-import { Jwt } from "jsonwebtoken";
+import Admin from "../../models/admin.model.js";
+import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import sendResponse from "../../utils/sendResponse";
-
+import sendResponse from "../../utils/sendResponse.js";
+import { AsyncHandler } from "../../utils/AsyncHandler.js";
 // const sendResponse = (res, statusCode,success, message, data) => {
 //     res.status(statusCode).json({success, message, data });
 //     };
 
-export const createAdmin = async (req, res) => {
-  const { fullName, password, phone } = req.body;
-  try {
-    const admin = await Admin.findOne({ phone });
-    if (admin) {
-      return sendResponse(res, 400, false, "Admin already exists");
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newAdmin = new Admin({
-      fullName,
-      password: hashedPassword,
-      phone,
-      role: "admin",
-    });
-    await newAdmin.save();
-    return sendResponse(res, 201, true, "Admin created successfully", {
-        fullName: newAdmin.fullName,
-        phone: newAdmin.phone,
-
-    });
-    } catch (error) {
-    return sendResponse(res, 500, false, error.message);
-    }
-}
+export const createAdmin = AsyncHandler(async (req, res) => {
+    const { fullName, password, phone } = req.body;
+    try {
+      const admin = await Admin.findOne({ phone });
+      if (admin) {
+        return sendResponse(res, 400, false, "Admin already exists");
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newAdmin = new Admin({
+        fullName,
+        password: hashedPassword,
+        phone,
+        role: "admin",
+      });
+      await newAdmin.save();
+      return sendResponse(res, 201, true, "Admin created successfully", {
+          fullName: newAdmin.fullName,
+          phone: newAdmin.phone,
+  
+      });
+      } catch (error) {
+      return sendResponse(res, 500, false, error.message);
+      }
+  })
 
 export const createUser = async (req, res) => {
     const { fullName, password, phone, role } = req.body;

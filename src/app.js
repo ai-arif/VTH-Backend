@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import adminRoutes from "./routes/Admin/admin.route.js";
 const app = express();
 
 app.use(
@@ -17,6 +17,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //Importing Routes Here
+app.use("/api/admin", adminRoutes);
 
 //Declaration of Routes Here
 

@@ -1,4 +1,4 @@
-import { Jwt } from "jsonwebtoken";
+import Jwt from "jsonwebtoken";
 
 export default function verifyAdminToken(req, res, next) {
     
