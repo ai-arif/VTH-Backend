@@ -5,7 +5,7 @@ import { app } from "./app.js";
 dotenv.config({
   path: "./.env",
 });
-
+console.log(process.env.MONGO_URI);
 connectDB()
   .then(() => {
     app.listen(process.env.PORT || 5000, () => {
