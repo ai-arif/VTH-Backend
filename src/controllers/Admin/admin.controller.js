@@ -35,6 +35,10 @@ export const createAdmin = AsyncHandler(async (req, res) => {
 export const createUser = async (req, res) => {
     const { fullName, password, phone, role } = req.body;
     try {
+        
+        if (!fullName || !password || !phone || !role) {
+            return sendResponse(res, 400, false, "All fields are required");
+        }
         const user = await Admin.findOne({ phone });
         if (user) {
             return sendResponse(res, 400, false, "User already exists");
@@ -49,8 +53,10 @@ export const createUser = async (req, res) => {
         await newUser.save();
         const token=Jwt.sign({id:newUser._id,role:newUser.role},process.env.ACCESS_TOKEN_SECRET);
         return sendResponse(res, 201, true, "User created successfully", {
+            _id: newUser._id,
             fullName: newUser.fullName,
             phone: newUser.phone,
+            role: newUser.role,
         });
     }
     catch (error) {
@@ -74,6 +80,30 @@ export const login = async (req, res) => {
     }
     catch (error) {
         return sendResponse(res, 500, false, error.message);
+    }
+}
+
+export const getUser=async(req,res)=>{
+    try{
+        const user=await Admin.findById(req.id).select("-password");
+        return sendResponse(res,200,true,"User",user);
+    }
+    catch(error){
+        return sendResponse(res,500,false,error.message);
+    }
+}
+
+export const getAllUsers=async(req,res)=>{
+    try{
+        // use page, limit, sort form query
+        const limit=parseInt(req.query.limit)||15;
+        const page=parseInt(req.query.page)||1;
+        const skip=(page-1)*limit;
+        const users=await Admin.find().select("-password").limit(limit).skip(skip);
+        return sendResponse(res,200,true,"All users",users);
+    }
+    catch(error){
+        return sendResponse(res,500,false,error.message);
     }
 }
     
