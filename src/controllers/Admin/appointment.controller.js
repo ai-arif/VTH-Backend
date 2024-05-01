@@ -61,6 +61,7 @@ export const updateAppointment = async (req, res) => {
     }
 }
 
+
 export const deleteAppointment = async (req, res) => {
     const { id } = req.params;
     try {
