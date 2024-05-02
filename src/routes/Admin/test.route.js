@@ -1,9 +1,16 @@
-import express from 'express'
-const testRouter = express.Router()
+import express from "express";
+const testRouter = express.Router();
 
-import { addTest,getTest } from "../../controllers/Admin/clinicaltest.controller.js";
+import {
+  addTest,
+  getTest,
+  updateTest,
+  deleteTest,
+} from "../../controllers/Admin/clinicaltest.controller.js";
 
-testRouter.post('/',addTest)
-testRouter.get('/',getTest)
+testRouter.post("/", addTest);
+testRouter.get("/", getTest);
+testRouter.put("/:id", updateTest);
+testRouter.delete("/:id", deleteTest);
 
-export default testRouter
+export default testRouter;
