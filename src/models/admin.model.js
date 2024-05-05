@@ -22,6 +22,10 @@ const adminSchema = new Schema(
         enum: ["admin", "doctor","lab","pharmacy",],
         default: "lab",
     },
+    department: {
+        type: Schema.Types.ObjectId,
+        ref: "Department",
+    },
 
   },
 
