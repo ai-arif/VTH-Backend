@@ -3,6 +3,7 @@ import Admin from "../../models/admin.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 
+
 export const createDepartment = AsyncHandler(async (req, res) => {
     const { name } = req.body;
     try {
