@@ -22,6 +22,7 @@ export const createDepartment = AsyncHandler(async (req, res) => {
     }
 });
 
+
 export const getDepartments = AsyncHandler(async (req, res) => {
     try {
         const departments = await Department.find();

@@ -41,9 +41,28 @@ const appointmentSchema = new Schema(
       default: "new",
     },
 
+    serialNumber: {
+      type: Number,
+    },
 
+    phone: {
+      type: String,
+    },
 
-},{ timestamps: true });
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    },
+    department: {
+        type: Schema.Types.ObjectId,
+        ref:'Department',
+    },
+   
+  },
+  { timestamps: true }
+);
+
 
 const Appointment = model("Appointment", appointmentSchema);
 export default Appointment;
