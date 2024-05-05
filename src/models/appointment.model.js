@@ -49,9 +49,6 @@ const appointmentSchema = new Schema({
         enum: ["new", "old"],
         default: "new",
     },
-
-
-
 },{ timestamps: true });
 
 const Appointment = model("Appointment", appointmentSchema);
