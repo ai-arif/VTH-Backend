@@ -5,12 +5,6 @@ const patientRegistrationFormSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Appointment",
     },
-    caseNo: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-    },
     date: {
         type: Date,
         required: true,
@@ -30,7 +24,7 @@ const patientRegistrationFormSchema = new Schema({
         required: true,
         trim: true,
     },
-    upazilla: {
+    upazila: {
         type: String,
         required: true,
         trim: true,
@@ -85,9 +79,9 @@ const patientRegistrationFormSchema = new Schema({
     },
     sex: {
         type: String,
-        enum: ['male','female'],
+        enum: ['male', 'female'],
         trim: true,
-        default:'male'
+        default: 'male'
     },
     weight: {
         type: Number,
@@ -123,6 +117,38 @@ const patientRegistrationFormSchema = new Schema({
         default: false,
     },
     serviceRequested: {
+        type: String,
+        trim: true,
+    },
+    diseaseHistory: {
+        type: String,
+        trim: true,
+    },
+    treatmentHistory: {
+        type: String,
+        trim: true,
+    },
+    managementHistory: {
+        type: String,
+        trim: true,
+    },
+    clinicalSigns: {
+        type: String,
+        trim: true,
+    },
+    rectalPalpation: {
+        type: String,
+        trim: true,
+    },
+    laboratoryFindings: {
+        type: String,
+        trim: true,
+    },
+    diagnosis: {
+        type: String,
+        trim: true,
+    },
+    prognosis: {
         type: String,
         trim: true,
     },
