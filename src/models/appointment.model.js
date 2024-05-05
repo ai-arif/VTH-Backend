@@ -1,58 +1,69 @@
 import { Schema, model } from "mongoose";
 
-const appointmentSchema = new Schema({
+const appointmentSchema = new Schema(
+  {
     caseNo: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
+      type: Number,
+      required: true,
+      trim: true,
+      unique: true,
     },
-    serialNumber: {
-        type: String,
-        trim: true,
+    date: {
+      type: Date,
     },
     ownerName: {
-        type: String,
-        required: true,
-        trim: true,
+      type: String,
     },
-    phone:{
-        type: String,
-        required: true,
-        trim: true,
+    district: {
+      type: String,
+      trim: true,
     },
-    address: {
-        type: String,
-        required: true,
-        trim: true,
+    upazilla: {
+      type: String,
+      trim: true,
     },
+
     registrationType: {
-        type: String,
-        required: true,
-        enum: ["online", "offline"],
-        default: "online",
+      type: String,
+      required: true,
+      enum: ["online", "offline"],
+      default: "online",
     },
-    appointmentDate: {
-        type: Date,
-    },
-    status: {
-        type: String,
-        enum: ["pending", "accepted", "rejected"],
-        default: "pending",
-    },
-    rejectionReason: {
-        type: String,
-        trim: true,
+
+    patientType: {
+      type: String,
+      enum: ["new", "old"],
+      default: "new",
     },
     caseType: {
-        type: String,
-        enum: ["new", "old"],
-        default: "new",
+      type: String,
+      enum: ["new", "old"],
+      default: "new",
     },
 
+    serialNumber: {
+      type: Number,
+    },
 
+    phone: {
+      type: String,
+    },
 
-},{ timestamps: true });
+    status: {
+      type: String,
+      enum: ["pending", "accepted", "rejected"],
+      default: "pending",
+    },
+    // department: {
+    //     type: Schema.Types.ObjectId,ref:'Department',
+    // },
+    department: {
+        type: String,
+    }
+  },
+  { timestamps: true }
+);
+
 
 const Appointment = model("Appointment", appointmentSchema);
 export default Appointment;
