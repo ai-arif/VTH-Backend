@@ -27,11 +27,11 @@ app.use(cookieParser());
 import { userRouter } from "./routes/User/user.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
+import departmentRouter from "./routes/Admin/department.route.js";
 
 //Declaration of Routes Here
 app.use("/api/v1/user", userRouter);
 app.use('/api/v1/test',testRouter)
 app.use('/api/v1/appointment',appointmentRouter)
-
-
+app.use('/api/v1/department',departmentRouter)
 export { app };
