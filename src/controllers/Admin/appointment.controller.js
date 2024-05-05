@@ -2,6 +2,8 @@ import Appointment from "../../models/appointment.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { v4 as uuidv4 } from "uuid";
 
+
+
 export const createAppointment = async (req, res) => {
   try {
     const uuid = uuidv4();
@@ -21,6 +23,7 @@ export const createAppointment = async (req, res) => {
   }
 };
 
+
 export const getAllAppointments = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 15;
@@ -28,6 +31,7 @@ export const getAllAppointments = async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
     const appointments = await Appointment.find()
+      .populate('department','name')
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: sort });
@@ -37,6 +41,7 @@ export const getAllAppointments = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const getAppointment = async (req, res) => {
   const { caseNo } = req.params;
@@ -52,6 +57,7 @@ export const getAppointment = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 export const updateAppointment = async (req, res) => {
   const { caseNo } = req.params;

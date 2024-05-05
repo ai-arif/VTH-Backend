@@ -54,12 +54,11 @@ const appointmentSchema = new Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
-    // department: {
-    //     type: Schema.Types.ObjectId,ref:'Department',
-    // },
     department: {
-        type: String,
-    }
+        type: Schema.Types.ObjectId,
+        ref:'Department',
+    },
+   
   },
   { timestamps: true }
 );

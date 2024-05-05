@@ -25,6 +25,8 @@ const generateAccessAndRefreshToken = async (userId) => {
 //@route POST /api/v1/user/register
 //@access private user
 
+
+
 const registerUserCtrl = AsyncHandler(async (req, res, next) => {
   const { fullName, phone, password } = req.body;
 
