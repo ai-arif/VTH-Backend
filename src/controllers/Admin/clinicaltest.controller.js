@@ -24,7 +24,7 @@ export const addTest = async (req, res) => {
 
 export const getTest = async (req, res) => {
   const page = parseInt(req.query.currentPage) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || ''
   const sort = -1;
   try {
     const totalTest = await ClinicalTest.countDocuments();
@@ -47,8 +47,6 @@ export const getTest = async (req, res) => {
   }
 };
 
-
-
 export const updateTest = async (req, res) => {
   const { testName, testDetails } = req.body;
   const { id } = req.params;
@@ -63,8 +61,6 @@ export const updateTest = async (req, res) => {
   }
 };
 
-
-
 export const deleteTest = async (req, res) => {
   const { id } = req.params;
   try {
@@ -77,3 +73,5 @@ export const deleteTest = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+
