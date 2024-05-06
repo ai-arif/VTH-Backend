@@ -6,16 +6,9 @@ export const addTest = async (req, res) => {
   try {
     const { testName, testDetails } = req.body;
     const newClinicalTest = new ClinicalTest({ testName, testDetails });
-    await newClinicalTest.save();
-    // let dummyData = []
-    // for(let i=0;i<50;i++){
-    //    dummyData.push({
-    //        testName: faker.person.fullName(),
-    //        testDetails: faker.lorem.lines({ min: 1, max: 5})
-    //    })
-    // }
-    // await ClinicalTest.insertMany(dummyData)
-    sendResponse(res, 200, true, "Successfully created clinical test");
+    const newTest=await newClinicalTest.save();
+    
+    sendResponse(res, 200, true, "Successfully created clinical test", newTest);
   } catch (error) {
     console.log(error);
     return sendResponse(res, 500, false, error.message);
@@ -36,7 +29,13 @@ export const getTest = async (req, res) => {
       .sort({ createdAt: sort })
       .exec();
 
-    res.json({
+    // res.json({
+    //   totalTest,
+    //   totalPages,
+    //   currentPage: page,
+    //   data: tests,
+    // });
+    sendResponse(res, 200, true, "Successfully fetched clinical tests", {
       totalTest,
       totalPages,
       currentPage: page,
