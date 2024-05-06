@@ -66,4 +66,17 @@ export const deleteMedicine = async (req, res) => {
     }
 }
 
+// getMedicineById
+export const getMedicineById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const medicine = await Medicine.findOne({ _id: id });
+        if (!medicine) return res.json({ message: "Did not found the medicine" });
+    
+        res.json({ data: medicine });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
 
