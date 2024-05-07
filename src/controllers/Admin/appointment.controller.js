@@ -32,6 +32,7 @@ export const getAllAppointments = async (req, res) => {
     const sort = -1;
     const appointments = await Appointment.find()
       .populate('department','name')
+      .populate('owner','-password')
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: sort });

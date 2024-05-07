@@ -11,9 +11,6 @@ const appointmentSchema = new Schema(
     date: {
       type: Date,
     },
-    ownerName: {
-      type: String,
-    },
     district: {
       type: String,
       trim: true,
@@ -58,7 +55,10 @@ const appointmentSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref:'Department',
     },
-   
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    }
   },
   { timestamps: true }
 );

@@ -28,6 +28,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 
 const registerUserCtrl = AsyncHandler(async (req, res, next) => {
+  
   const { fullName, phone, password } = req.body;
 
   if ([fullName, phone, password].some((field) => field?.trim() === "")) {

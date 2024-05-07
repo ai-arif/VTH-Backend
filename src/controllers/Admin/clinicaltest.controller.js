@@ -1,4 +1,5 @@
 import ClinicalTest from "../../models/clinicaltest.model.js";
+import TestParameter from "../../models/test_parameter.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { faker } from "@faker-js/faker";
 
@@ -72,5 +73,19 @@ export const deleteTest = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+
+
+export const AddParameter = async(req,res)=> {
+  try{
+    const {name,testId} = req.body
+    const newParameter = new TestParameter({name,test:testId})
+    await newParameter.save()
+    sendResponse(res, 200, true, "Successfully added parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
 
 
