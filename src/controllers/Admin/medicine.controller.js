@@ -1,5 +1,5 @@
-import Medicine from "../../models/medicine.model";
-import sendResponse from "../../utils/sendResponse";
+import Medicine from "../../models/medicine.model.js";
+import sendResponse from "../../utils/sendResponse.js";
 
 export const addMedicine = async (req, res) => {
   try {
