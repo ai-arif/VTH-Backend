@@ -1,167 +1,75 @@
-import { AsyncHandler } from "../../utils/AsyncHandler.js";
-import { ApiError } from "../../utils/ApiError.js";
-import { ApiResponse } from "../../utils/ApiResponse.js";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
 import { User } from "../../models/user.model.js";
+import Jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import sendResponse from "../../utils/sendResponse.js";
+import { AsyncHandler } from "../../utils/AsyncHandler.js";
 
-const generateAccessAndRefreshToken = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToken();
+export const createUser = AsyncHandler(async (req, res) => {
+    const { fullName, password, phone } = req.body;
+    try {
+        const existingUser = await User.findOne({ phone });
+        if (existingUser) {
+            return sendResponse(res, 400, false, "User already exists");
+        }
 
-    user.refreshToken = refreshToken;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            fullName,
+            password: hashedPassword,
+            phone,
+        });
 
-    await user.save({ validateBeforeSave: false });
+        await newUser.save();
 
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating tokens");
-  }
+        const token = Jwt.sign({ id: newUser._id }, process.env.ACCESS_TOKEN_SECRET);
+
+        return sendResponse(res, 201, true, "User created successfully", {
+            _id: newUser._id,
+            fullName: newUser.fullName,
+            phone: newUser.phone,
+        });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+});
+
+export const loginUser = async (req, res) => {
+    const { phone, password } = req.body;
+    try {
+        const user = await User.findOne({ phone });
+        if (!user) {
+            return sendResponse(res, 400, false, "Invalid credentials");
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return sendResponse(res, 400, false, "Invalid credentials");
+        }
+
+        const token = Jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_USER_SECRET);
+        return sendResponse(res, 200, true, "Login successful", { token });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
 };
 
-//@desc Register User
-//@route POST /api/v1/user/register
-//@access private user
-
-
-
-const registerUserCtrl = AsyncHandler(async (req, res, next) => {
-  
-  const { fullName, phone, password } = req.body;
-
-  if ([fullName, phone, password].some((field) => field?.trim() === "")) {
-    throw new ApiError(400, "Required Field Missing");
-  }
-
-  const existedUser = await User.findOne({
-    $or: [{ phone }],
-  });
-
-  if (existedUser) {
-    throw new ApiError(400, "User already exists");
-  }
-
-  const user = await User.create({ fullName, phone, password });
-
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-
-  if (!createdUser) {
-    throw new ApiError(500, "Something went wrong while creating account");
-  }
-
-  return res
-    .status(201)
-    .json(new ApiResponse((201, createdUser, "User created successfully")));
-});
-
-//@desc Login User
-//@route POST /api/v1/user/login
-//@access private user
-
-const loginUserCtrl = AsyncHandler(async (req, res, next) => {
-  const { phone, password } = req.body;
-
-  if (!phone) {
-    throw new ApiError(400, "Phone Number is Required");
-  }
-
-  const user = await User.findOne({ $or: [{ phone }] });
-
-  if (!user) {
-    throw new ApiError(404, "User not found");
-  }
-
-  const isPasswordValid = await user.isPasswordCorrect(password);
-
-  if (!isPasswordValid) {
-    throw new ApiError(400, "Invalid Credentials");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
-    user._id
-  );
-
-  const loggedInUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: loggedInUser, accessToken, refreshToken },
-        "User Logged in Successfully"
-      )
-    );
-});
-
-//@desc Logout User
-//@route POST /api/v1/user/logout
-//@access private user
-
-const logoutUserCtrl = AsyncHandler(async (req, res, next) => {
-  await User.findByIdAndUpdate(
-    req.user?._id,
-    {
-      $set: {
-        refreshToken: undefined,
-      },
-    },
-    {
-      new: true,
+export const getUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.id).select("-password");
+        return sendResponse(res, 200, true, "User", user);
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
     }
-  );
+};
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
-  return res
-    .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
-});
-
-//@desc Change Current Password
-//@route POST /api/v1/user/change-password
-//@access private user
-
-const changeCurrentPasswordCtrl = AsyncHandler(async (req, res) => {
-  const { currentPassword, newPassword } = req.body;
-
-  const user = await User.findById(req.user?._id);
-  const isPasswordCorrect = await user.isPasswordCorrect(currentPassword);
-
-  if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid old password");
-  }
-
-  user.password = newPassword;
-
-  await user.save();
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, {}, "Password changed successfully"));
-});
-
-export {
-  registerUserCtrl,
-  loginUserCtrl,
-  logoutUserCtrl,
-  changeCurrentPasswordCtrl,
+export const getAllUsers = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 15;
+        const page = parseInt(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+        const users = await User.find().select("-password").limit(limit).skip(skip);
+        return sendResponse(res, 200, true, "All users", users);
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
 };

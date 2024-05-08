@@ -24,7 +24,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //Importing Routes Here
-import { userRouter } from "./routes/User/user.route.js";
+import userRouter from "./routes/User/user.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
