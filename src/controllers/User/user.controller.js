@@ -5,7 +5,7 @@ import sendResponse from "../../utils/sendResponse.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 
 export const createUser = AsyncHandler(async (req, res) => {
-    const { fullName, password, phone } = req.body;
+    const { fullName, password, phone, district, upazila, village, nid } = req.body;
     try {
         const existingUser = await User.findOne({ phone });
         if (existingUser) {
@@ -17,6 +17,10 @@ export const createUser = AsyncHandler(async (req, res) => {
             fullName,
             password: hashedPassword,
             phone,
+            district,
+            upazila,
+            village,
+            nid,
         });
 
         await newUser.save();
@@ -73,5 +77,3 @@ export const getAllUsers = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 };
-
-
