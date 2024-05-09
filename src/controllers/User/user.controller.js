@@ -73,3 +73,5 @@ export const getAllUsers = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 };
+
+

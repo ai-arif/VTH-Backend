@@ -19,14 +19,12 @@ const appointmentSchema = new Schema(
       type: String,
       trim: true,
     },
-
     registrationType: {
       type: String,
       required: true,
       enum: ["online", "offline"],
       default: "online",
     },
-
     patientType: {
       type: String,
       enum: ["new", "old"],
@@ -37,11 +35,15 @@ const appointmentSchema = new Schema(
       enum: ["new", "old"],
       default: "new",
     },
-
     serialNumber: {
       type: Number,
     },
-
+    ownerName: {
+      type: String,
+    },
+    nid: {
+      type: String,
+    },
     phone: {
       type: String,
     },

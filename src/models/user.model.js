@@ -17,6 +17,31 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
       trim: true,
     },
+    district: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    upazila: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    village: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    nid: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
+    role: {
+      type: String,
+      default: "user",
+    },
   },
 
   { timestamps: true }

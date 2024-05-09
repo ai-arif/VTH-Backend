@@ -1,4 +1,5 @@
 import Admin from "../../models/admin.model.js";
+import { User } from "../../models/user.model.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import sendResponse from "../../utils/sendResponse.js";
@@ -120,6 +121,19 @@ export const getAllUsers=async(req,res)=>{
     }
     catch(error){
         return sendResponse(res,500,false,error.message);
+    }
+}
+
+export const getUserByPhone = async (req, res) => {
+    try {
+        const user = await User.findOne({ phone: req.params.phone }).select("-password");
+        if (!user) {
+            return sendResponse(res, 404, false, "User not found");
+        }
+        return sendResponse(res, 200, true, "User", user);
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
     }
 }
     
