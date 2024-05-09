@@ -27,7 +27,7 @@ const userSchema = new Schema(
       required: true,
       trim: true,
     },
-    village: {
+    address: {
       type: String,
       required: true,
       trim: true,
