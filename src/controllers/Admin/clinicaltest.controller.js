@@ -1,4 +1,5 @@
 import ClinicalTest from "../../models/clinicaltest.model.js";
+import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { faker } from "@faker-js/faker";
@@ -75,6 +76,7 @@ export const deleteTest = async (req, res) => {
 };
 
 
+// TEST PARAMETER
 
 export const AddParameter = async(req,res)=> {
   try{
@@ -89,3 +91,88 @@ export const AddParameter = async(req,res)=> {
 
 
 
+export const getParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    const parameters = await TestParameter.find({test:id})
+    sendResponse(res, 200, true, "Successfully fetched parameter",{data:parameters});
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+export const deleteParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    await TestParameter.deleteOne({_id:id})
+    sendResponse(res, 200, true, "Successfully deleted parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+export const updateParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    await TestParameter.updateOne({_id:id},{...req.body})
+    sendResponse(res, 200, true, "Successfully updated parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+
+
+//SUB PARAMETER
+export const AddSubParameter = async(req,res)=> {
+  try{
+    const {sub_parameter_type,text,check,test_parameter} = req.body
+     console.log(req.body)
+    const newSubParameter = new TestSubParameter({
+      sub_parameter_type,
+      text,
+      check,
+      test_parameter
+    })
+    await newSubParameter.save()
+    sendResponse(res, 200, true, "Successfully added sub parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+export const getSubParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    const sub_parameter = await TestSubParameter.find({test_parameter:id})
+    sendResponse(res, 200, true, "Successfully fetched sub parameter",{data:sub_parameter});
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+export const deleteSubParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    await TestSubParameter.deleteOne({_id:id})
+    sendResponse(res, 200, true, "Successfully deleted sub parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+export const updateSubParameter = async(req,res)=> {
+  try{
+    const {id} = req.params
+    await TestSubParameter.updateOne({_id:id},{...req.body})
+    sendResponse(res, 200, true, "Successfully updated sub parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
