@@ -24,15 +24,17 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //Importing Routes Here
-import { userRouter } from "./routes/User/user.route.js";
+import userRouter from "./routes/User/user.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
 import medicineRouter from "./routes/Admin/medicine.route.js";
 import prescriptionRouter from "./routes/Admin/prescription.route.js";
 
+import adminRouter from "./routes/Admin/admin.route.js";
 
 //Declaration of Routes Here
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/user", userRouter);
 app.use('/api/v1/test',testRouter)
 app.use('/api/v1/appointment',appointmentRouter)

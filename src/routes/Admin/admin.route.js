@@ -3,7 +3,9 @@ import {
     createAdmin,
     createUser,
     login,
-    getUser,
+    getProfile,
+    getAllAdmins,
+    getUserByPhone,
     getAllUsers
     } from "../../controllers/Admin/admin.controller.js";
 
@@ -13,8 +15,10 @@ const router = Router();
 router.post("/create-admin",  createAdmin);
 router.post("/create-user", verifyAdminToken, createUser);
 router.post("/login", login);
-router.get("/user", verifyAdminToken, getUser);
-router.get("/users", verifyAdminToken, getAllUsers);
+router.get("/", verifyAdminToken, getProfile);
+router.get("/admins", verifyAdminToken, getAllAdmins);
+router.get("/user/:phone",  getUserByPhone);
+router.get("/users",  getAllUsers);
 
 
 

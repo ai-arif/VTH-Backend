@@ -1,4 +1,5 @@
 import Admin from "../../models/admin.model.js";
+import { User } from "../../models/user.model.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import sendResponse from "../../utils/sendResponse.js";
@@ -99,7 +100,7 @@ export const login = async (req, res) => {
     }
 }
 
-export const getUser=async(req,res)=>{
+export const getProfile=async(req,res)=>{
     try{
         const user=await Admin.findById(req.id).select("-password");
         return sendResponse(res,200,true,"User",user);
@@ -109,7 +110,7 @@ export const getUser=async(req,res)=>{
     }
 }
 
-export const getAllUsers=async(req,res)=>{
+export const getAllAdmins=async(req,res)=>{
     try{
         // use page, limit, sort form query
         const limit=parseInt(req.query.limit)||15;
@@ -120,6 +121,30 @@ export const getAllUsers=async(req,res)=>{
     }
     catch(error){
         return sendResponse(res,500,false,error.message);
+    }
+}
+
+export const getUserByPhone = async (req, res) => {
+    try {
+        const user = await User.findOne({ phone: req.params.phone }).select("-password");
+        if (!user) {
+            return sendResponse(res, 404, false, "User not found");
+        }
+        return sendResponse(res, 200, true, "User", user);
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
+// get all users, except password
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find().select("-password");
+        return sendResponse(res, 200, true, "All users", users);
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
     }
 }
     
