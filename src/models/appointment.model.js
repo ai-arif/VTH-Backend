@@ -69,7 +69,18 @@ const appointmentSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'User'
-    }
+    },
+    prescription: {
+      type: Schema.Types.ObjectId,
+      ref: 'Prescription'
+    },
+    tests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Test'
+      }
+    ]
+
   },
   { timestamps: true }
 );
