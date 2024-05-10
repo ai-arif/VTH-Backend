@@ -46,12 +46,21 @@ const appointmentSchema = new Schema(
     },
     phone: {
       type: String,
+      required:true
     },
-
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
+      enum: ["pending", "approved", "rejected"],
       default: "pending",
+    },
+    payment: {
+      type: String,
+      enum: ["paid", "unpaid"],
+      default: "unpaid",
+    },
+    amount: {
+      type: Number,
+      default: 0,
     },
     department: {
         type: Schema.Types.ObjectId,
