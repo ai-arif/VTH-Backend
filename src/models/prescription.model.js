@@ -1,28 +1,27 @@
 import { Schema, model } from "mongoose";
 
-
-const prescriptionSchema = new Schema({
-    caseNo: {
-        type: Schema.Types.ObjectId,
-        ref: "Appointment",
-    },
+const prescriptionSchema = new Schema(
+  {
+    caseNo: Number,
     date: {
-        type: Date,
-        default: Date.now(),
+      type: Date,
+      default: Date.now(),
     },
     medicine: {
-        type: [],
+      type: [],
     },
     diagnosis: {
-        type: [],
+      type: [],
     },
     advice: {
-        type: String,
+      type: String,
     },
     nextVisit: {
-        type: Date,
+      type: Date,
     },
-}, { timestamps: true });
+  },
+  { timestamps: true }
+);
 
 const Prescription = model("Prescription", prescriptionSchema);
 

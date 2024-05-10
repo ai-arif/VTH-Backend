@@ -15,7 +15,7 @@ prescriptionRouter.get('/',Find)
 prescriptionRouter.get('/:id',FindBy)
 prescriptionRouter.put('/:id',Updateby)
 prescriptionRouter.post('/:id',Deleteby)
-prescriptionRouter.get('/',Search)
+prescriptionRouter.get('/search',Search)
 
 
 

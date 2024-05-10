@@ -35,7 +35,8 @@ export const FindBy =  async (req, res) => {
             sendResponse(res, 404, false, "Prescription did not found");
 
         }
-        res.send(prescription);
+        sendResponse(res, 200, true, "Prescription fetched successfully",{data: prescription});
+
     } catch (error) {
         sendResponse(res, 500, false, error.message);
     }
@@ -69,6 +70,7 @@ export const Deleteby  =  async (req, res) => {
         sendResponse(res, 500, false, error.message);
     }
 }
+
 
 // Search Prescription by caseNo
 export const Search =  async (req, res) => {
