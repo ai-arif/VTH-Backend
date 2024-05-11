@@ -15,7 +15,7 @@ const appointmentSchema = new Schema(
       type: String,
       trim: true,
     },
-    upazilla: {
+    upazila: {
       type: String,
       trim: true,
     },
