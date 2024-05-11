@@ -7,7 +7,8 @@ import {
   getAppointment,
   updateAppointment,
   deleteAppointment,
-  getAppointmentByPhone
+  getAppointmentByPhone,
+  updateAppointmentById
 } from "../../controllers/Admin/appointment.controller.js";
 
 

@@ -76,6 +76,20 @@ export const updateAppointment = async (req, res) => {
   }
 };
 
+export const updateAppointmentById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment)
+      return sendResponse(res, 404, false, "Did not found the appointment");
+
+    await Appointment.updateOne({ _id: id }, { ...req.body });
+    sendResponse(res, 200, true, "Updated successfully", appointment);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 export const deleteAppointment = async (req, res) => {
   const { caseNo } = req.params;
