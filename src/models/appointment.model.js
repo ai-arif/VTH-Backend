@@ -19,6 +19,14 @@ const appointmentSchema = new Schema(
       type: String,
       trim: true,
     },
+    address: {
+      type: String,
+      trim: true,
+    },
+    numberOfAnimals: {
+      type: Number,
+      default: 1,
+    },
     registrationType: {
       type: String,
       required: true,
