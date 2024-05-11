@@ -15,9 +15,17 @@ const appointmentSchema = new Schema(
       type: String,
       trim: true,
     },
-    upazilla: {
+    upazila: {
       type: String,
       trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    numberOfAnimals: {
+      type: Number,
+      default: 1,
     },
     registrationType: {
       type: String,
@@ -46,12 +54,21 @@ const appointmentSchema = new Schema(
     },
     phone: {
       type: String,
+      required:true
     },
-
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected"],
+      enum: ["pending", "approved", "rejected"],
       default: "pending",
+    },
+    payment: {
+      type: String,
+      enum: ["paid", "unpaid"],
+      default: "unpaid",
+    },
+    amount: {
+      type: Number,
+      default: 0,
     },
     department: {
         type: Schema.Types.ObjectId,
@@ -60,7 +77,18 @@ const appointmentSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'User'
-    }
+    },
+    prescription: {
+      type: Schema.Types.ObjectId,
+      ref: 'Prescription'
+    },
+    tests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Test'
+      }
+    ]
+
   },
   { timestamps: true }
 );

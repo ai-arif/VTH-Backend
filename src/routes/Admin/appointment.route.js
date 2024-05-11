@@ -7,12 +7,15 @@ import {
   getAppointment,
   updateAppointment,
   deleteAppointment,
+  getAppointmentByPhone,
+  updateAppointmentById
 } from "../../controllers/Admin/appointment.controller.js";
 
 
 
 appointmentRouter.post('/',createAppointment)
 appointmentRouter.get('/',getAllAppointments)
+appointmentRouter.get('/phone/:phone',getAppointmentByPhone)
 appointmentRouter.get('/:caseNo',getAppointment)
 appointmentRouter.put('/:caseNo',updateAppointment)
 appointmentRouter.delete('/:caseNo',deleteAppointment)

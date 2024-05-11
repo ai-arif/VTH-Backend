@@ -7,11 +7,14 @@ const prescriptionSchema = new Schema(
       type: Date,
       default: Date.now(),
     },
-    medicine: {
-      type: [],
-    },
+    medicine: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Medicine',
+      }
+    ],
     diagnosis: {
-      type: [],
+      type: String,      
     },
     advice: {
       type: String,
@@ -19,6 +22,12 @@ const prescriptionSchema = new Schema(
     nextVisit: {
       type: Date,
     },
+    tests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Test'
+      }
+    ]
   },
   { timestamps: true }
 );
