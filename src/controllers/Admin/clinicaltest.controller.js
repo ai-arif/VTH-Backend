@@ -1,3 +1,4 @@
+import AppointmentTest from "../../models/appointment_test.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
@@ -31,12 +32,6 @@ export const getTest = async (req, res) => {
       .sort({ createdAt: sort })
       .exec();
 
-    // res.json({
-    //   totalTest,
-    //   totalPages,
-    //   currentPage: page,
-    //   data: tests,
-    // });
     sendResponse(res, 200, true, "Successfully fetched clinical tests", {
       totalTest,
       totalPages,
@@ -145,6 +140,18 @@ export const AddSubParameter = async(req,res)=> {
 }
 
 
+export const getAllSubParameter = async(req,res)=> {
+  try{
+    const sub_parameters = await TestSubParameter.find()
+    sendResponse(res, 200, true, "Successfully fetched sub parameter",{data:sub_parameters});
+  
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+
 export const getSubParameter = async(req,res)=> {
   try{
     const {id} = req.params
@@ -154,6 +161,7 @@ export const getSubParameter = async(req,res)=> {
     sendResponse(res,500,false,error.message)
   }
 }
+
 
 
 export const deleteSubParameter = async(req,res)=> {
@@ -172,6 +180,20 @@ export const updateSubParameter = async(req,res)=> {
     const {id} = req.params
     await TestSubParameter.updateOne({_id:id},{...req.body})
     sendResponse(res, 200, true, "Successfully updated sub parameter");
+  }catch(error){
+    sendResponse(res,500,false,error.message)
+  }
+}
+
+
+
+//APPOINTMENT TEST
+export const AddAppointmentTest = async(req,res)=> {
+  try{
+     const newAppointmentTest = new AppointmentTest({...req.body})
+     await newAppointmentTest.save()
+
+    sendResponse(res, 200, true, "Successfully created appointment test");
   }catch(error){
     sendResponse(res,500,false,error.message)
   }

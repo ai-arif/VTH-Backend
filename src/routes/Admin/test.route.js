@@ -13,7 +13,9 @@ import {
   deleteParameter,
   updateParameter,
   deleteSubParameter,
-  updateSubParameter
+  updateSubParameter,
+  getAllSubParameter,
+  AddAppointmentTest
 } from "../../controllers/Admin/clinicaltest.controller.js";
 
 
@@ -29,7 +31,12 @@ testRouter.put('/parameter/:id',updateParameter)
 
 testRouter.post("/parameter/sub",AddSubParameter)
 testRouter.get("/parameter/sub/:id",getSubParameter)
+testRouter.get("/parameter/all/sub",getAllSubParameter)
 testRouter.delete("/parameter/sub/:id",deleteSubParameter)
 testRouter.put("/parameter/sub/:id",updateSubParameter)
+
+
+testRouter.post("/appointment",AddAppointmentTest)
+
 
 export default testRouter;
