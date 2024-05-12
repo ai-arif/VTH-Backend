@@ -15,11 +15,17 @@ export const Create = async(req, res) => {
 
 
 // Read All Prescriptions
-  export const Find = async (req, res) => {
+export const Find = async (req, res) => {
     try {
-        const prescriptions = await Prescription.find();
-        sendResponse(res, 200, true, "Prescription successfully",{data: prescriptions});
-
+        const prescriptions = await Prescription.find()
+            .populate({
+                path: 'appointment',
+                populate: {
+                    path: 'department',
+                    model: 'Department'
+                }
+            });
+        sendResponse(res, 200, true, "Prescriptions successfully retrieved", { data: prescriptions });
     } catch (error) {
         sendResponse(res, 500, false, error.message);
     }

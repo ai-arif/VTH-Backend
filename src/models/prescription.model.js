@@ -11,7 +11,7 @@ const prescriptionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Appointment',
     },
-    medicine: [
+    medicines: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Medicine',
