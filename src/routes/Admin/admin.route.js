@@ -13,7 +13,7 @@ import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
 const router = Router();
 
 router.post("/create-admin",  createAdmin);
-router.post("/create-user", verifyAdminToken, createUser);
+router.post("/create-user",  createUser);
 router.post("/login", login);
 router.get("/", verifyAdminToken, getProfile);
 router.get("/admins", verifyAdminToken, getAllAdmins);
