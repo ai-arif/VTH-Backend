@@ -9,39 +9,38 @@ const patientRegistrationFormSchema = new Schema({
         type: Date,
         required: true,
     },
-    ownerName: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    village: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    district: {
-        type: String,
-        required: true,
-        trim: true,
-    },
-    upazila: {
-        type: String,
-        required: true,
-        trim: true,
-    },
+    // ownerName: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
+    // village: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
+    // district: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
+    // upazila: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
     nid: {
         type: String,
         required: true,
         trim: true,
     },
-    phone: {
-        type: String,
-        required: true,
-        trim: true,
-    },
+    // phone: {
+    //     type: String,
+    //     required: true,
+    //     trim: true,
+    // },
     attendeeInfo: {
         type: String,
-        required: true,
         trim: true,
     },
     tagNo: {
