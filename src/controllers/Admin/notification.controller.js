@@ -1,6 +1,6 @@
-import Notification from "../../models/notification.model";
-import sendResponse from "../../utils/sendResponse";
-import { AsyncHandler } from "../../utils/AsyncHandler";
+import Notification from "../../models/notification.model.js";
+import sendResponse from "../../utils/sendResponse.js";
+import { AsyncHandler } from "../../utils/AsyncHandler.js";
 
 // just create a function to create notification, title, description, department, type will be passed in the body
 export const createNotification = async(title, description, department, type) => {

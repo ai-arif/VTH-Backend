@@ -8,3 +8,5 @@ const router = Router();
 
 router.get("/",  getAllNotifications);
 router.delete("/",  deleteNotifications);
+
+export default router;
