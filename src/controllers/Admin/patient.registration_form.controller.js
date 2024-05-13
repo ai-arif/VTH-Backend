@@ -76,3 +76,19 @@ export const deletePatientRegistrationFormById = async ({ params: { id } }, res)
         return sendResponse(res, 500, false, error.message);
     }
 };
+
+// get all registrations using pagination
+export const getAllPatientRegistrationForms = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const patientRegistrationForms = await PatientRegistrationForm.find().skip(skip).limit(limit);
+        const total = await PatientRegistrationForm.countDocuments();
+
+        return sendResponse(res, 200, true, "Patient registration forms retrieved successfully", { data: patientRegistrationForms, total });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+};
