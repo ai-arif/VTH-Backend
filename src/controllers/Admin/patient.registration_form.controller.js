@@ -84,7 +84,7 @@ export const getAllPatientRegistrationForms = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
 
-        const patientRegistrationForms = await PatientRegistrationForm.find().skip(skip).limit(limit);
+        const patientRegistrationForms = await PatientRegistrationForm.find().skip(skip).limit(limit).populate('appointmentId');
         const total = await PatientRegistrationForm.countDocuments();
 
         return sendResponse(res, 200, true, "Patient registration forms retrieved successfully", { data: patientRegistrationForms, total });
