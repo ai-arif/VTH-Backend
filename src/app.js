@@ -30,7 +30,8 @@ import appointmentRouter from "./routes/Admin/appointment.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
 import medicineRouter from "./routes/Admin/medicine.route.js";
 import prescriptionRouter from "./routes/Admin/prescription.route.js";
-
+import patientRegistrationRouter from "./routes/Admin/patient.registration.route.js";
+import notificationRouter from "./routes/Admin/notification.route.js";
 import adminRouter from "./routes/Admin/admin.route.js";
 
 //Declaration of Routes Here
@@ -41,6 +42,8 @@ app.use('/api/v1/appointment',appointmentRouter)
 app.use('/api/v1/department',departmentRouter)
 app.use('/api/v1/medicine',medicineRouter)
 app.use('/api/v1/prescription',prescriptionRouter)
+app.use('/api/v1/patient-registration',patientRegistrationRouter)
+app.use('/api/v1/notification',notificationRouter)
 
 
 export { app };

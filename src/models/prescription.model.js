@@ -7,7 +7,11 @@ const prescriptionSchema = new Schema(
       type: Date,
       default: Date.now(),
     },
-    medicine: [
+    appointment: {
+      type: Schema.Types.ObjectId,
+      ref: 'Appointment',
+    },
+    medicines: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Medicine',

@@ -42,6 +42,11 @@ const userSchema = new Schema(
       type: String,
       default: "user",
     },
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      default: null,
+    },
   },
 
   { timestamps: true }

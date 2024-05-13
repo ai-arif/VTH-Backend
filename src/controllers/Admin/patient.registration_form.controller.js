@@ -6,9 +6,9 @@ export const createPatientRegistrationForm = async (req, res) => {
         const { appointmentId, date, ownerName, village, district, upazila, nid, phone, attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, breed, sex, weight, registrationType, patientType, caseType } = req.body;
 
         // Check for required fields
-        if (!appointmentId || !date || !ownerName || !village || !district || !upazila || !nid || !phone || !attendeeInfo || !tagNo || !patientName || !age || !dob || !identificationMark || !species || !breed || !sex || !weight || !registrationType || !patientType || !caseType) {
-            return sendResponse(res, 400, false, "All required fields must be provided");
-        }
+        // if (!appointmentId || !date || !ownerName || !village || !district || !upazila || !nid || !phone || !attendeeInfo || !tagNo || !patientName || !age || !dob || !identificationMark || !species || !breed || !sex || !weight || !registrationType || !patientType || !caseType) {
+        //     return sendResponse(res, 400, false, "All required fields must be provided");
+        // }
 
         const newPatientRegistrationForm = new PatientRegistrationForm({
             appointmentId,
@@ -43,7 +43,7 @@ export const createPatientRegistrationForm = async (req, res) => {
 
 export const getPatientRegistrationFormById = async ({ params: { id } }, res) => {
     try {
-        const patientRegistrationForm = await PatientRegistrationForm.findById(id);
+        const patientRegistrationForm = await PatientRegistrationForm.findById(id).populate('appointmentId');
         if (!patientRegistrationForm) {
             return sendResponse(res, 404, false, "Patient registration form not found");
         }
@@ -72,6 +72,22 @@ export const deletePatientRegistrationFormById = async ({ params: { id } }, res)
             return sendResponse(res, 404, false, "Patient registration form not found");
         }
         return sendResponse(res, 200, true, "Patient registration form deleted successfully", deletedPatientRegistrationForm);
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+};
+
+// get all registrations using pagination
+export const getAllPatientRegistrationForms = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const patientRegistrationForms = await PatientRegistrationForm.find().skip(skip).limit(limit).populate('appointmentId');
+        const total = await PatientRegistrationForm.countDocuments();
+
+        return sendResponse(res, 200, true, "Patient registration forms retrieved successfully", { data: patientRegistrationForms, total });
     } catch (error) {
         return sendResponse(res, 500, false, error.message);
     }

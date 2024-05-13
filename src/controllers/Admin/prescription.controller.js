@@ -15,11 +15,17 @@ export const Create = async(req, res) => {
 
 
 // Read All Prescriptions
-  export const Find = async (req, res) => {
+export const Find = async (req, res) => {
     try {
-        const prescriptions = await Prescription.find();
-        sendResponse(res, 200, true, "Prescription successfully",{data: prescriptions});
-
+        const prescriptions = await Prescription.find()
+            .populate({
+                path: 'appointment',
+                populate: {
+                    path: 'department',
+                    model: 'Department'
+                }
+            });
+        sendResponse(res, 200, true, "Prescriptions successfully retrieved", { data: prescriptions });
     } catch (error) {
         sendResponse(res, 500, false, error.message);
     }
@@ -30,7 +36,13 @@ export const Create = async(req, res) => {
 // Read Prescription by ID
 export const FindBy =  async (req, res) => {
     try {
-        const prescription = await Prescription.findById(req.params.id);
+        const prescription = await Prescription.findById(req.params.id).populate({
+            path: 'appointment',
+            populate: {
+                path: 'department',
+                model: 'Department'
+            }
+        });
         if (!prescription) {
             sendResponse(res, 404, false, "Prescription did not found");
 
