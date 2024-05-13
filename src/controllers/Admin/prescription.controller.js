@@ -36,7 +36,13 @@ export const Find = async (req, res) => {
 // Read Prescription by ID
 export const FindBy =  async (req, res) => {
     try {
-        const prescription = await Prescription.findById(req.params.id);
+        const prescription = await Prescription.findById(req.params.id).populate({
+            path: 'appointment',
+            populate: {
+                path: 'department',
+                model: 'Department'
+            }
+        });
         if (!prescription) {
             sendResponse(res, 404, false, "Prescription did not found");
 
