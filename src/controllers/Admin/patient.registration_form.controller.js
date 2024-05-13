@@ -6,9 +6,9 @@ export const createPatientRegistrationForm = async (req, res) => {
         const { appointmentId, date, ownerName, village, district, upazila, nid, phone, attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, breed, sex, weight, registrationType, patientType, caseType } = req.body;
 
         // Check for required fields
-        if (!appointmentId || !date || !ownerName || !village || !district || !upazila || !nid || !phone || !attendeeInfo || !tagNo || !patientName || !age || !dob || !identificationMark || !species || !breed || !sex || !weight || !registrationType || !patientType || !caseType) {
-            return sendResponse(res, 400, false, "All required fields must be provided");
-        }
+        // if (!appointmentId || !date || !ownerName || !village || !district || !upazila || !nid || !phone || !attendeeInfo || !tagNo || !patientName || !age || !dob || !identificationMark || !species || !breed || !sex || !weight || !registrationType || !patientType || !caseType) {
+        //     return sendResponse(res, 400, false, "All required fields must be provided");
+        // }
 
         const newPatientRegistrationForm = new PatientRegistrationForm({
             appointmentId,
