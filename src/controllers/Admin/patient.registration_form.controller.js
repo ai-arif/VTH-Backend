@@ -43,7 +43,7 @@ export const createPatientRegistrationForm = async (req, res) => {
 
 export const getPatientRegistrationFormById = async ({ params: { id } }, res) => {
     try {
-        const patientRegistrationForm = await PatientRegistrationForm.findById(id);
+        const patientRegistrationForm = await PatientRegistrationForm.findById(id).populate('appointmentId');
         if (!patientRegistrationForm) {
             return sendResponse(res, 404, false, "Patient registration form not found");
         }
