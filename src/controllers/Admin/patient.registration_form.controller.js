@@ -3,10 +3,12 @@ import sendResponse from "../../utils/sendResponse.js";
 
 export const createPatientRegistrationForm = async (req, res) => {
     try {
-        const { appointmentId, date, ownerName, village, district, upazila, nid, phone, attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, 
+        const { appointmentId, date,  attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, 
             breed, sex, weight, registrationType, 
             patientType, caseType, milkYield,
-            patientHistory, managementHistory
+            patientHistory, managementHistory,
+            diseaseHistory, clinicalSigns, diagnosis, serviceRequested, treatmentHistory,
+            patientComplaint
          } = req.body;
 
         // Check for required fields
@@ -17,12 +19,6 @@ export const createPatientRegistrationForm = async (req, res) => {
         const newPatientRegistrationForm = new PatientRegistrationForm({
             appointmentId,
             date,
-            ownerName,
-            village,
-            district,
-            upazila,
-            nid,
-            phone,
             attendeeInfo,
             tagNo,
             patientName,
@@ -39,6 +35,13 @@ export const createPatientRegistrationForm = async (req, res) => {
             milkYield: req.body.milkYield || null,
             patientHistory: req.body.patientHistory || null,
             managementHistory: req.body.managementHistory || null,
+            diseaseHistory: req.body.diseaseHistory || null,
+            clinicalSigns: req.body.clinicalSigns || null,
+            diagnosis: req.body.diagnosis || null,
+            serviceRequested: req.body.serviceRequested || null,
+            treatmentHistory: req.body.treatmentHistory || null,
+            patientComplaint: req.body.patientComplaint || null
+            
 
 
         });
