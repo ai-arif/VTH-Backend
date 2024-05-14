@@ -36,8 +36,8 @@ import adminRouter from "./routes/Admin/admin.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
 
 //Declaration of Routes Here
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/staffs", userRouter);
+app.use("/api/v1/staffs", adminRouter);
+// app.use("/api/v1/staffs", userRouter);
 app.use("/api/v1/admin-user", adminUserRouter);
 app.use('/api/v1/test',testRouter)
 app.use('/api/v1/appointment',appointmentRouter)

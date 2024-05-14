@@ -6,19 +6,21 @@ import {
     getProfile,
     getAllAdmins,
     getUserByPhone,
-    getAllUsers
+    getAllUsers,
+    updateAdmin
     } from "../../controllers/Admin/admin.controller.js";
 
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
 const router = Router();
 
 router.post("/create-admin",  createAdmin);
-router.post("/create-user",  createUser);
+router.post("/create-staff",  createUser);
 router.post("/login", login);
 router.get("/", verifyAdminToken, getProfile);
-router.get("/admins", verifyAdminToken, getAllAdmins);
+router.get("/admins",  getAllAdmins);
 router.get("/user/:phone",  getUserByPhone);
 router.get("/users",  getAllUsers);
+router.put("/update-admin",  updateAdmin);
 
 
 

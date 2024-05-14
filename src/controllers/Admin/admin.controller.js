@@ -147,4 +147,35 @@ export const getAllUsers = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 }
-    
+
+// update admin, if password is present, hash it and update
+export const updateAdmin = async (req, res) => {
+    try {
+        const { fullName, password, phone,role } = req.body;
+        const admin = await Admin.findById(req.id);
+        if (!admin) {
+            return sendResponse(res, 404, false, "Admin not found");
+        }
+        if (fullName) {
+            admin.fullName = fullName;
+        }
+        if (phone) {
+            admin.phone = phone;
+        }
+        if (role) {
+            admin.role = role;
+        }
+        if (password) {
+            admin.password = await bcrypt.hash(password, 10);
+        }
+        await admin.save();
+        return sendResponse(res, 200, true, "Admin updated successfully", {
+            fullName: admin.fullName,
+            phone: admin.phone,
+            role: admin.role
+        });
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
