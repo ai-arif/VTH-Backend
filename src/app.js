@@ -48,7 +48,9 @@ app.use('/api/v1/patient-registration',patientRegistrationRouter)
 app.use('/api/v1/notification',notificationRouter)
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.json({
+    message: "Welcome to the API",
+  });
 });
 
 

@@ -24,24 +24,51 @@ export const createAppointment = async (req, res) => {
 };
 
 
-export const getAllAppointments = async (req, res) => {
+export const getAllApprovedAppointments = async (req, res) => {
   try {
+    // send with total pages
     const limit = parseInt(req.query.limit) || 15;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
     const sort = -1;
-    const appointments = await Appointment.find()
-      .populate('department','name')
-      .populate('owner','-password')
+    const appointments = await Appointment.find({ status: "approved" })
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: sort });
 
-    res.json({ success: true, message: "Showing results", data: appointments });
+    const count = await Appointment.countDocuments({ status: "approved" });
+    const totalPages = Math.ceil(count / limit);
+
+    sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
+    
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// get all pending appointments
+export const getAllPendingAppointments = async (req, res) => {
+  try {
+    // send with total pages
+    const limit = parseInt(req.query.limit) || 15;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+    const sort = -1;
+    const appointments = await Appointment.find({ status: "pending" })
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: sort });
+
+    const count = await Appointment.countDocuments({ status: "pending" });
+    const totalPages = Math.ceil(count / limit);
+
+    sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 
 
 export const getAppointment = async (req, res) => {
