@@ -3,7 +3,11 @@ import sendResponse from "../../utils/sendResponse.js";
 
 export const createPatientRegistrationForm = async (req, res) => {
     try {
-        const { appointmentId, date, ownerName, village, district, upazila, nid, phone, attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, breed, sex, weight, registrationType, patientType, caseType } = req.body;
+        const { appointmentId, date, ownerName, village, district, upazila, nid, phone, attendeeInfo, tagNo, patientName, age, dob, identificationMark, species, 
+            breed, sex, weight, registrationType, 
+            patientType, caseType, milkYield,
+            patientHistory, managementHistory
+         } = req.body;
 
         // Check for required fields
         // if (!appointmentId || !date || !ownerName || !village || !district || !upazila || !nid || !phone || !attendeeInfo || !tagNo || !patientName || !age || !dob || !identificationMark || !species || !breed || !sex || !weight || !registrationType || !patientType || !caseType) {
@@ -31,7 +35,12 @@ export const createPatientRegistrationForm = async (req, res) => {
             weight,
             registrationType,
             patientType,
-            caseType
+            caseType,
+            milkYield: req.body.milkYield || null,
+            patientHistory: req.body.patientHistory || null,
+            managementHistory: req.body.managementHistory || null,
+
+
         });
 
         await newPatientRegistrationForm.save();
