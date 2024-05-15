@@ -7,7 +7,8 @@ import {
     getAllAdmins,
     getUserByPhone,
     getAllUsers,
-    updateAdmin
+    updateAdmin,
+    deleteAdmin
     } from "../../controllers/Admin/admin.controller.js";
 
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
@@ -21,6 +22,7 @@ router.get("/admins",  getAllAdmins);
 router.get("/user/:phone",  getUserByPhone);
 router.get("/users",  getAllUsers);
 router.put("/update-admin",  updateAdmin);
+router.delete("/delete-admin/:id",  deleteAdmin);
 
 
 
