@@ -117,7 +117,10 @@ export const getAllAdmins=async(req,res)=>{
         const page=parseInt(req.query.page)||1;
         const skip=(page-1)*limit;
         const users=await Admin.find().select("-password").limit(limit).skip(skip);
-        return sendResponse(res,200,true,"All users",users);
+        // send pages
+        const count=await Admin.countDocuments();
+        const pages=Math.ceil(count/limit);
+        return sendResponse(res,200,true,"All users",{users,pages});
     }
     catch(error){
         return sendResponse(res,500,false,error.message);
