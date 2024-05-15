@@ -130,11 +130,11 @@ export const getAllAdmins=async(req,res)=>{
 // delete admin
 export const deleteAdmin = async (req, res) => {
     try {
-        const admin = await Admin.findById(req.params.id);
+        const admin = await Admin.findByIdAndDelete(req.params.id);
         if (!admin) {
             return sendResponse(res, 404, false, "Admin not found");
         }
-        await admin.remove();
+        
         return sendResponse(res, 200, true, "Admin deleted successfully");
     }
     catch (error) {
