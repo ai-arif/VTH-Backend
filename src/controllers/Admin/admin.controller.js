@@ -170,7 +170,8 @@ export const getAllUsers = async (req, res) => {
 export const updateAdmin = async (req, res) => {
     try {
         const { fullName, password, phone,role } = req.body;
-        const admin = await Admin.findById(req.id);
+        const id = req.params.id;
+        const admin = await Admin.findById(id);
         if (!admin) {
             return sendResponse(res, 404, false, "Admin not found");
         }

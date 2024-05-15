@@ -21,7 +21,7 @@ router.get("/", verifyAdminToken, getProfile);
 router.get("/admins",  getAllAdmins);
 router.get("/user/:phone",  getUserByPhone);
 router.get("/users",  getAllUsers);
-router.put("/update-admin",  updateAdmin);
+router.put("/update-admin/:id",  updateAdmin);
 router.delete("/delete-admin/:id",  deleteAdmin);
 
 
