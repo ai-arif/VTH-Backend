@@ -205,14 +205,17 @@ export const searchPatientRegistrationForms = async (req, res) => {
           from: "appointments",
           localField: "appointmentId",
           foreignField: "_id",
-          as: "appointment",
+          as: "appointmentId",
         },
+      },
+      {
+        $unwind: "$appointmentId",
       },
       {
         $match: {
           $or: [
-            { "appointment.ownerName": { $regex: search, $options: "i" } },
-            { "appointment.phone": { $regex: search, $options: "i" } },
+            { "appointmentId.ownerName": { $regex: search, $options: "i" } },
+            { "appointmentId.phone": { $regex: search, $options: "i" } },
             { caseNo: { $regex: search, $options: "i" } },
           ],
         },
