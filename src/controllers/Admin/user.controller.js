@@ -19,19 +19,34 @@ export const getAllUsers = AsyncHandler(async (req, res) => {
     return sendResponse(res, 200, true, "Showing results", { users, totalPages });
 });
 
-// search users by phone and name 
+// search users by phone and name with pagination, and total count of pages for that logic
 export const searchUsers = AsyncHandler(async (req, res) => {
-    const { search } = req.query;
+    const limit = parseInt(req.query.limit) || 15;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+    const sort = -1;
+    const search = req.query.search;
+    
     const users = await User.find({
         $or: [
-            { phone: { $regex: search, $options: 'i' } },
-            { name: { $regex: search, $options: 'i' } }
-        ]
+            { fullName: { $regex: search, $options: "i" } },
+            { phone: { $regex: search, $options: "i" } },
+        ],
+    })
+        .limit(limit)
+        .skip(skip)
+        .sort({ createdAt: sort });
+
+    const count = await User.countDocuments({
+        $or: [
+            { fullName: { $regex: search, $options: "i" } },
+            { phone: { $regex: search, $options: "i" } },
+        ],
     });
+    const totalPages = Math.ceil(count / limit);
 
-    return sendResponse(res, 200, true, "Showing results", users);
+    return sendResponse(res, 200, true, "Showing results", { users, totalPages });
 });
-
 
 // get user by phone
 export const getUserByPhone = AsyncHandler(async (req, res) => {
@@ -51,4 +66,6 @@ export const getUserById = AsyncHandler(async (req, res) => {
     }
     return sendResponse(res, 200, true, "User", user);
 });
+
+
 
