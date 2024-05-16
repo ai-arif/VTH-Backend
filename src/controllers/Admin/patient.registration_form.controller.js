@@ -188,3 +188,70 @@ export const getAllPatientRegistrationForms = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+// i need to search by ownerName, phone, caseNo fields which are inside the appointmentId field after populate, so i need to use aggregate
+export const searchPatientRegistrationForms = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { search } = req.query;
+    
+    
+    const patientRegistrationForms = await PatientRegistrationForm.aggregate([
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointment",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "appointment.ownerName": { $regex: search, $options: "i" } },
+            { "appointment.phone": { $regex: search, $options: "i" } },
+            { caseNo: { $regex: search, $options: "i" } },
+          ],
+        },
+      },
+    ])
+      .skip(skip)
+      .limit(limit);
+
+    // calculate total document count with the above condition
+    const total = await PatientRegistrationForm.aggregate([
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointment",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { "appointment.ownerName": { $regex: search, $options: "i" } },
+            { "appointment.phone": { $regex: search, $options: "i" } },
+            { caseNo: { $regex: search, $options: "i" } },
+          ],
+        },
+      }
+    ]).count("total");
+    
+    let totalPage=total.length>0?Math.ceil(total[0].total/limit):0;
+
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Patient registration forms retrieved successfully",
+      {  data:patientRegistrationForms, total:totalPage }
+    );
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
