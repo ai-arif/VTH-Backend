@@ -24,7 +24,6 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //Importing Routes Here
-import userRouter from "./routes/User/user.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
@@ -34,6 +33,11 @@ import patientRegistrationRouter from "./routes/Admin/patient.registration.route
 import notificationRouter from "./routes/Admin/notification.route.js";
 import adminRouter from "./routes/Admin/admin.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
+
+// user routes
+import userRouter from "./routes/User/user.route.js";
+import userAppointmentRouter from "./routes/User/appointment.route.js";
+import userPrescriptionRouter from "./routes/User/prescription.route.js";
 
 //Declaration of Routes Here
 app.use("/api/v1/staffs", adminRouter);
@@ -46,6 +50,13 @@ app.use('/api/v1/medicine',medicineRouter)
 app.use('/api/v1/prescription',prescriptionRouter)
 app.use('/api/v1/patient-registration',patientRegistrationRouter)
 app.use('/api/v1/notification',notificationRouter)
+
+
+//  user routes
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/user-appointment", userAppointmentRouter);
+app.use("/api/v1/user-prescription", userPrescriptionRouter);
+
 
 app.get("/", (req, res) => {
   res.json({
