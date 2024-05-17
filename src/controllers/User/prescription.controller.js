@@ -22,8 +22,7 @@ export const getAllPrescriptions = async (req, res) => {
             .limit(limit)
             .skip(skip)
             .sort({ createdAt: sort });
-
-        // filter out prescriptions with null appointments
+        
         prescriptions = prescriptions.filter(prescription => prescription.appointment !== null);
 
         const count = await Prescription.countDocuments();

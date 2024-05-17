@@ -35,7 +35,8 @@ export const getAllAppointments = async (req, res) => {
       const skip = (page - 1) * limit;
       const sort = -1;
       
-      const appointments = await Appointment.find({owner:req.id})
+      
+      const appointments = await Appointment.find({owner}).populate('department owner')
         .limit(limit)
         .skip(skip)
         .sort({ createdAt: sort });
