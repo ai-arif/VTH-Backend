@@ -31,7 +31,7 @@ export const getAllAppointments = async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const skip = (page - 1) * limit;
       const sort = -1;
-      const appointments = await Appointment.find()
+      const appointments = await Appointment.find({owner:req.id})
         .limit(limit)
         .skip(skip)
         .sort({ createdAt: sort });
@@ -45,4 +45,3 @@ export const getAllAppointments = async (req, res) => {
       res.status(500).json({ success: false, message: error.message });
     }
   };
-  

@@ -86,9 +86,23 @@ export const updateUser = async (req, res) => {
         existingUser.upazila = upazila;
         existingUser.address = address;
         existingUser.nid = nid;
+        let message = "";
+        // check if all fileds are filled the isCompleted will be true, otherwise give message which fields are missing
+        if (fullName && phone && district && upazila && address) {
+            existingUser.isCompleted = true;
+        }
+        else {
+            // mention which fields are missing
+            if (!fullName) message += "Full name is required, \n";
+            if (!phone) message += "Phone number is required, \n";
+            if (!district) message += "District is required, \n";
+            if (!upazila) message += "Upazila is required, \n";
+            if (!address) message += "Address is required, \n";
 
+
+        }
         await existingUser.save();
-        return sendResponse(res, 200, true, "User updated successfully");
+        return sendResponse(res, 200, true, "User updated successfully", { message });
     } catch (error) {
         return sendResponse(res, 500, false, error.message);
     }
