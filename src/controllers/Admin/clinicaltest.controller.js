@@ -70,6 +70,37 @@ export const deleteTest = async (req, res) => {
   }
 };
 
+// testName search clinical test with pagination and total count for that condition
+export const searchTest = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 15;
+  const sort = -1;
+  const search = req.query.search;
+
+  try {
+    const totalTest = await ClinicalTest.countDocuments({
+      testName: { $regex: search, $options: "i" },
+    });
+    const totalPages = Math.ceil(totalTest / limit);
+
+    const tests = await ClinicalTest.find({
+      testName: { $regex: search, $options: "i" },
+    })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: sort });
+
+    sendResponse(res, 200, true, "Successfully fetched clinical tests", {
+      totalTest,
+      totalPages,
+      currentPage: page,
+      data: tests,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 // TEST PARAMETER
 
 export const AddParameter = async (req, res) => {

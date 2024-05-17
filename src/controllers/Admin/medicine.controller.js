@@ -157,3 +157,40 @@ export const getMedicineById = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
+
+// name, brandName take search query params and match with name and brandName and handle with proper pagination
+export const searchMedicine = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const sort = -1;
+  const search = req.query.search;
+
+  try {
+    const totalMedicine = await Medicine.countDocuments({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { brandName: { $regex: search, $options: "i" } },
+      ],
+    });
+    const totalPages = Math.ceil(totalMedicine / limit);
+
+    const medicines = await Medicine.find({
+      $or: [
+        { name: { $regex: search, $options: "i" } },
+        { brandName: { $regex: search, $options: "i" } },
+      ],
+    })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: sort });
+
+    sendResponse(res, 200, true, "Successfully fetched medicines", {
+      totalMedicine,
+      totalPages,
+      currentPage: page,
+      data: medicines,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};

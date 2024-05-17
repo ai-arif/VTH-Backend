@@ -4,13 +4,15 @@ import {
     getMedicine,
     updateMedicine,
     deleteMedicine,
-    getMedicineById
+    getMedicineById,
+    searchMedicine
     } from "../../controllers/Admin/medicine.controller.js";
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
 const router = Router();
 
 router.post("/",  addMedicine);
 router.get("/",  getMedicine);
+router.get("/search",  searchMedicine);
 router.put("/:id",  updateMedicine);
 router.delete("/:id",  deleteMedicine);
 router.get("/:id",  getMedicineById);

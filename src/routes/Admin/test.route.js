@@ -6,6 +6,7 @@ import {
   getTest,
   updateTest,
   deleteTest,
+  searchTest,
   AddParameter,
   getParameter,
   AddSubParameter,
@@ -23,6 +24,7 @@ testRouter.post("/", addTest);
 testRouter.get("/", getTest);
 testRouter.put("/:id", updateTest);
 testRouter.delete("/:id", deleteTest);
+testRouter.get("/search", searchTest);
 
 testRouter.post('/parameter',AddParameter)
 testRouter.get('/parameter/:id',getParameter)

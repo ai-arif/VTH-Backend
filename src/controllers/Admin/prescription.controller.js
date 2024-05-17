@@ -102,3 +102,49 @@ export const Search =  async (req, res) => {
         sendResponse(res, 500, false, error.message);
     }
 }
+
+// prescription has a field appointment which is a reference to the Appointment model., use aggregae to search for search query parameter, and match it basis of ownerName, phone, and caseNo,
+// then populate the appointment field with the department field.
+// handle proper pagination and also return total number of document based on the condition
+export const SearchBy = async (req, res) => {
+    const search = req.query.search;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    if (!search) return sendResponse(res, 400, false, "Please provide search query parameter");
+
+    try {
+        const prescriptions = await Prescription.aggregate([
+            {
+              $lookup: {
+                from: "appointments",
+                localField: "appointment",
+                foreignField: "_id",
+                as: "appointment"
+              }
+            },
+            {
+              $unwind: "$appointment"
+            },
+            {
+                          $match: {
+                              $or: [
+                                  { "appointment.ownerName": { $regex: search, $options: 'i' } },
+                                  { "appointment.phone": { $regex: search, $options: 'i' } },
+                                  { "appointment.caseNo": { $regex: search, $options: 'i' } }
+                              ]
+                          }
+                      },
+          ]);
+
+        if (prescriptions[0].data.length === 0) {
+            return sendResponse(res, 404, false, "Prescription did not found for this search query");
+        }
+
+        sendResponse(res, 200, true, "Prescription fetched successfully", { data: prescriptions[0].data, metadata: prescriptions[0].metadata[0] });
+
+    } catch (error) {
+        sendResponse(res, 500, false, error.message);
+    }
+}
