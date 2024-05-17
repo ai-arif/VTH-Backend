@@ -3,7 +3,6 @@ import { Router } from "express";
 import {
   createUser,
   loginUser,
-  getUser,
   getUserById,
   updateUser,
   getAllUsers,

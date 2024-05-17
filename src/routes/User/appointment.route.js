@@ -4,3 +4,5 @@ import { createAppointment,getAllAppointments } from "../../controllers/User/app
 const appointmentRouter = Router();
 
 appointmentRouter.post("/", createAppointment);
+
+export default appointmentRouter;
