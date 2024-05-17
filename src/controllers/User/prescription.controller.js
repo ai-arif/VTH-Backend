@@ -4,14 +4,16 @@ import sendResponse from "../../utils/sendResponse.js";
 // get all prescriptions with pagination and populate appointment and department, with decending order
 export const getAllPrescriptions = async (req, res) => {
     try {
-        // send with total pages
+        const owner = req.id;
         const limit = parseInt(req.query.limit) || 15;
         const page = parseInt(req.query.page) || 1;
         const skip = (page - 1) * limit;
         const sort = -1;
-        const prescriptions = await Prescription.find()
+        console.log(req.id)
+        let prescriptions = await Prescription.find({ appointment: { $ne: null } }) // Exclude prescriptions with null appointments
             .populate({
                 path: 'appointment',
+                match: { owner: owner },
                 populate: {
                     path: 'department',
                     model: 'Department'
@@ -20,6 +22,9 @@ export const getAllPrescriptions = async (req, res) => {
             .limit(limit)
             .skip(skip)
             .sort({ createdAt: sort });
+
+        // filter out prescriptions with null appointments
+        prescriptions = prescriptions.filter(prescription => prescription.appointment !== null);
 
         const count = await Prescription.countDocuments();
         const totalPages = Math.ceil(count / limit);

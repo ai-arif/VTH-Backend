@@ -18,23 +18,19 @@ const userSchema = new Schema(
       trim: true,
     },
     district: {
-      type: String,
-      required: true,
+      type: String,      
       trim: true,
     },
     upazila: {
-      type: String,
-      required: true,
+      type: String,      
       trim: true,
     },
     address: {
-      type: String,
-      required: true,
+      type: String,      
       trim: true,
     },
     nid: {
       type: String,
-      required: true,
       trim: true,
       unique: true,
     },

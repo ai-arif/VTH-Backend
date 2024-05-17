@@ -26,11 +26,15 @@ export const createAppointment = async (req, res) => {
     // get all appointments with pagination
 export const getAllAppointments = async (req, res) => {
     try {
-      // send with total pages
+      const owner=req.id;
+      if (!owner) {
+        return sendResponse(res, 400, false, "Owner is required");
+      }
       const limit = parseInt(req.query.limit) || 15;
       const page = parseInt(req.query.page) || 1;
       const skip = (page - 1) * limit;
       const sort = -1;
+      
       const appointments = await Appointment.find({owner:req.id})
         .limit(limit)
         .skip(skip)

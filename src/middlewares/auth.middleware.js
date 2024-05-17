@@ -3,7 +3,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 import jwt from "jsonwebtoken";
 
-export const verifyJWT = AsyncHandler(async (req, _, next) => {
+export const verifyJWT = AsyncHandler(async (req, res, next) => {
   if(!req.header('authorization')) return res.status(401).send('Access Denied');
     // if undefined then return 401
     if(req.header('authorization')===undefined) return res.status(401).send('Access Denied');
