@@ -31,6 +31,7 @@ export const createUser = AsyncHandler(async (req, res) => {
             _id: newUser._id,
             fullName: newUser.fullName,
             phone: newUser.phone,
+            token
         });
     } catch (error) {
         return sendResponse(res, 500, false, error.message);
