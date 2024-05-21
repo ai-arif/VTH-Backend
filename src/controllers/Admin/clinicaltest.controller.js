@@ -1,9 +1,11 @@
+import { faker } from "@faker-js/faker";
+import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
+import TestAdditionalField from "../../models/test_additional_field.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
 import sendResponse from "../../utils/sendResponse.js";
-import { faker } from "@faker-js/faker";
 
 export const addTest = async (req, res) => {
   try {
@@ -126,6 +128,17 @@ export const getParameter = async (req, res) => {
   }
 };
 
+export const getAllParameter = async (req, res) => {
+  try {
+    const parameters = await TestParameter.find();
+    sendResponse(res, 200, true, "Successfully fetched parameter", {
+      data: parameters,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 export const deleteParameter = async (req, res) => {
   try {
     const { id } = req.params;
@@ -151,12 +164,16 @@ export const AddSubParameter = async (req, res) => {
   try {
     const { sub_parameter_type, text, check, test_parameter } = req.body;
     console.log(req.body);
+    //update by ak
     const newSubParameter = new TestSubParameter({
-      sub_parameter_type,
-      text,
-      check,
-      test_parameter,
+      ...req.body
     });
+    // const newSubParameter = new TestSubParameter({
+    //   sub_parameter_type,
+    //   text,
+    //   check,
+    //   test_parameter,
+    // });
     await newSubParameter.save();
     sendResponse(res, 200, true, "Successfully added sub parameter");
   } catch (error) {
@@ -207,19 +224,126 @@ export const updateSubParameter = async (req, res) => {
   }
 };
 
+// Additional Field 
+export const AddAdditionalField = async (req, res) => {
+  try {
+    const data = req.body;
+    const newAdditionalField = new TestAdditionalField({
+      ...req.body
+    });
+
+    await newAdditionalField.save();
+    sendResponse(res, 200, true, "Successfully added new additional field");
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getAllAdditionalField = async (req, res) => {
+  try {
+    const test_additional_field = await TestAdditionalField.find();
+    sendResponse(res, 200, true, "Successfully fetched all additional field", {
+      data: test_additional_field,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getAdditionalField = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const test_additional_field = await TestAdditionalField.find({ test_parameter: id });
+    sendResponse(res, 200, true, "Successfully fetched additional field", {
+      data: test_additional_field,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const deleteAdditionalField = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await TestAdditionalField.deleteOne({ _id: id });
+    sendResponse(res, 200, true, "Successfully deleted additional field");
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const updateAdditionalField = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await TestAdditionalField.updateOne({ _id: id }, { ...req.body });
+    sendResponse(res, 200, true, "Successfully updated sub parameter");
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+// send all test result 
+export const fullTestField = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch the main clinical test data
+    const testData = await ClinicalTest.findById(id);
+    if (!testData) {
+      return sendResponse(res, 404, false, 'Clinical Test not found');
+    }
+
+    // Fetch associated test parameters
+    const testParams = await TestParameter.find({ test: testData._id });
+
+    // Prepare the main data object
+    // const data = {
+    //   ...testData._doc,
+    //   testParams: await Promise.all(testParams.map(async (testParam) => {
+    //     // Fetch sub parameters for each test parameter
+    //     const subTestParams = await TestSubParameter.find({ test_parameter: testParam._id });
+    //     return { ...testParam._doc, subTestParams };
+    //   }))
+    // };
+
+    const data = {
+      ...testData._doc,
+      testParams: await Promise.all(testParams.map(async (testParam) => {
+        // Fetch sub parameters for each test parameter
+        const subTestParams = await TestSubParameter.find({ test_parameter: testParam._id });
+
+        // Fetch additional fields for each subTestParam
+        const subTestParamsWithAdditionalFields = await Promise.all(subTestParams.map(async (subTestParam) => {
+          const additionalFields = await TestAdditionalField.find({ sub_test_parameter: subTestParam._id });
+          return { ...subTestParam._doc, additionalFields };
+        }));
+
+        return { ...testParam._doc, subTestParams: subTestParamsWithAdditionalFields };
+      }))
+    };
+
+    // Send the enriched data
+    res.send(data);
+  } catch (error) {
+    console.error('Error fetching clinical test data:', error);
+    sendResponse(res, 500, false, error.message);
+  }
+}
+
+
 //APPOINTMENT TEST
 export const AddAppointmentTest = async (req, res) => {
   try {
     const { caseNo, test } = req.body;
-    
+
     const existTest = await AppointmentTest.findOne({ caseNo });
 
     if (existTest) {
-     let result = [...existTest.test]
-     result.push(test)
-     await AppointmentTest.updateOne({ caseNo }, { test: result });
+      let result = [...existTest.test]
+      result.push(test)
+      await AppointmentTest.updateOne({ caseNo }, { test: result });
     } else {
-      const newAppointmentTest = new AppointmentTest({ caseNo,test});
+      const newAppointmentTest = new AppointmentTest({ caseNo, test });
       await newAppointmentTest.save();
     }
     sendResponse(res, 200, true, "Successfully created appointment test");

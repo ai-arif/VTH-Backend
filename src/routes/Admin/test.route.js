@@ -2,21 +2,28 @@ import express from "express";
 const testRouter = express.Router();
 
 import {
-  addTest,
-  getTest,
-  updateTest,
-  deleteTest,
-  searchTest,
+  AddAdditionalField,
+  AddAppointmentTest,
   AddParameter,
-  getParameter,
   AddSubParameter,
-  getSubParameter,
+  addTest,
+  deleteAdditionalField,
   deleteParameter,
-  updateParameter,
   deleteSubParameter,
-  updateSubParameter,
+  deleteTest,
+  fullTestField,
+  getAdditionalField,
+  getAllAdditionalField,
+  getAllParameter,
   getAllSubParameter,
-  AddAppointmentTest
+  getParameter,
+  getSubParameter,
+  getTest,
+  searchTest,
+  updateAdditionalField,
+  updateParameter,
+  updateSubParameter,
+  updateTest
 } from "../../controllers/Admin/clinicaltest.controller.js";
 
 
@@ -26,19 +33,32 @@ testRouter.put("/:id", updateTest);
 testRouter.delete("/:id", deleteTest);
 testRouter.get("/search", searchTest);
 
-testRouter.post('/parameter',AddParameter)
-testRouter.get('/parameter/:id',getParameter)
-testRouter.delete('/parameter/:id',deleteParameter)
-testRouter.put('/parameter/:id',updateParameter)
+testRouter.post('/parameter', AddParameter)
+testRouter.get('/parameter/:id', getParameter)
+testRouter.get('/parameters', getAllParameter)
+testRouter.delete('/parameter/:id', deleteParameter)
+testRouter.put('/parameter/:id', updateParameter)
 
-testRouter.post("/parameter/sub",AddSubParameter)
-testRouter.get("/parameter/sub/:id",getSubParameter)
-testRouter.get("/parameter/all/sub",getAllSubParameter)
-testRouter.delete("/parameter/sub/:id",deleteSubParameter)
-testRouter.put("/parameter/sub/:id",updateSubParameter)
+testRouter.post("/parameter/sub", AddSubParameter)
+testRouter.get("/parameter/sub/:id", getSubParameter)
+testRouter.get("/parameter/all/sub", getAllSubParameter)
+testRouter.delete("/parameter/sub/:id", deleteSubParameter)
+testRouter.put("/parameter/sub/:id", updateSubParameter)
 
 
-testRouter.post("/appointment",AddAppointmentTest)
+// Additional field 
+testRouter.post("/parameter/additional", AddAdditionalField)
+testRouter.get("/parameter/additional/:id", getAdditionalField)
+testRouter.get("/parameter/all/additional", getAllAdditionalField)
+testRouter.delete("/parameter/additional/:id", deleteAdditionalField)
+testRouter.put("/parameter/additional/:id", updateAdditionalField)
+
+// full test 
+testRouter.get("/full-test/:id", fullTestField)
+
+
+
+testRouter.post("/appointment", AddAppointmentTest)
 
 
 export default testRouter;

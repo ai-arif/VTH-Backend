@@ -5,13 +5,14 @@ const clinicalTestSchema = new Schema({
         type: String,
         required: true,
         trim: true,
-        unique:true
+        unique: true
     },
-    testDetails:{
+    testDetails: {
         type: String,
         trim: true,
     },
-},{ timestamps: true });
+    parameters: [String] //  added by Mamun
+}, { timestamps: true });
 
 const ClinicalTest = model("ClinicalTest", clinicalTestSchema);
 
