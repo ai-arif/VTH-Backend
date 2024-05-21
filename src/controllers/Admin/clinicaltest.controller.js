@@ -253,7 +253,7 @@ export const getAllAdditionalField = async (req, res) => {
 export const getAdditionalField = async (req, res) => {
   try {
     const { id } = req.params;
-    const test_additional_field = await TestAdditionalField.find({ test_parameter: id });
+    const test_additional_field = await TestAdditionalField.find({ sub_test_parameter: id });
     sendResponse(res, 200, true, "Successfully fetched additional field", {
       data: test_additional_field,
     });
