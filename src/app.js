@@ -33,6 +33,7 @@ import patientRegistrationRouter from "./routes/Admin/patient.registration.route
 import prescriptionRouter from "./routes/Admin/prescription.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
+import speciesRouter from "./routes/Admin/species.route.js";
 
 // user routes
 import userAppointmentRouter from "./routes/User/appointment.route.js";
@@ -50,6 +51,7 @@ app.use('/api/v1/medicine', medicineRouter)
 app.use('/api/v1/prescription', prescriptionRouter)
 app.use('/api/v1/patient-registration', patientRegistrationRouter)
 app.use('/api/v1/notification', notificationRouter)
+app.use('/api/v1/species', speciesRouter)
 
 
 //  user routes
