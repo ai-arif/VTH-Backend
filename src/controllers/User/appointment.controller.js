@@ -10,8 +10,18 @@ export const createAppointment = async (req, res) => {
         const numericPart = uuid.replace(/-/g, "").replace(/\D/g, "");
         const paddedNumericPart = numericPart.padStart(7, "0");
         const caseNo = paddedNumericPart.slice(0, 7);
+        let image='';
+
+        if (req.file) {
+            image = req.file.path;
+        }
     
-        const appointment = new Appointment({ ...req.body, caseNo,owner });
+        const appointment = new Appointment({
+            ...req.body,
+            caseNo,
+            owner,
+            image,
+        });
         await appointment.save();
     
         res.json({
