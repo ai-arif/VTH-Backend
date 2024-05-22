@@ -8,7 +8,7 @@ const app = express();
 dotenv.config({
   path: "./.env",
 });
-
+app.use('/uploads', express.static('uploads'));
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -40,6 +40,8 @@ import complaintRouter from "./routes/Admin/complaint.route.js";
 import userAppointmentRouter from "./routes/User/appointment.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
 import userRouter from "./routes/User/user.route.js";
+
+
 
 //Declaration of Routes Here
 app.use("/api/v1/staffs", adminRouter);
