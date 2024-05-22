@@ -1,7 +1,7 @@
-const Species = require("../../models/species.model.js");
-const sendResponse = require("../../utils//sendResponse.js");
+import Species from "../../models/Species.model.js";
+import sendResponse from "../../utils/sendResponse.js";
 
-exports.createSpecies = async (req, res) => {
+export const createSpecies = async (req, res) => {
     try {
         const species = new Species(req.body);
         await species.save();
@@ -11,7 +11,7 @@ exports.createSpecies = async (req, res) => {
     }
     };
 
-exports.getSpecies = async (req, res) => {
+export const getSpecies = async (req, res) => {
     try {
         const species = await Species.find();
         sendResponse(res, 200, true, "Species fetched successfully", species);
@@ -20,7 +20,7 @@ exports.getSpecies = async (req, res) => {
     }
     };
 
-exports.getSpeciesById = async (req, res) => {
+export const getSpeciesById = async (req, res) => {
     try {
         const species = await Species.findById(req.params.id);
         if (!species) {
@@ -32,7 +32,7 @@ exports.getSpeciesById = async (req, res) => {
     }
     };
 
-exports.updateSpecies = async (req, res) => {
+export const updateSpecies = async (req, res) => {
     try {
         const species = await Species.findById(req.params.id);
         if (!species) {
@@ -50,7 +50,7 @@ exports.updateSpecies = async (req, res) => {
     }
     };
 
-exports.deleteSpecies = async (req, res) => {
+export const deleteSpecies = async (req, res) => {
     try {
         const species = await Species.findById(req.params.id);
         if (!species) {

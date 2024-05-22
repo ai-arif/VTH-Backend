@@ -14,3 +14,5 @@ const speciesSchema = new Schema(
     );
 
 const Species = model("Species", speciesSchema);
+
+export default Species;

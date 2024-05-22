@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteSpecies,createSpecies,getSpecies,getSpeciesById,updateSpecies } from "../../controllers/Admin/species.controller";
+import { deleteSpecies,createSpecies,getSpecies,getSpeciesById,updateSpecies } from "../../controllers/Admin/species.controller.js";
 const speciesRouter = Router();
 
 speciesRouter.post('/',createSpecies)
