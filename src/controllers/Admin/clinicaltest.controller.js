@@ -5,6 +5,7 @@ import ClinicalTest from "../../models/clinicaltest.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestAdditionalField from "../../models/test_additional_field.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
+import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 
 export const addTest = async (req, res) => {
@@ -315,17 +316,6 @@ export const fullTestField = async (req, res) => {
 
     // Fetch associated test parameters
     const testParams = await TestParameter.find({ test: testData._id });
-
-    // Prepare the main data object
-    // const data = {
-    //   ...testData._doc,
-    //   testParams: await Promise.all(testParams.map(async (testParam) => {
-    //     // Fetch sub parameters for each test parameter
-    //     const subTestParams = await TestSubParameter.find({ test_parameter: testParam._id });
-    //     return { ...testParam._doc, subTestParams };
-    //   }))
-    // };
-
     const data = {
       ...testData._doc,
       testParams: await Promise.all(testParams.map(async (testParam) => {
@@ -343,12 +333,38 @@ export const fullTestField = async (req, res) => {
     };
 
     // Send the enriched data
-    res.send(data);
+    sendResponse(res, 200, true, "Successfully fetched additional field", data);
   } catch (error) {
     console.error('Error fetching clinical test data:', error);
     sendResponse(res, 500, false, error.message);
   }
 }
+
+// test result 
+export const AddTestResult = async (req, res) => {
+  try {
+    const data = req.body;
+    const newTestResult = new TestResult(data);
+    const result = await newTestResult.save();
+    sendResponse(res, 200, true, "Successfully added test result");
+  } catch (error) {
+    console.log(error)
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getTestResult = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log({ id })
+    const result = await TestResult.find({ appointmentId: id });
+    sendResponse(res, 200, true, "Successfully fetched test result", {
+      data: result,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
 
 
 //APPOINTMENT TEST
