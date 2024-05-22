@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getComplaintsBySpecies,createComplaint,deleteComplaint,getComplaintById,getComplaints,updateComplaint } from "../../controllers/Admin/complaint.controller";
+import { getComplaintsBySpecies,createComplaint,deleteComplaint,getComplaintById,getComplaints,updateComplaint } from "../../controllers/Admin/complaint.controller.js";
 
 const complaintRouter = Router();
 

@@ -1,7 +1,7 @@
-const Complaint = require("../../models/complaint.model.js");
-const sendResponse = require("../../utils/sendResponse.js");
+import Complaint from "../../models/complaint.model.js";
+import sendResponse from "../../utils/sendResponse.js";
 
-exports.createComplaint = async (req, res) => {
+export const createComplaint = async (req, res) => {
     try {
         const complaint = new Complaint(req.body);
         await complaint.save();
@@ -11,7 +11,7 @@ exports.createComplaint = async (req, res) => {
     }
     };
 
-exports.getComplaints = async (req, res) => {
+export const getComplaints = async (req, res) => {
     try {
         const complaint = await Complaint.find().populate("species");
         sendResponse(res, 200, true, "Complaint fetched successfully", complaint);
@@ -20,7 +20,7 @@ exports.getComplaints = async (req, res) => {
     }
     };
 
-exports.getComplaintById = async (req, res) => {
+export const getComplaintById = async (req, res) => {
     try {
         const complaint = await Complaint.findById(req.params.id).populate("species");
         if (!complaint) {
@@ -32,7 +32,7 @@ exports.getComplaintById = async (req, res) => {
     }
     };
 
-exports.updateComplaint = async (req, res) => {
+export const updateComplaint = async (req, res) => {
     try {
         const complaint = await Complaint.findById(req.params.id);
         if (!complaint) {
@@ -50,7 +50,7 @@ exports.updateComplaint = async (req, res) => {
     }
     };
 
-exports.deleteComplaint = async (req, res) => {
+export const deleteComplaint = async (req, res) => {
     try {
         const complaint = await Complaint.findById(req.params.id);
         if (!complaint) {
@@ -63,7 +63,7 @@ exports.deleteComplaint = async (req, res) => {
     }
     };
 
-exports.getComplaintsBySpecies = async (req, res) => {
+export const getComplaintsBySpecies = async (req, res) => {
     try {
         const complaint = await Complaint.find({ species: req.params.speciesId }).populate("species");
         sendResponse(res, 200, true, "Complaint fetched successfully", complaint);

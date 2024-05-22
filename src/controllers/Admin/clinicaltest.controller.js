@@ -152,7 +152,13 @@ export const deleteParameter = async (req, res) => {
 export const updateParameter = async (req, res) => {
   try {
     const { id } = req.params;
-    await TestParameter.updateOne({ _id: id }, { ...req.body });
+    const { name } = req.body;
+
+    await TestParameter.updateOne({ _id: id }, {
+      $set: {
+        name: name
+      }
+    });
     sendResponse(res, 200, true, "Successfully updated parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -163,7 +169,7 @@ export const updateParameter = async (req, res) => {
 export const AddSubParameter = async (req, res) => {
   try {
     const { sub_parameter_type, text, check, test_parameter } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     //update by ak
     const newSubParameter = new TestSubParameter({
       ...req.body
@@ -215,9 +221,16 @@ export const deleteSubParameter = async (req, res) => {
 };
 
 export const updateSubParameter = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
   try {
-    const { id } = req.params;
-    await TestSubParameter.updateOne({ _id: id }, { ...req.body });
+    await TestSubParameter.updateOne({ _id: id }, {
+      $set: {
+        title: name
+      }
+    });
+
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -273,9 +286,16 @@ export const deleteAdditionalField = async (req, res) => {
 };
 
 export const updateAdditionalField = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
   try {
-    const { id } = req.params;
-    await TestAdditionalField.updateOne({ _id: id }, { ...req.body });
+    await TestAdditionalField.updateOne({ _id: id }, {
+      $set: {
+        additionalFieldTitle: name
+      }
+    });
+
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
