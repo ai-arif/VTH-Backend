@@ -1,6 +1,8 @@
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
+// const multer = require('multer');
+// const fs = require('fs');
+// const path = require('path');
+import multer from 'multer';
+import fs from 'fs';
 
 
 const configureMulter = (directory) => {  
@@ -24,4 +26,4 @@ const configureMulter = (directory) => {
   return upload;
 };
 
-module.exports = configureMulter;
+export default configureMulter;
