@@ -17,3 +17,6 @@ const complaintSchema = new Schema(
         timestamps: true,
     }
 );
+
+const Complaint = model("Complaint", complaintSchema);
+export default Complaint;
