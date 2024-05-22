@@ -10,3 +10,5 @@ complaintRouter.put('/:id',updateComplaint)
 
 complaintRouter.delete('/:id',deleteComplaint)
 complaintRouter.get('/species/:speciesId',getComplaintsBySpecies)
+
+export default complaintRouter
