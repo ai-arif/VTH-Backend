@@ -14,6 +14,14 @@ const patientRegistrationFormSchema = new Schema(
       type: String,
       trim: true,
     },
+    species: {
+      type: String,
+      trim: true,
+    },
+    complaints: {
+      type: String,
+      trim: true,
+    },
     age: {
       type: String,
       trim: true,
@@ -90,7 +98,7 @@ const patientRegistrationFormSchema = new Schema(
       type: String,
       trim: true,
     },
-    lacrimation: {
+    pulseRate: {
       type: String,
       trim: true,
     },
@@ -103,14 +111,6 @@ const patientRegistrationFormSchema = new Schema(
       trim: true,
     },
     others: {
-      type: String,
-      trim: true,
-    },
-    species: {
-      type: String,
-      trim: true,
-    },
-    complaints: {
       type: String,
       trim: true,
     },
