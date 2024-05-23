@@ -18,7 +18,7 @@ export const createAppointment = async (req, res) => {
     if (!owner) {
       return sendResponse(res, 400, false, "Must be logged in to create an appointment");
     }
-    
+        
     const appointment = new Appointment({
       ...req.body,
       caseNo,
@@ -27,12 +27,9 @@ export const createAppointment = async (req, res) => {
     });
     await appointment.save();
 
-    res.json({
-      success: true,
-      message: "Successfully created appointment",
-    });
+    sendResponse(res, 201, true, "Appointment created successfully", appointment);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    sendResponse(res, 500, false, error.message);
   }
 }
 
