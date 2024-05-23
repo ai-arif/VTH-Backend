@@ -18,10 +18,7 @@ export const createAppointment = async (req, res) => {
     if (!owner) {
       return sendResponse(res, 400, false, "Must be logged in to create an appointment");
     }
-    const body=req.body;
-    return res.json({
-      success: true, message: "Successfully uploaded image", image, body
-    });
+    
     const appointment = new Appointment({
       ...req.body,
       caseNo,
