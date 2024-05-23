@@ -6,32 +6,43 @@ export const createPatientRegistrationForm = async (req, res) => {
     const {
       appointmentId,
       date,
-      attendeeInfo,
-      tagNo,
-      patientName,
-      age,
-      dob,
       nid,
-      identificationMark,
-      species,
-      breed,
-      sex,
+      age,
       weight,
-      registrationType,
-      patientType,
-      caseType,
+      bcs,
       milkYield,
-      patientHistory,
-      managementHistory,
-      diseaseHistory,
-      clinicalSigns,
+      parity,
+      breed,
       diagnosis,
-      serviceRequested,
-      treatmentHistory,
-      patientComplaint,
-      rectalPalpation,
-      laboratoryFindings,
-      prognosis,
+      illnessDuration,
+      drags,
+      breading,
+      feedProvided,
+      vaccinations,
+      appetite,
+      rumination,
+      salvation,
+      lacrimation,
+      nasalDischarge,
+      dehydration,
+      mm,
+      respRate,
+      temp,
+      rumenMotility,
+      others,
+      species,
+      complaints,
+      sex,
+      pregnancyStatus,
+      treatedBefore,
+      confusionWords,
+      demeanour,
+      physicalCondition,
+      totalAnimals,
+      totalSickAnimals,
+      totalDeedAnimals,
+      dop,
+      doo,
     } = req.body;
 
     // Check for required fields
@@ -42,32 +53,43 @@ export const createPatientRegistrationForm = async (req, res) => {
     const newPatientRegistrationForm = new PatientRegistrationForm({
       appointmentId,
       date,
-      attendeeInfo,
-      tagNo,
-      patientName,
-      age,
-      dob,
-      identificationMark,
-      species,
-      breed,
-      sex,
-      nid,
-      weight,
-      registrationType,
-      patientType,
-      caseType,
+      nid: req.body.nid || "",
+      age: req.body.age || "",
+      weight: req.body.weight || "",
+      bcs: req.body.bcs || "",
       milkYield: req.body.milkYield || "",
-      patientHistory: req.body.patientHistory || "",
-      managementHistory: req.body.managementHistory || "",
-      diseaseHistory: req.body.diseaseHistory || "",
-      clinicalSigns: req.body.clinicalSigns || "",
+      parity: req.body.parity || "",
+      breed: req.body.breed || "",
       diagnosis: req.body.diagnosis || "",
-      serviceRequested: req.body.serviceRequested || "",
-      treatmentHistory: req.body.treatmentHistory || "",
-      patientComplaint: req.body.patientComplaint || "",
-      rectalPalpation: req.body.rectalPalpation || "",
-      laboratoryFindings: req.body.laboratoryFindings || "",
-      prognosis: req.body.prognosis || "",
+      illnessDuration: req.body.illnessDuration || "",
+      drags: req.body.drags || "",
+      breading: req.body.breading || "",
+      feedProvided: req.body.feedProvided || "",
+      vaccinations: req.body.vaccinations || "",
+      appetite: req.body.appetite || "",
+      rumination: req.body.rumination || "",
+      salvation: req.body.salvation || "",
+      lacrimation: req.body.lacrimation || "",
+      nasalDischarge: req.body.nasalDischarge || "",
+      dehydration: req.body.dehydration || "",
+      mm: req.body.mm || "",
+      respRate: req.body.respRate || "",
+      temp: req.body.temp || "",
+      rumenMotility: req.body.rumenMotility || "",
+      others: req.body.others || "",
+      species: req.body.species || "",
+      complaints: req.body.complaints || "",
+      sex: req.body.sex || "",
+      pregnancyStatus: req.body.pregnancyStatus || "",
+      treatedBefore: req.body.treatedBefore || "",
+      confusionWords: req.body.confusionWords || "",
+      demeanour: req.body.demeanour || "",
+      physicalCondition: req.body.physicalCondition || "",
+      totalAnimals: req.body.totalAnimals || "",
+      totalSickAnimals: req.body.totalSickAnimals || "",
+      totalDeedAnimals: req.body.totalDeedAnimals || "",
+      dop: req.body.dop || "",
+      doo: req.body.doo || "",
     });
 
     await newPatientRegistrationForm.save();
@@ -197,8 +219,7 @@ export const searchPatientRegistrationForms = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const { search } = req.query;
-    
-    
+
     const patientRegistrationForms = await PatientRegistrationForm.aggregate([
       {
         $lookup: {
@@ -242,17 +263,17 @@ export const searchPatientRegistrationForms = async (req, res) => {
             { caseNo: { $regex: search, $options: "i" } },
           ],
         },
-      }
+      },
     ]).count("total");
-    
-    let totalPage=total.length>0?Math.ceil(total[0].total/limit):0;
+
+    let totalPage = total.length > 0 ? Math.ceil(total[0].total / limit) : 0;
 
     return sendResponse(
       res,
       200,
       true,
       "Patient registration forms retrieved successfully",
-      {  data:patientRegistrationForms, total:totalPage }
+      { data: patientRegistrationForms, total: totalPage }
     );
   } catch (error) {
     return sendResponse(res, 500, false, error.message);

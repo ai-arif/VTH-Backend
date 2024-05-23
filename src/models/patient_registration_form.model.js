@@ -10,148 +10,151 @@ const patientRegistrationFormSchema = new Schema(
       type: Date,
       required: true,
     },
-    // ownerName: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
-    // village: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
-    // district: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
-    // upazila: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
     nid: {
       type: String,
-      required: true,
-      trim: true,
-    },
-    // phone: {
-    //     type: String,
-    //     required: true,
-    //     trim: true,
-    // },
-    attendeeInfo: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    tagNo: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    patientName: {
-      type: String,
-      required: true,
       trim: true,
     },
     age: {
-      type: Number,
-      required: true,
-    },
-    dob: {
-      type: Date,
-      required: true,
-    },
-    identificationMark: {
       type: String,
-      required: true,
       trim: true,
     },
-    species: {
+    weight: {
       type: String,
-      required: true,
+      trim: true,
+    },
+    bcs: {
+      type: String,
+      trim: true,
+    },
+    milkYield: {
+      type: String,
+      trim: true,
+    },
+    parity: {
+      type: String,
       trim: true,
     },
     breed: {
       type: String,
-      required: true,
+      trim: true,
+    },
+    illnessDuration: {
+      type: String,
+      trim: true,
+    },
+    drags: {
+      type: String,
+      trim: true,
+    },
+    breading: {
+      type: String,
+      trim: true,
+    },
+    feedProvided: {
+      type: String,
+      trim: true,
+    },
+    vaccinations: {
+      type: String,
+      trim: true,
+    },
+    appetite: {
+      type: String,
+      trim: true,
+    },
+    rumination: {
+      type: String,
+      trim: true,
+    },
+    salvation: {
+      type: String,
+      trim: true,
+    },
+    lacrimation: {
+      type: String,
+      trim: true,
+    },
+    nasalDischarge: {
+      type: String,
+      trim: true,
+    },
+    dehydration: {
+      type: String,
+      trim: true,
+    },
+    mm: {
+      type: String,
+      trim: true,
+    },
+    respRate: {
+      type: String,
+      trim: true,
+    },
+    lacrimation: {
+      type: String,
+      trim: true,
+    },
+    temp: {
+      type: String,
+      trim: true,
+    },
+    rumenMotility: {
+      type: String,
+      trim: true,
+    },
+    others: {
+      type: String,
+      trim: true,
+    },
+    species: {
+      type: String,
+      trim: true,
+    },
+    complaints: {
+      type: String,
       trim: true,
     },
     sex: {
       type: String,
-      enum: ["male", "female"],
-      trim: true,
-      default: "male",
-    },
-    weight: {
-      type: Number,
-      required: true,
-    },
-    milkYield: {
-      type: String,
-    },
-    registrationType: {
-      type: String,
-      required: true,
-      enum: ["online", "offline"],
-      default: "online",
-    },
-    patientType: {
-      type: String,
-      required: true,
-      enum: ["new", "old"],
-      default: "new",
-    },
-    caseType: {
-      type: String,
-      required: true,
-      enum: ["new", "old"],
-      default: "new",
-    },
-    patientComplaint: {
-      type: String,
       trim: true,
     },
     pregnancyStatus: {
-      type: Boolean,
-      default: false,
-    },
-    serviceRequested: {
       type: String,
       trim: true,
     },
-    diseaseHistory: {
+    treatedBefore: {
       type: String,
       trim: true,
     },
-    treatmentHistory: {
+    confusionWords: {
       type: String,
       trim: true,
     },
-    managementHistory: {
+    demeanour: {
       type: String,
       trim: true,
     },
-    clinicalSigns: {
+    physicalCondition: {
       type: String,
       trim: true,
     },
-    rectalPalpation: {
-      type: String,
+    totalAnimals: {
+      type: Number,
       trim: true,
     },
-    laboratoryFindings: {
-      type: String,
+    totalSickAnimals: {
+      type: Number,
       trim: true,
     },
-    diagnosis: {
-      type: String,
+    totalDeedAnimals: {
+      type: Number,
       trim: true,
     },
-    prognosis: {
-      type: String,
-      trim: true,
+    dop: {
+      type: Date,
+    },
+    doo: {
+      type: Date,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
