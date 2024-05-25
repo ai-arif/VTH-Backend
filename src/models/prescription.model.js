@@ -2,7 +2,10 @@ import { Schema, model } from "mongoose";
 
 const prescriptionSchema = new Schema(
   {
-    takesMedicinesBefore: Boolean,
+    takesMedicinesBefore: {
+      type: Boolean,
+      default: false
+    },
     caseNo: Number,
     date: {
       type: Date,
@@ -33,10 +36,14 @@ const prescriptionSchema = new Schema(
     nextVisit: {
       type: Date,
     },
+    testStatue: {
+      type: Boolean,
+      default: false,
+    },
     tests: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Test",
+        ref: "ClinicalTest",
       },
     ],
   },

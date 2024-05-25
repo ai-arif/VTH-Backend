@@ -6,10 +6,14 @@ const dynamicSubSchema = new Schema({}, { strict: false });
 // Define the main schema
 const testResultSchema = new Schema({
     testId: { type: String, required: true },
-    appointmentId: { type: String, required: true },
+    appointmentId: String,
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    data: { type: dynamicSubSchema }
+    data: { type: dynamicSubSchema },
+    status: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 // Create the model
