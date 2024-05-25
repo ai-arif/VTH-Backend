@@ -5,6 +5,7 @@ import ClinicalTest from "../../models/clinicaltest.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestAdditionalField from "../../models/test_additional_field.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
+import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 
 export const addTest = async (req, res) => {
@@ -152,7 +153,13 @@ export const deleteParameter = async (req, res) => {
 export const updateParameter = async (req, res) => {
   try {
     const { id } = req.params;
-    await TestParameter.updateOne({ _id: id }, { ...req.body });
+    const { name } = req.body;
+
+    await TestParameter.updateOne({ _id: id }, {
+      $set: {
+        name: name
+      }
+    });
     sendResponse(res, 200, true, "Successfully updated parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -163,7 +170,7 @@ export const updateParameter = async (req, res) => {
 export const AddSubParameter = async (req, res) => {
   try {
     const { sub_parameter_type, text, check, test_parameter } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     //update by ak
     const newSubParameter = new TestSubParameter({
       ...req.body
@@ -215,9 +222,16 @@ export const deleteSubParameter = async (req, res) => {
 };
 
 export const updateSubParameter = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
   try {
-    const { id } = req.params;
-    await TestSubParameter.updateOne({ _id: id }, { ...req.body });
+    await TestSubParameter.updateOne({ _id: id }, {
+      $set: {
+        title: name
+      }
+    });
+
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -273,9 +287,16 @@ export const deleteAdditionalField = async (req, res) => {
 };
 
 export const updateAdditionalField = async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
   try {
-    const { id } = req.params;
-    await TestAdditionalField.updateOne({ _id: id }, { ...req.body });
+    await TestAdditionalField.updateOne({ _id: id }, {
+      $set: {
+        additionalFieldTitle: name
+      }
+    });
+
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -295,17 +316,6 @@ export const fullTestField = async (req, res) => {
 
     // Fetch associated test parameters
     const testParams = await TestParameter.find({ test: testData._id });
-
-    // Prepare the main data object
-    // const data = {
-    //   ...testData._doc,
-    //   testParams: await Promise.all(testParams.map(async (testParam) => {
-    //     // Fetch sub parameters for each test parameter
-    //     const subTestParams = await TestSubParameter.find({ test_parameter: testParam._id });
-    //     return { ...testParam._doc, subTestParams };
-    //   }))
-    // };
-
     const data = {
       ...testData._doc,
       testParams: await Promise.all(testParams.map(async (testParam) => {
@@ -323,12 +333,38 @@ export const fullTestField = async (req, res) => {
     };
 
     // Send the enriched data
-    res.send(data);
+    sendResponse(res, 200, true, "Successfully fetched additional field", data);
   } catch (error) {
     console.error('Error fetching clinical test data:', error);
     sendResponse(res, 500, false, error.message);
   }
 }
+
+// test result 
+export const AddTestResult = async (req, res) => {
+  try {
+    const data = req.body;
+    const newTestResult = new TestResult(data);
+    const result = await newTestResult.save();
+    sendResponse(res, 200, true, "Successfully added test result");
+  } catch (error) {
+    console.log(error)
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getTestResult = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log({ id })
+    const result = await TestResult.find({ appointmentId: id });
+    sendResponse(res, 200, true, "Successfully fetched test result", {
+      data: result,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
 
 
 //APPOINTMENT TEST

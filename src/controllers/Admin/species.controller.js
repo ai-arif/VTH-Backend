@@ -9,7 +9,7 @@ export const createSpecies = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const getSpecies = async (req, res) => {
     try {
@@ -18,7 +18,7 @@ export const getSpecies = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const getSpeciesById = async (req, res) => {
     try {
@@ -30,7 +30,7 @@ export const getSpeciesById = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const updateSpecies = async (req, res) => {
     try {
@@ -38,7 +38,7 @@ export const updateSpecies = async (req, res) => {
         if (!species) {
             return sendResponse(res, 404, false, "Species not found");
         }
-        const updatedData= req.body;
+        const updatedData = req.body;
         await Species.findByIdAndUpdate(req.params.id, updatedData, {
             new: true,
             runValidators: true,
@@ -48,7 +48,7 @@ export const updateSpecies = async (req, res) => {
     catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const deleteSpecies = async (req, res) => {
     try {
@@ -61,7 +61,7 @@ export const deleteSpecies = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
-    
-        
+
+

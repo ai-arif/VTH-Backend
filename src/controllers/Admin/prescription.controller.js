@@ -3,7 +3,7 @@ import sendResponse from "../../utils/sendResponse.js";
 
 
 //Create Prescription
-export const Create = async(req, res) => {
+export const Create = async (req, res) => {
     try {
         const prescription = new Prescription(req.body);
         await prescription.save();
@@ -34,7 +34,7 @@ export const Find = async (req, res) => {
 
 
 // Read Prescription by ID
-export const FindBy =  async (req, res) => {
+export const FindBy = async (req, res) => {
     try {
         const prescription = await Prescription.findById(req.params.id).populate({
             path: 'appointment',
@@ -47,7 +47,7 @@ export const FindBy =  async (req, res) => {
             sendResponse(res, 404, false, "Prescription did not found");
 
         }
-        sendResponse(res, 200, true, "Prescription fetched successfully",{data: prescription});
+        sendResponse(res, 200, true, "Prescription fetched successfully", { data: prescription });
 
     } catch (error) {
         sendResponse(res, 500, false, error.message);
@@ -71,7 +71,7 @@ export const Updateby = async (req, res) => {
 
 
 // Delete Prescription
-export const Deleteby  =  async (req, res) => {
+export const Deleteby = async (req, res) => {
     try {
         const prescription = await Prescription.findByIdAndDelete(req.params.id);
         if (!prescription) {
@@ -85,18 +85,18 @@ export const Deleteby  =  async (req, res) => {
 
 
 // Search Prescription by caseNo
-export const Search =  async (req, res) => {
+export const Search = async (req, res) => {
     const caseNo = req.query.caseNo;
 
-    if (!caseNo)  
-         return sendResponse(res, 400, false, "Please provide case no");
+    if (!caseNo)
+        return sendResponse(res, 400, false, "Please provide case no");
 
     try {
         const prescription = await Prescription.find({ caseNo });
         if (prescription.length === 0) {
             return sendResponse(res, 404, false, "Prescription did not found for this case no");
         }
-        sendResponse(res, 200, true, "Prescription fetched successfully",{data: prescription});
+        sendResponse(res, 200, true, "Prescription fetched successfully", { data: prescription });
 
     } catch (error) {
         sendResponse(res, 500, false, error.message);
@@ -117,26 +117,26 @@ export const SearchBy = async (req, res) => {
     try {
         const prescriptions = await Prescription.aggregate([
             {
-              $lookup: {
-                from: "appointments",
-                localField: "appointment",
-                foreignField: "_id",
-                as: "appointment"
-              }
+                $lookup: {
+                    from: "appointments",
+                    localField: "appointment",
+                    foreignField: "_id",
+                    as: "appointment"
+                }
             },
             {
-              $unwind: "$appointment"
+                $unwind: "$appointment"
             },
             {
-                          $match: {
-                              $or: [
-                                  { "appointment.ownerName": { $regex: search, $options: 'i' } },
-                                  { "appointment.phone": { $regex: search, $options: 'i' } },
-                                  { "appointment.caseNo": { $regex: search, $options: 'i' } }
-                              ]
-                          }
-                      },
-          ]);
+                $match: {
+                    $or: [
+                        { "appointment.ownerName": { $regex: search, $options: 'i' } },
+                        { "appointment.phone": { $regex: search, $options: 'i' } },
+                        { "appointment.caseNo": { $regex: search, $options: 'i' } }
+                    ]
+                }
+            },
+        ]);
 
         if (prescriptions[0].data.length === 0) {
             return sendResponse(res, 404, false, "Prescription did not found for this search query");

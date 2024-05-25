@@ -6,6 +6,7 @@ import {
   AddAppointmentTest,
   AddParameter,
   AddSubParameter,
+  AddTestResult,
   addTest,
   deleteAdditionalField,
   deleteParameter,
@@ -19,6 +20,7 @@ import {
   getParameter,
   getSubParameter,
   getTest,
+  getTestResult,
   searchTest,
   updateAdditionalField,
   updateParameter,
@@ -26,19 +28,21 @@ import {
   updateTest
 } from "../../controllers/Admin/clinicaltest.controller.js";
 
-
+// test 
 testRouter.post("/", addTest);
 testRouter.get("/", getTest);
 testRouter.put("/:id", updateTest);
 testRouter.delete("/:id", deleteTest);
 testRouter.get("/search", searchTest);
 
+// params 
 testRouter.post('/parameter', AddParameter)
 testRouter.get('/parameter/:id', getParameter)
 testRouter.get('/parameters', getAllParameter)
 testRouter.delete('/parameter/:id', deleteParameter)
 testRouter.put('/parameter/:id', updateParameter)
 
+//sub params
 testRouter.post("/parameter/sub", AddSubParameter)
 testRouter.get("/parameter/sub/:id", getSubParameter)
 testRouter.get("/parameter/all/sub", getAllSubParameter)
@@ -54,7 +58,10 @@ testRouter.delete("/parameter/additional/:id", deleteAdditionalField)
 testRouter.put("/parameter/additional/:id", updateAdditionalField)
 
 // full test 
-testRouter.get("/full-test/:id", fullTestField)
+testRouter.get("/full-test/:id", fullTestField);
+testRouter.post("/test-result", AddTestResult);
+testRouter.get("/test-result/:id", getTestResult);
+
 
 
 

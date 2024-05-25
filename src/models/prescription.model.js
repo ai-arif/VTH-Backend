@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 
 const prescriptionSchema = new Schema(
   {
+    takesMedicinesBefore: Boolean,
     caseNo: Number,
     date: {
       type: Date,
