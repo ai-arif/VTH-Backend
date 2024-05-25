@@ -9,16 +9,22 @@ const prescriptionSchema = new Schema(
     },
     appointment: {
       type: Schema.Types.ObjectId,
-      ref: 'Appointment',
+      ref: "Appointment",
     },
     medicines: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Medicine',
-      }
+        ref: "Medicine",
+      },
     ],
     diagnosis: {
-      type: String,      
+      type: String,
+    },
+    therapeutics: {
+      type: String,
+    },
+    prognosis: {
+      type: String,
     },
     advice: {
       type: String,
@@ -29,9 +35,9 @@ const prescriptionSchema = new Schema(
     tests: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Test'
-      }
-    ]
+        ref: "Test",
+      },
+    ],
   },
   { timestamps: true }
 );
