@@ -1,6 +1,6 @@
+import { v4 as uuidv4 } from "uuid";
 import Appointment from "../../models/appointment.model.js";
 import sendResponse from "../../utils/sendResponse.js";
-import { v4 as uuidv4 } from "uuid";
 
 
 
@@ -40,7 +40,7 @@ export const getAllApprovedAppointments = async (req, res) => {
     const totalPages = Math.ceil(count / limit);
 
     sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
-    
+
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -142,7 +142,7 @@ export const getAppointmentByPhone = async (req, res) => {
     if (!appointment) {
       return sendResponse(res, 404, false, "Did not found the appointment");
     }
-    sendResponse(res, 200, true, "Showing result",  appointment );
+    sendResponse(res, 200, true, "Showing result", appointment);
   }
   catch (error) {
     sendResponse(res, 500, false, error.message);

@@ -346,6 +346,7 @@ export const AddTestResult = async (req, res) => {
     const data = req.body;
     const newTestResult = new TestResult(data);
     const result = await newTestResult.save();
+
     sendResponse(res, 200, true, "Successfully added test result");
   } catch (error) {
     console.log(error)
@@ -353,6 +354,16 @@ export const AddTestResult = async (req, res) => {
   }
 };
 
+export const getAllTestResult = async (req, res) => {
+  try {
+    const result = await TestResult.find();
+    sendResponse(res, 200, true, "Successfully fetched test result", {
+      data: result,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
 export const getTestResult = async (req, res) => {
   try {
     const { id } = req.params;

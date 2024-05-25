@@ -17,6 +17,7 @@ import {
   getAllAdditionalField,
   getAllParameter,
   getAllSubParameter,
+  getAllTestResult,
   getParameter,
   getSubParameter,
   getTest,
@@ -60,6 +61,7 @@ testRouter.put("/parameter/additional/:id", updateAdditionalField)
 // full test 
 testRouter.get("/full-test/:id", fullTestField);
 testRouter.post("/test-result", AddTestResult);
+testRouter.get("/test-result", getAllTestResult);
 testRouter.get("/test-result/:id", getTestResult);
 
 

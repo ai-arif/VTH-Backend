@@ -148,3 +148,38 @@ export const SearchBy = async (req, res) => {
         sendResponse(res, 500, false, error.message);
     }
 }
+
+// prescription for lab test 
+
+export const GetPrescriptionWhichHasTest = async (req, res) => {
+    try {
+        const prescriptions = await Prescription.find({ tests: { $ne: [] } }).populate('appointment')
+            .populate('tests').sort({ createdAt: -1 }).select({ appointment: 1, tests: 1, therapeutics: 1 });
+
+        sendResponse(res, 200, true, "Prescriptions successfully retrieved", { data: prescriptions });
+    } catch (error) {
+        sendResponse(res, 500, false, error.message);
+    }
+}
+
+export const GetPrescriptionWhichHasTestById = async (req, res) => {
+    try {
+        const prescriptions = await Prescription.findById(req.params.id).populate('appointment')
+            .populate('tests').select({ tests: 1, appointment: 1 });
+
+        sendResponse(res, 200, true, "Prescriptions successfully retrieved", { data: prescriptions });
+    } catch (error) {
+        sendResponse(res, 500, false, error.message);
+    }
+}
+
+export const updatePrescriptionTestStatus = async (req, res) => {
+    try {
+        // const prescriptions = await Prescription.find({ tests: { $ne: [] } });
+        const result = await Prescription.findByIdAndUpdate(req.params.id, { $set: { testStatue: req.body.status } });
+
+        sendResponse(res, 200, true, "Lab test status updated successfully", { data: result });
+    } catch (error) {
+        sendResponse(res, 500, false, error.message);
+    }
+}

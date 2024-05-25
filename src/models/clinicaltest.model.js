@@ -10,8 +10,7 @@ const clinicalTestSchema = new Schema({
     testDetails: {
         type: String,
         trim: true,
-    },
-    parameters: [String] //  added by Mamun
+    }
 }, { timestamps: true });
 
 const ClinicalTest = model("ClinicalTest", clinicalTestSchema);
