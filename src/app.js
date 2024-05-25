@@ -26,17 +26,19 @@ app.use(cookieParser());
 //Importing Routes Here
 import adminRouter from "./routes/Admin/admin.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
+import complaintRouter from "./routes/Admin/complaint.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
 import medicineRouter from "./routes/Admin/medicine.route.js";
 import notificationRouter from "./routes/Admin/notification.route.js";
 import patientRegistrationRouter from "./routes/Admin/patient.registration.route.js";
 import prescriptionRouter from "./routes/Admin/prescription.route.js";
+import speciesRouter from "./routes/Admin/species.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
-import speciesRouter from "./routes/Admin/species.route.js";
-import complaintRouter from "./routes/Admin/complaint.route.js";
 
 // user routes
+
+import pharmacyRoute from "./routes/Admin/pharmacy.route.js";
 import userAppointmentRouter from "./routes/User/appointment.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
 import userRouter from "./routes/User/user.route.js";
@@ -62,6 +64,9 @@ app.use('/api/v1/complaint', complaintRouter)
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/user-appointment", userAppointmentRouter);
 app.use("/api/v1/user-prescription", userPrescriptionRouter);
+
+//pharmacy routes
+app.use("/api/v1/pharmacy", pharmacyRoute);
 
 
 app.get("/", (req, res) => {

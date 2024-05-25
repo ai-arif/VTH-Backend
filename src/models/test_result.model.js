@@ -33,13 +33,13 @@ export default TestResult;
 // const a = {
 //     "Gestation sac param": [
 //         { Absent: false },
-//         {
-//             Present: true, "Present&": [
-//                 { "Rt horn": true },
-//                 { "Lt horn": true },
-//                 { Number: 20 },
-//             ]
-//         },
+// {
+//     Present: true, "Present&": [
+//         { "Rt horn": true },
+//         { "Lt horn": true },
+//         { Number: 20 },
+//     ]
+// },
 
 //         { "input sub": "param sub 2}" },
 //         { none: true },
@@ -52,3 +52,23 @@ export default TestResult;
 //     ]
 
 // }
+
+// example-1
+// -----------
+// Present: [
+//     {Normal: false},
+//     {Abnormal: true}
+// ]
+// example-2
+// -----------
+// Present: [
+//     {Normal: false},
+//     {Abnormal: ""}
+// ]
+// example-3
+// -----------
+// Present: [
+//     {Normal: false},
+//     {Abnormal: "20x"}
+// ]
+
