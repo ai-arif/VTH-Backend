@@ -39,13 +39,25 @@ export const FindAllPrescriptions = async (req, res) => {
     try {
         const prescriptions = await Prescription.aggregate([
             {
+                $lookup: {
+                    from: "appointments", // Name of the collection you're joining with
+                    localField: "appointment", // Field from the Prescription collection
+                    foreignField: "_id", // Field from the Appointment collection
+                    as: "appointment" // Alias for the joined data
+                }
+            },
+            {
+                $unwind: "$appointment" // Unwind the array to denormalize the data
+            },
+            {
                 $project: {
                     caseNo: 1,
                     takesMedicinesBefore: 1,
                     medicines: 1,
                     date: 1,
                     tests: 1,
-                    medicinesCount: { $size: "$medicines" }
+                    medicinesCount: { $size: "$medicines" },
+                    appointment: 1 // Include the full appointment data
                 }
             },
             {
@@ -58,6 +70,7 @@ export const FindAllPrescriptions = async (req, res) => {
                 $limit: limit
             }
         ]);
+
 
 
         return sendResponse(res, 200, true, "Prescriptions successfully retrieved", {

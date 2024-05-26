@@ -24,7 +24,10 @@ prescriptionRouter.get('/search', SearchBy)
 // for lab test 
 prescriptionRouter.get('/lab/test', GetPrescriptionWhichHasTest)
 prescriptionRouter.get('/lab/test/:id', GetPrescriptionWhichHasTestById)
+// update status in prescription for test result status
 prescriptionRouter.patch('/lab/test/:id', updatePrescriptionTestStatus)
+
+
 
 
 
