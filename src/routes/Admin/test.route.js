@@ -12,6 +12,7 @@ import {
   deleteParameter,
   deleteSubParameter,
   deleteTest,
+  deleteTestResult,
   fullTestField,
   getAdditionalField,
   getAllAdditionalField,
@@ -26,7 +27,8 @@ import {
   updateAdditionalField,
   updateParameter,
   updateSubParameter,
-  updateTest
+  updateTest,
+  updateTestResult
 } from "../../controllers/Admin/clinicaltest.controller.js";
 
 // test 
@@ -63,6 +65,8 @@ testRouter.get("/full-test/:id", fullTestField);
 testRouter.post("/test-result", AddTestResult);
 testRouter.get("/test-result", getAllTestResult);
 testRouter.get("/test-result/:id", getTestResult);
+testRouter.put("/test-result/:id", updateTestResult);
+testRouter.delete("/test-result/:id", deleteTestResult);
 
 
 
