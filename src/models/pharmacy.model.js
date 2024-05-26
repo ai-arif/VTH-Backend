@@ -7,7 +7,14 @@ const pharmacySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Prescription",
     },
-    medicinesList: [
+    availableMedicines: [
+        {
+            medicineName: String,
+            unitPrice: Number,
+            quantity: Number,
+        }
+    ],
+    unavailableMedicines: [
         {
             medicineName: String,
             unitPrice: Number,
