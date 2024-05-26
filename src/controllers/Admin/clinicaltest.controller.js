@@ -354,6 +354,36 @@ export const AddTestResult = async (req, res) => {
   }
 };
 
+// update test result 
+export const updateTestResult = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const updatedData = await TestResult.findByIdAndUpdate(id, {
+      $set: { data: data }
+    })
+
+    sendResponse(res, 200, true, "Successfully updated test result");
+  } catch (error) {
+    console.log(error)
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+// delete test result 
+export const deleteTestResult = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await TestResult.findByIdAndDelete(id);
+    sendResponse(res, 200, true, "Deleted successfully!");
+  } catch (error) {
+    console.log(error)
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 export const getAllTestResult = async (req, res) => {
   try {
     const result = await TestResult.find();
