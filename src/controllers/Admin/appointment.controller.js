@@ -1,10 +1,13 @@
 import { v4 as uuidv4 } from "uuid";
 import Appointment from "../../models/appointment.model.js";
+import Department from "../../models/department.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 
 
 export const createAppointment = async (req, res) => {
+  console.log("cc")
   try {
     const uuid = uuidv4();
     const numericPart = uuid.replace(/-/g, "").replace(/\D/g, "");
@@ -12,13 +15,26 @@ export const createAppointment = async (req, res) => {
     const caseNo = paddedNumericPart.slice(0, 7);
 
     const appointment = new Appointment({ ...req.body, caseNo });
-    await appointment.save();
+    const result = await appointment.save();
+
+    if (result) {
+      const departmentInfo = await Department.findById(req?.body?.department);
+
+      const title = "New appointment";
+      const description = `New appointment is assigned to ${departmentInfo?.name} department`;
+      const department = req?.body?.department;
+      const type = "general";
+
+      const notify = await createNotification(title, description, department, type);
+      // console.log({ notify })
+    }
 
     res.json({
       success: true,
       message: "Successfully created appointment",
     });
   } catch (error) {
+    console.log({ error })
     res.status(500).json({ success: false, message: error.message });
   }
 };

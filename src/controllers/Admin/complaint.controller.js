@@ -1,15 +1,31 @@
+import Species from "../../models/Species.model.js";
 import Complaint from "../../models/complaint.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createComplaint = async (req, res) => {
     try {
         const complaint = new Complaint(req.body);
-        await complaint.save();
+        const result = await complaint.save();
+
+        if (result) {
+            // const departmentInfo = await Department.findById(department);
+            const speciesInfo = await Species.findById(req.body?.species);
+
+            const title = `Receive a new complaint`;
+            const description = `Receive a new complaint about '${speciesInfo?.name}'.`;
+            const department = null;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+            // console.log({ notify })
+        }
         sendResponse(res, 201, true, "Complaint created successfully");
     } catch (error) {
+        console.log({ error })
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const getComplaints = async (req, res) => {
     try {
@@ -18,7 +34,7 @@ export const getComplaints = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const getComplaintById = async (req, res) => {
     try {
@@ -30,7 +46,7 @@ export const getComplaintById = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const updateComplaint = async (req, res) => {
     try {
@@ -38,7 +54,7 @@ export const updateComplaint = async (req, res) => {
         if (!complaint) {
             return sendResponse(res, 404, false, "Complaint not found");
         }
-        const updatedData= req.body;
+        const updatedData = req.body;
         await Complaint.findByIdAndUpdate(req.params.id, updatedData, {
             new: true,
             runValidators: true,
@@ -48,7 +64,7 @@ export const updateComplaint = async (req, res) => {
     catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const deleteComplaint = async (req, res) => {
     try {
@@ -61,7 +77,7 @@ export const deleteComplaint = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 export const getComplaintsBySpecies = async (req, res) => {
     try {
@@ -70,7 +86,7 @@ export const getComplaintsBySpecies = async (req, res) => {
     } catch (error) {
         sendResponse(res, 500, error);
     }
-    };
+};
 
 
 
