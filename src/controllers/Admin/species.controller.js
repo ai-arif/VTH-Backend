@@ -1,10 +1,24 @@
 import Species from "../../models/Species.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createSpecies = async (req, res) => {
     try {
         const species = new Species(req.body);
-        await species.save();
+        const result = await species.save();
+
+        if (result) {
+            // const departmentInfo = await Department.findById(department);
+
+            const title = `New specie added`;
+            const description = `'${result?.name}' has been as new species`;
+            const department = null;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+            // console.log({ notify })
+        }
+
         sendResponse(res, 201, true, "Species created successfully");
     } catch (error) {
         sendResponse(res, 500, error);
@@ -56,7 +70,20 @@ export const deleteSpecies = async (req, res) => {
         if (!species) {
             return sendResponse(res, 404, false, "Species not found");
         }
-        await Species.findByIdAndDelete(req.params.id);
+        const result = await Species.findByIdAndDelete(req.params.id);
+
+        if (result) {
+            // const departmentInfo = await Department.findById(department);
+
+            const title = `A specie deleted`;
+            const description = `'${species?.name}' has been from species list.`;
+            const department = null;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+            // console.log({ notify })
+        }
+
         sendResponse(res, 200, true, "Species deleted successfully");
     } catch (error) {
         sendResponse(res, 500, error);

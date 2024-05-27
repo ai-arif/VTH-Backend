@@ -1,5 +1,9 @@
+import Appointment from "../../models/appointment.model.js";
+import ClinicalTest from "../../models/clinicaltest.model.js";
+import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 
 //Create Prescription
@@ -7,8 +11,34 @@ export const Create = async (req, res) => {
     try {
         const prescription = new Prescription(req.body);
         await prescription.save();
+
+        // notification 
+        const appointment = await Appointment.findById(req.body?.appointment).populate("department").select("department");
+        const tests = await ClinicalTest.find({ _id: { $in: req.body?.tests } });
+
+        const testString = tests?.map(t => t?.testName).join(', ') || '';
+
+        if (testString) {
+            const title = `New Test Assigned`;
+            const description = `'${testString}' has been assigned by ${appointment?.department?.name} department`;
+            const department = appointment?.department?._id;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+        }
+        else {
+            const title = `New Prescription created`;
+            const description = `New prescription created by ${appointment?.department?.name} department`;
+            const department = appointment?.department?._id;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+            // console.log({ notify })
+        }
+
         sendResponse(res, 200, true, "Prescription successfully");
     } catch (error) {
+        console.log({ error })
         sendResponse(res, 500, false, error.message);
     }
 }
@@ -213,6 +243,7 @@ export const GetPrescriptionWhichHasTest = async (req, res) => {
 
         sendResponse(res, 200, true, "Prescriptions successfully retrieved", { data: prescriptions });
     } catch (error) {
+        console.log({ error })
         sendResponse(res, 500, false, error.message);
     }
 }

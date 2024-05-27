@@ -5,6 +5,7 @@ import Department from "../../models/department.model.js";
 import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 // const sendResponse = (res, statusCode,success, message, data) => {
 //     res.status(statusCode).json({success, message, data });
 //     };
@@ -36,6 +37,7 @@ export const createAdmin = AsyncHandler(async (req, res) => {
 
 export const createUser = async (req, res) => {
     const { fullName, password, phone, role, department } = req.body;
+
     try {
         if (!fullName || !password || !phone || !role) {
             return sendResponse(res, 400, false, "All fields are required");
@@ -64,9 +66,22 @@ export const createUser = async (req, res) => {
             }
         }
 
-        await newUser.save();
+        const createdUSer = await newUser.save();
 
         const token = Jwt.sign({ id: newUser._id, role: newUser.role }, process.env.ACCESS_TOKEN_SECRET);
+
+        if (department && createdUSer) {
+            const departmentInfo = await Department.findById(department);
+
+            const title = `${fullName} join as a new ${role}`;
+            const description = `'${fullName}' join as a new ${role} to ${departmentInfo?.name} department`;
+            // const department = department;
+            const type = "general";
+
+            const notify = await createNotification(title, description, department, type);
+            // console.log({ notify })
+        }
+
 
         return sendResponse(res, 201, true, "User created successfully", {
             _id: newUser._id,

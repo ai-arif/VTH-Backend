@@ -2,17 +2,30 @@ import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
+import Department from "../../models/department.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestAdditionalField from "../../models/test_additional_field.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
 import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 export const addTest = async (req, res) => {
   try {
     // const { testName, testDetails } = req.body;
     const newClinicalTest = new ClinicalTest(req.body);
     const newTest = await newClinicalTest.save();
+
+    if (newTest) {
+      // const departmentInfo = await Department.findById(req?.body?.department);
+
+      const title = "New test is created";
+      const description = `'${req.body?.testName}' is created as new test.`;
+      const department = null;
+      const type = "lab";
+
+      await createNotification(title, description, department, type);
+    }
 
     sendResponse(res, 200, true, "Successfully created clinical test", newTest);
   } catch (error) {
@@ -66,7 +79,20 @@ export const deleteTest = async (req, res) => {
     const existTest = await ClinicalTest.findOne({ _id: id });
     if (!existTest) return res.json({ message: "Did not found the test" });
 
-    await ClinicalTest.deleteOne({ _id: id });
+    const result = await ClinicalTest.deleteOne({ _id: id });
+
+    if (result) {
+      // const departmentInfo = await Department.findById(department);
+
+      const title = `'${existTest?.testName}' has been deleted`;
+      const description = `Test: '${existTest?.testName}' has been removed`;
+      const department = null;
+      const type = "general";
+
+      const notify = await createNotification(title, description, department, type);
+      // console.log({ notify })
+    }
+
     sendResponse(res, 200, true, "Successfully deleted clinical test");
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
@@ -346,6 +372,20 @@ export const AddTestResult = async (req, res) => {
     const data = req.body;
     const newTestResult = new TestResult(data);
     const result = await newTestResult.save();
+
+    // sending notification 
+    if (result) {
+      const r = await TestResult.findById(result?._id)
+        .populate("appointmentId")
+        .populate("testId");
+
+      const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
+      const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
+      const department = r?.appointmentId?.department;
+      const type = "test-result";
+
+      await createNotification(title, description, department, type)
+    }
 
     sendResponse(res, 200, true, "Successfully added test result");
   } catch (error) {

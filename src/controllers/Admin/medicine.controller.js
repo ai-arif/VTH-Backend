@@ -1,5 +1,6 @@
 import Medicine from "../../models/medicine.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 export const addMedicine = async (req, res) => {
   try {
@@ -42,7 +43,19 @@ export const addMedicine = async (req, res) => {
     });
 
     const newMed = await newMedicine.save();
-    
+
+    if (newMed) {
+      // const departmentInfo = await Department.findById(department);
+
+      const title = `'${name}' added as a new medicine`;
+      const description = `Class: '${medicineClass}', band: '${brandName}' and manufacturer: ${manufacturer}`;
+      const department = null;
+      const type = "general";
+
+      const notify = await createNotification(title, description, department, type);
+      // console.log({ notify })
+    }
+
     sendResponse(res, 200, true, "Successfully created medicine", newMed);
   } catch (error) {
     console.log(error);
@@ -58,13 +71,13 @@ export const getMedicine = async (req, res) => {
   try {
     const totalMedicine = await Medicine.countDocuments();
     const totalPages = Math.ceil(totalMedicine / limit);
-    
+
     const medicines = await Medicine.find()
       .limit(limit)
       .skip((page - 1) * limit)
       .sort({ createdAt: sort })
       .exec();
-    
+
     sendResponse(res, 200, true, "Successfully fetched medicines", {
       totalMedicine,
       totalPages,
@@ -122,7 +135,7 @@ export const updateMedicine = async (req, res) => {
         animalType,
       }
     );
-    
+
     sendResponse(res, 200, true, "Successfully updated medicine");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -136,8 +149,20 @@ export const deleteMedicine = async (req, res) => {
     const existMedicine = await Medicine.findOne({ _id: id });
     if (!existMedicine) return sendResponse(res, 404, false, "Did not find the medicine");
 
-    await Medicine.deleteOne({ _id: id });
-    
+    const result = await Medicine.deleteOne({ _id: id });
+
+    if (result) {
+      // const departmentInfo = await Department.findById(department);
+
+      const title = `'${existMedicine?.name}' has been deleted`;
+      const description = `Medicine: '${existMedicine?.name}' of band: '${existMedicine?.brandName}' has been deleted`;
+      const department = null;
+      const type = "general";
+
+      const notify = await createNotification(title, description, department, type);
+      // console.log({ notify })
+    }
+
     sendResponse(res, 200, true, "Successfully deleted medicine");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
