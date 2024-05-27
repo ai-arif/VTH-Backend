@@ -10,8 +10,8 @@ import sendResponse from "../../utils/sendResponse.js";
 
 export const addTest = async (req, res) => {
   try {
-    const { testName, testDetails } = req.body;
-    const newClinicalTest = new ClinicalTest({ testName, testDetails });
+    // const { testName, testDetails } = req.body;
+    const newClinicalTest = new ClinicalTest(req.body);
     const newTest = await newClinicalTest.save();
 
     sendResponse(res, 200, true, "Successfully created clinical test", newTest);

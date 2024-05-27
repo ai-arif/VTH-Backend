@@ -19,7 +19,7 @@ prescriptionRouter.get('/', Find)
 prescriptionRouter.get('/:id', FindBy)
 prescriptionRouter.put('/:id', Updateby)
 prescriptionRouter.delete('/:id', Deleteby)
-prescriptionRouter.get('/search', SearchBy)
+prescriptionRouter.get('/search/by', SearchBy)
 
 // for lab test 
 prescriptionRouter.get('/lab/test', GetPrescriptionWhichHasTest)

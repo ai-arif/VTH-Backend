@@ -1,10 +1,10 @@
-import Admin from "../../models/admin.model.js";
-import { User } from "../../models/user.model.js";
-import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import sendResponse from "../../utils/sendResponse.js";
-import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import Jwt from "jsonwebtoken";
+import Admin from "../../models/admin.model.js";
 import Department from "../../models/department.model.js";
+import { User } from "../../models/user.model.js";
+import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import sendResponse from "../../utils/sendResponse.js";
 // const sendResponse = (res, statusCode,success, message, data) => {
 //     res.status(statusCode).json({success, message, data });
 //     };
@@ -12,29 +12,29 @@ import Department from "../../models/department.model.js";
 export const createAdmin = AsyncHandler(async (req, res) => {
     const { fullName, password, phone } = req.body;
     try {
-      const admin = await Admin.findOne({ phone });
-      if (admin) {
-        return sendResponse(res, 400, false, "Admin already exists");
-      }
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newAdmin = new Admin({
-        fullName,
-        password: hashedPassword,
-        phone,
-        role: "admin",
-      });
-      await newAdmin.save();
-      return sendResponse(res, 201, true, "Admin created successfully", {
-          fullName: newAdmin.fullName,
-          phone: newAdmin.phone,
-  
-      });
-      } catch (error) {
-      return sendResponse(res, 500, false, error.message);
-      }
-  })
+        const admin = await Admin.findOne({ phone });
+        if (admin) {
+            return sendResponse(res, 400, false, "Admin already exists");
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newAdmin = new Admin({
+            fullName,
+            password: hashedPassword,
+            phone,
+            role: "admin",
+        });
+        await newAdmin.save();
+        return sendResponse(res, 201, true, "Admin created successfully", {
+            fullName: newAdmin.fullName,
+            phone: newAdmin.phone,
 
-  export const createUser = async (req, res) => {
+        });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+})
+
+export const createUser = async (req, res) => {
     const { fullName, password, phone, role, department } = req.body;
     try {
         if (!fullName || !password || !phone || !role) {
@@ -100,32 +100,69 @@ export const login = async (req, res) => {
     }
 }
 
-export const getProfile=async(req,res)=>{
-    try{
-        const user=await Admin.findById(req.id).select("-password");
-        return sendResponse(res,200,true,"User",user);
+export const getProfile = async (req, res) => {
+    try {
+        const user = await Admin.findById(req.id).select("-password");
+        return sendResponse(res, 200, true, "User", user);
     }
-    catch(error){
-        return sendResponse(res,500,false,error.message);
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
     }
 }
 
-export const getAllAdmins=async(req,res)=>{
-    try{
+export const getAllAdmins = async (req, res) => {
+    try {
         // use page, limit, sort form query
-        const limit=parseInt(req.query.limit)||15;
-        const page=parseInt(req.query.page)||1;
-        const skip=(page-1)*limit;
-        const users=await Admin.find().select("-password").limit(limit).skip(skip);
+        const limit = parseInt(req.query.limit) || 15;
+        const page = parseInt(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+        const users = await Admin.find().select("-password").limit(limit).skip(skip);
         // send pages
-        const count=await Admin.countDocuments();
-        const pages=Math.ceil(count/limit);
-        return sendResponse(res,200,true,"All users",{users,pages});
+        const count = await Admin.countDocuments();
+        const pages = Math.ceil(count / limit);
+        return sendResponse(res, 200, true, "All users", { users, pages });
     }
-    catch(error){
-        return sendResponse(res,500,false,error.message);
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
     }
 }
+
+// search all staffs ************* 
+export const searchAllAppointments = async (req, res) => {
+
+    try {
+        const { search } = req.query;
+        if (!search) {
+            return res.status(500).json({ success: false, message: "Search query needed!" });
+        }
+
+        // send with total pages
+        const limit = parseInt(req.query.limit) || 15;
+        const page = parseInt(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+        const sort = -1;
+
+
+        const conditions = [
+            { fullName: { $regex: search, $options: "i" } },
+            { phone: { $regex: search, $options: "i" } },
+        ];
+
+        const query = {
+            $or: conditions
+        };
+
+        const users = await Admin.find(query).sort({ createdAt: sort }).select("-password").limit(limit).skip(skip);
+        // send pages
+        const count = await Admin.countDocuments(query);
+        const pages = Math.ceil(count / limit);
+
+        sendResponse(res, 200, true, "Showing results", { users, totalPages: pages });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
 
 // delete admin
 export const deleteAdmin = async (req, res) => {
@@ -134,7 +171,7 @@ export const deleteAdmin = async (req, res) => {
         if (!admin) {
             return sendResponse(res, 404, false, "Admin not found");
         }
-        
+
         return sendResponse(res, 200, true, "Admin deleted successfully");
     }
     catch (error) {
@@ -169,7 +206,7 @@ export const getAllUsers = async (req, res) => {
 // update admin, if password is present, hash it and update
 export const updateAdmin = async (req, res) => {
     try {
-        const { fullName, password, phone,role } = req.body;
+        const { fullName, password, phone, role } = req.body;
         const id = req.params.id;
         const admin = await Admin.findById(id);
         if (!admin) {

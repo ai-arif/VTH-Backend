@@ -220,6 +220,20 @@ export const searchPatientRegistrationForms = async (req, res) => {
 
     const { search } = req.query;
 
+    if (!search) {
+      return sendResponse(res, 500, false, "Search query is required!");
+    }
+
+    const condition = [
+      { "appointmentId.ownerName": { $regex: search, $options: "i" } },
+      { "appointmentId.phone": { $regex: search, $options: "i" } },
+    ];
+
+    // Add caseNo condition only if search can be parsed as a number
+    if (!isNaN(search)) {
+      condition.push({ "appointmentId.caseNo": parseInt(search) });
+    }
+
     const patientRegistrationForms = await PatientRegistrationForm.aggregate([
       {
         $lookup: {
@@ -234,11 +248,12 @@ export const searchPatientRegistrationForms = async (req, res) => {
       },
       {
         $match: {
-          $or: [
-            { "appointmentId.ownerName": { $regex: search, $options: "i" } },
-            { "appointmentId.phone": { $regex: search, $options: "i" } },
-            { caseNo: { $regex: search, $options: "i" } },
-          ],
+          // $or: [
+          //   { "appointmentId.ownerName": { $regex: search, $options: "i" } },
+          //   { "appointmentId.phone": { $regex: search, $options: "i" } },
+          //   { caseNo: { $regex: search, $options: "i" } },
+          // ],
+          $or: condition,
         },
       },
     ])
@@ -257,11 +272,7 @@ export const searchPatientRegistrationForms = async (req, res) => {
       },
       {
         $match: {
-          $or: [
-            { "appointment.ownerName": { $regex: search, $options: "i" } },
-            { "appointment.phone": { $regex: search, $options: "i" } },
-            { caseNo: { $regex: search, $options: "i" } },
-          ],
+          $or: condition,
         },
       },
     ]).count("total");
@@ -273,9 +284,11 @@ export const searchPatientRegistrationForms = async (req, res) => {
       200,
       true,
       "Patient registration forms retrieved successfully",
-      { data: patientRegistrationForms, total: totalPage }
+      { data: patientRegistrationForms, totalPage }
     );
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+
