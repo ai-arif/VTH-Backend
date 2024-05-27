@@ -4,12 +4,12 @@ const patientRegistrationRouter = Router();
 
 import {
     createPatientRegistrationForm,
-    getPatientRegistrationFormById,
-    updatePatientRegistrationFormById,
     deletePatientRegistrationFormById,
     getAllPatientRegistrationForms,
-    searchPatientRegistrationForms    
-    } from "../../controllers/Admin/patient.registration_form.controller.js";
+    getPatientRegistrationFormById,
+    searchPatientRegistrationForms,
+    updatePatientRegistrationFormById
+} from "../../controllers/Admin/patient.registration_form.controller.js";
 
 
 patientRegistrationRouter.post("/", createPatientRegistrationForm);

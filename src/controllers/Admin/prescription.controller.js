@@ -114,7 +114,53 @@ export const SearchBy = async (req, res) => {
 
     if (!search) return sendResponse(res, 400, false, "Please provide search query parameter");
 
+    const condition = [
+        { "appointment.ownerName": { $regex: search, $options: 'i' } },
+        { "appointment.phone": { $regex: search, $options: 'i' } },
+
+    ];
+
+    // Add caseNo condition only if search can be parsed as a number
+    if (!isNaN(search)) {
+        condition.push({ "appointment.caseNo": parseInt(search) });
+    }
+
     try {
+        const totalCountPipeline = [
+            {
+                $lookup: {
+                    from: "appointments",
+                    localField: "appointment",
+                    foreignField: "_id",
+                    as: "appointment"
+                }
+            },
+            {
+                $unwind: "$appointment"
+            },
+            {
+                $match: {
+                    $or: condition
+                }
+            },
+            {
+                $lookup: {
+                    from: "departments",
+                    localField: "appointment.department",
+                    foreignField: "_id",
+                    as: "department"
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalCount: { $sum: 1 }
+                }
+            }
+        ];
+
+        const totalCountResult = await Prescription.aggregate(totalCountPipeline);
+
         const prescriptions = await Prescription.aggregate([
             {
                 $lookup: {
@@ -129,22 +175,31 @@ export const SearchBy = async (req, res) => {
             },
             {
                 $match: {
-                    $or: [
-                        { "appointment.ownerName": { $regex: search, $options: 'i' } },
-                        { "appointment.phone": { $regex: search, $options: 'i' } },
-                        { "appointment.caseNo": { $regex: search, $options: 'i' } }
-                    ]
+                    $or: condition
                 }
             },
+            {
+                $lookup: {
+                    from: "departments",
+                    localField: "appointment.department",
+                    foreignField: "_id",
+                    as: "department"
+                }
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
+            }
         ]);
 
-        if (prescriptions[0].data.length === 0) {
-            return sendResponse(res, 404, false, "Prescription did not found for this search query");
-        }
+        const totalPages = Math.ceil(totalCountResult?.[0]?.totalCount / limit);
 
-        sendResponse(res, 200, true, "Prescription fetched successfully", { data: prescriptions[0].data, metadata: prescriptions[0].metadata[0] });
+        sendResponse(res, 200, true, "Prescription fetched successfully", { data: prescriptions, totalPages: totalPages, totalDocuments: totalCountResult?.[0]?.totalCount });
 
     } catch (error) {
+        console.log({ error })
         sendResponse(res, 500, false, error.message);
     }
 }

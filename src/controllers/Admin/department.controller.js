@@ -1,12 +1,12 @@
-import Department from "../../models/department.model.js";
 import Admin from "../../models/admin.model.js";
-import sendResponse from "../../utils/sendResponse.js";
+import Department from "../../models/department.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import sendResponse from "../../utils/sendResponse.js";
 
 
 export const createDepartment = AsyncHandler(async (req, res) => {
     const { name } = req.body;
-    const user=req.id;
+    const user = req.id;
     try {
         const department = await Department.findOne({ name });
         if (department) {
@@ -92,3 +92,32 @@ export const deleteDepartment = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 }
+
+// get departments with pagination
+export const searchDepartments = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 15;
+        const page = parseInt(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+        const sort = -1;
+
+        const search = req.query?.search;
+
+        if (!search) {
+            return sendResponse(res, 500, false, "Search params is required!")
+        }
+
+        const departmentsCount = await Department.find({ name: { $regex: search, $options: 'i' } });
+        const totalPages = Math.ceil(departmentsCount?.length / limit)
+
+        const departments = await Department.find({ name: { $regex: search, $options: 'i' } })
+            .populate('createdBy')
+            .limit(limit)
+            .skip(skip)
+            .sort({ createdAt: sort });
+
+        return sendResponse(res, 200, true, "Showing results", { data: departments, totalPages });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+};
