@@ -1,5 +1,5 @@
 import express from "express";
-import { CreateOrder, DeleteOrderById, FindAllOrders, FindAllPrescriptions, FindOrderById, UpdateOrderById } from '../../controllers/Admin/pharmacy.controller.js';
+import { CreateOrder, DeleteOrderById, FindAllOrders, FindAllPrescriptions, FindOrderById, UpdateOrderById, deletedForPharmacy } from '../../controllers/Admin/pharmacy.controller.js';
 
 
 
@@ -13,6 +13,8 @@ pharmacyRoute.get("/", FindAllOrders);
 pharmacyRoute.get("/:id", FindOrderById);
 pharmacyRoute.put("/:id", UpdateOrderById);
 pharmacyRoute.delete("/:id", DeleteOrderById);
+pharmacyRoute.patch("/:id", deletedForPharmacy);
+
 
 
 export default pharmacyRoute;

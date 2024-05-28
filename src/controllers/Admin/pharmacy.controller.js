@@ -149,5 +149,19 @@ export const DeleteOrderById = async (req, res) => {
     }
 }
 
+// delete prescription for pharmacy order
+export const deletedForPharmacy = async (req, res) => {
+    try {
+        const updatedData = await Prescription.findByIdAndUpdate(req.params.id, { $set: { isDeletedForPharmacy: true } }, { new: true });
+        if (!updatedData) {
+            return sendResponse(res, 404, false, "Unable to delete prescription!");
+        }
+        return sendResponse(res, 200, true, "Successfully deleted prescription for pharmacy");
+
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
 
 

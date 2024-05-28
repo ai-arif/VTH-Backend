@@ -2,6 +2,10 @@ import { Schema, model } from "mongoose";
 
 const prescriptionSchema = new Schema(
   {
+    isDeletedForPharmacy: {
+      type: Boolean,
+      default: false
+    },
     takesMedicinesBefore: {
       type: Boolean,
       default: false
