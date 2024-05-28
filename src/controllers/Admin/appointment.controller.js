@@ -7,7 +7,7 @@ import { createNotification } from "./notification.controller.js";
 
 
 export const createAppointment = async (req, res) => {
-  console.log("cc")
+
   try {
     const uuid = uuidv4();
     const numericPart = uuid.replace(/-/g, "").replace(/\D/g, "");
@@ -23,7 +23,7 @@ export const createAppointment = async (req, res) => {
       const title = "New appointment";
       const description = `New appointment is assigned to ${departmentInfo?.name} department`;
       const department = req?.body?.department;
-      const type = "general";
+      const type = "admin";
 
       const notify = await createNotification(title, description, department, type);
       // console.log({ notify })

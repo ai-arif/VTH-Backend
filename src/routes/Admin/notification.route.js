@@ -1,12 +1,16 @@
 import { Router } from "express";
 import {
+    deleteNotifications,
     getAllNotifications,
-    deleteNotifications
-    } from "../../controllers/Admin/notification.controller.js";
+    getSpecificNotifications
+} from "../../controllers/Admin/notification.controller.js";
 
 const router = Router();
 
-router.get("/",  getAllNotifications);
-router.delete("/",  deleteNotifications);
+// notification by department and role
+router.get("/specific", getSpecificNotifications);
+
+router.get("/", getAllNotifications);
+router.delete("/", deleteNotifications);
 
 export default router;
