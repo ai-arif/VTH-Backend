@@ -1,3 +1,4 @@
+import mongoose, { Mongoose } from "mongoose";
 import Pharmacy from "../../models/pharmacy.model.js";
 import Prescription from "../../models/prescription.model.js";
 import sendResponse from "../../utils/sendResponse.js";
@@ -188,10 +189,41 @@ export const deletedForPharmacy = async (req, res) => {
     }
 };
 
+
 // Prescription by ID
+const { ObjectId } = mongoose.Types;
 export const FindOrderByPrescriptionId = async (req, res) => {
+    console.log("jj", req.params.id)
     try {
-        const order = await Pharmacy.find({ prescriptionID: req.params.id }).populate("prescriptionID").sort({ createdAt: -1 });
+        const order = await Pharmacy.aggregate([
+            {
+                $match: {
+                    prescriptionID: new ObjectId(req.params.id)
+                }
+            },
+            {
+                $lookup: {
+                    from: "prescriptions",
+                    localField: "prescriptionID",
+                    foreignField: "_id",
+                    as: "prescriptionDetails"
+                }
+            },
+            {
+                $unwind: "$prescriptionDetails"
+            },
+            {
+                $lookup: {
+                    from: "appointments",
+                    localField: "prescriptionDetails.appointment",
+                    foreignField: "_id",
+                    as: "prescriptionDetails.appointmentDetails"
+                }
+            },
+            {
+                $unwind: "$prescriptionDetails.appointmentDetails"
+            }
+        ]);
 
         if (!order) {
             return sendResponse(res, 404, false, "Order did not found");
@@ -200,6 +232,7 @@ export const FindOrderByPrescriptionId = async (req, res) => {
             data: order,
         });
     } catch (error) {
+        console.log({ error })
         return sendResponse(res, 500, false, error.message);
     }
 };
