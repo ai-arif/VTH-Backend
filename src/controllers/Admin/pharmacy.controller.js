@@ -187,3 +187,19 @@ export const deletedForPharmacy = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 };
+
+// Prescription by ID
+export const FindOrderByPrescriptionId = async (req, res) => {
+    try {
+        const order = await Pharmacy.find({ prescriptionID: req.params.id }).populate("prescriptionID").sort({ createdAt: -1 });
+
+        if (!order) {
+            return sendResponse(res, 404, false, "Order did not found");
+        }
+        return sendResponse(res, 200, true, "Order fetched successfully", {
+            data: order,
+        });
+    } catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+};
