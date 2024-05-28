@@ -193,7 +193,7 @@ export const deletedForPharmacy = async (req, res) => {
 // Prescription by ID
 const { ObjectId } = mongoose.Types;
 export const FindOrderByPrescriptionId = async (req, res) => {
-    console.log("jj", req.params.id)
+
     try {
         const order = await Pharmacy.aggregate([
             {

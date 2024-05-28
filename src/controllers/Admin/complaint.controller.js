@@ -12,7 +12,7 @@ export const createComplaint = async (req, res) => {
             // const departmentInfo = await Department.findById(department);
             const speciesInfo = await Species.findById(req.body?.species);
 
-            const title = `Receive a new complaint`;
+            const title = `Received a complaint`;
             const description = `Receive a new complaint about '${speciesInfo?.name}'.`;
             const department = null;
             const type = "admin";
