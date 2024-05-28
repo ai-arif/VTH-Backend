@@ -48,9 +48,9 @@ export const addMedicine = async (req, res) => {
       // const departmentInfo = await Department.findById(department);
 
       const title = `'${name}' added as a new medicine`;
-      const description = `Class: '${medicineClass}', band: '${brandName}' and manufacturer: ${manufacturer}`;
+      const description = `Class: '${medicineClass}', brand: '${brandName}' and manufacturer: ${manufacturer}`;
       const department = null;
-      const type = "general";
+      const type = "pharmacy";
 
       const notify = await createNotification(title, description, department, type);
       // console.log({ notify })
@@ -157,7 +157,7 @@ export const deleteMedicine = async (req, res) => {
       const title = `'${existMedicine?.name}' has been deleted`;
       const description = `Medicine: '${existMedicine?.name}' of band: '${existMedicine?.brandName}' has been deleted`;
       const department = null;
-      const type = "general";
+      const type = "pharmacy";
 
       const notify = await createNotification(title, description, department, type);
       // console.log({ notify })

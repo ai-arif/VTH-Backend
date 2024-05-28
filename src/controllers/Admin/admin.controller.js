@@ -76,7 +76,7 @@ export const createUser = async (req, res) => {
             const title = `${fullName} join as a new ${role}`;
             const description = `'${fullName}' join as a new ${role} to ${departmentInfo?.name} department`;
             // const department = department;
-            const type = "general";
+            const type = "admin";
 
             const notify = await createNotification(title, description, department, type);
             // console.log({ notify })

@@ -15,7 +15,7 @@ export const createComplaint = async (req, res) => {
             const title = `Receive a new complaint`;
             const description = `Receive a new complaint about '${speciesInfo?.name}'.`;
             const department = null;
-            const type = "general";
+            const type = "admin";
 
             const notify = await createNotification(title, description, department, type);
             // console.log({ notify })

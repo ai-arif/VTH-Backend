@@ -22,7 +22,7 @@ export const Create = async (req, res) => {
             const title = `New Test Assigned`;
             const description = `'${testString}' has been assigned by ${appointment?.department?.name} department`;
             const department = appointment?.department?._id;
-            const type = "general";
+            const type = "lab";
 
             const notify = await createNotification(title, description, department, type);
         }
@@ -30,7 +30,7 @@ export const Create = async (req, res) => {
             const title = `New Prescription created`;
             const description = `New prescription created by ${appointment?.department?.name} department`;
             const department = appointment?.department?._id;
-            const type = "general";
+            const type = "lab-pharmacy";
 
             const notify = await createNotification(title, description, department, type);
             // console.log({ notify })

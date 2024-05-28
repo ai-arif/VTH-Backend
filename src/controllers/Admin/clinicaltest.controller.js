@@ -87,7 +87,7 @@ export const deleteTest = async (req, res) => {
       const title = `'${existTest?.testName}' has been deleted`;
       const description = `Test: '${existTest?.testName}' has been removed`;
       const department = null;
-      const type = "general";
+      const type = "lab";
 
       const notify = await createNotification(title, description, department, type);
       // console.log({ notify })
@@ -382,7 +382,7 @@ export const AddTestResult = async (req, res) => {
       const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
       const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
       const department = r?.appointmentId?.department;
-      const type = "test-result";
+      const type = "doctor-test-result";
 
       await createNotification(title, description, department, type)
     }
