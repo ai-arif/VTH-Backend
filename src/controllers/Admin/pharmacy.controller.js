@@ -33,11 +33,16 @@ export const FindAllPrescriptions = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const sort = -1;
 
-    const totalPrescription = await Prescription.find().select("_id");
+    const totalPrescription = await Prescription.find({ isDeletedForPharmacy: false }).select("_id");
     const totalPages = Math.ceil(totalPrescription.length / limit);
 
     try {
         const prescriptions = await Prescription.aggregate([
+            {
+                $match: {
+                    isDeletedForPharmacy: false
+                }
+            },
             {
                 $lookup: {
                     from: "appointments", // Name of the collection you're joining with
