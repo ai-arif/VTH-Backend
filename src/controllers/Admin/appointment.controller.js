@@ -21,9 +21,9 @@ export const createAppointment = async (req, res) => {
       const departmentInfo = await Department.findById(req?.body?.department);
 
       const title = "New appointment";
-      const description = `New appointment is assigned to ${departmentInfo?.name} department`;
+      const description = `${departmentInfo?.name} department has new appointment.`;
       const department = req?.body?.department;
-      const type = "admin";
+      const type = "receptionist";
 
       const notify = await createNotification(title, description, department, type);
       // console.log({ notify })

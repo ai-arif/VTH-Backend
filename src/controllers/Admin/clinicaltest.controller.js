@@ -84,7 +84,7 @@ export const deleteTest = async (req, res) => {
     if (result) {
       // const departmentInfo = await Department.findById(department);
 
-      const title = `'${existTest?.testName}' has been deleted`;
+      const title = `A test has been deleted`;
       const description = `Test: '${existTest?.testName}' has been removed`;
       const department = null;
       const type = "lab";

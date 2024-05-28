@@ -18,13 +18,13 @@ const adminSchema = new Schema(
       trim: true,
     },
     role: {
-        type: String,
-        enum: ["admin", "doctor","lab","pharmacy",],
-        default: "lab",
+      type: String,
+      enum: ["admin", "doctor", "lab", "pharmacy", "receptionist"],
+      default: "lab",
     },
     department: {
-        type: Schema.Types.ObjectId,
-        ref: "Department",
+      type: Schema.Types.ObjectId,
+      ref: "Department",
     },
 
   },

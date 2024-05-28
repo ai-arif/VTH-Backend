@@ -73,7 +73,7 @@ export const createUser = async (req, res) => {
         if (department && createdUSer) {
             const departmentInfo = await Department.findById(department);
 
-            const title = `${fullName} join as a new ${role}`;
+            const title = `New joining!`;
             const description = `'${fullName}' join as a new ${role} to ${departmentInfo?.name} department`;
             // const department = department;
             const type = "admin";
