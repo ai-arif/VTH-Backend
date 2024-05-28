@@ -156,6 +156,12 @@ const patientRegistrationFormSchema = new Schema(
     doo: {
       type: Date,
     },
+    tests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ClinicalTest",
+      },
+    ],
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "Admin",

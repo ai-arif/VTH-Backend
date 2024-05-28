@@ -43,6 +43,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalDeedAnimals,
       dop,
       doo,
+      tests,
     } = req.body;
 
     // Check for required fields
@@ -90,6 +91,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalDeedAnimals: req.body.totalDeedAnimals || "",
       dop: req.body.dop || "",
       doo: req.body.doo || "",
+      tests: req.body.tests || [],
     });
 
     await newPatientRegistrationForm.save();
@@ -290,5 +292,3 @@ export const searchPatientRegistrationForms = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
-
-
