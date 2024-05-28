@@ -14,13 +14,7 @@ const pharmacySchema = new Schema({
             quantity: Number,
         }
     ],
-    unavailableMedicines: [
-        {
-            medicineName: String,
-            unitPrice: Number,
-            quantity: Number,
-        }
-    ],
+    unavailableMedicines: [String],
     subTotal: Number,
     discount: Number,
     totalPrice: Number,
