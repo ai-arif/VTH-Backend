@@ -54,7 +54,7 @@ const appointmentSchema = new Schema(
     },
     phone: {
       type: String,
-      required:true
+      required: true
     },
     status: {
       type: String,
@@ -71,10 +71,10 @@ const appointmentSchema = new Schema(
       default: 0,
     },
     department: {
-        type: Schema.Types.ObjectId,
-        ref:'Department',
+      type: Schema.Types.ObjectId,
+      ref: 'Department',
     },
-    image:{
+    image: {
       type: String,
     },
     owner: {

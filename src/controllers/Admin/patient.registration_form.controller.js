@@ -250,11 +250,6 @@ export const searchPatientRegistrationForms = async (req, res) => {
       },
       {
         $match: {
-          // $or: [
-          //   { "appointmentId.ownerName": { $regex: search, $options: "i" } },
-          //   { "appointmentId.phone": { $regex: search, $options: "i" } },
-          //   { caseNo: { $regex: search, $options: "i" } },
-          // ],
           $or: condition,
         },
       },

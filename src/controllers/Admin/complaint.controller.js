@@ -1,5 +1,5 @@
-import Species from "../../models/Species.model.js";
 import Complaint from "../../models/complaint.model.js";
+import Species from "../../models/species.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 

@@ -38,6 +38,7 @@ import adminUserRouter from "./routes/Admin/user.route.js";
 
 // user routes
 
+import { overviewRoute } from "./routes/Admin/overview.route.js";
 import pharmacyRoute from "./routes/Admin/pharmacy.route.js";
 import userAppointmentRouter from "./routes/User/appointment.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
@@ -46,6 +47,7 @@ import userRouter from "./routes/User/user.route.js";
 
 
 //Declaration of Routes Here
+app.use("/api/v1/overview", overviewRoute);
 app.use("/api/v1/staffs", adminRouter);
 // app.use("/api/v1/staffs", userRouter);
 app.use("/api/v1/admin-user", adminUserRouter);
