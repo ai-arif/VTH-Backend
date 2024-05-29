@@ -95,6 +95,18 @@ export const createUser = async (req, res) => {
     }
 }
 
+// to do 
+export const getLoginStaffOrAdmin = async (req, res) => {
+    try {
+        if (req.params?.id) {
+            const user = await Admin.findById(req.params?.id).select("-password");
+            return sendResponse(res, 200, true, "User", user);
+        }
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
 
 export const login = async (req, res) => {
     const { phone, password } = req.body;
