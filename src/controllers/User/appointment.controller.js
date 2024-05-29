@@ -1,6 +1,8 @@
-import Appointment from "../../models/appointment.model.js";
-import sendResponse from "../../utils/sendResponse.js";
 import { v4 as uuidv4 } from "uuid";
+import Appointment from "../../models/appointment.model.js";
+import Department from "../../models/department.model.js";
+import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "../Admin/notification.controller.js";
 
 
 export const createAppointment = async (req, res) => {
@@ -18,14 +20,26 @@ export const createAppointment = async (req, res) => {
     if (!owner) {
       return sendResponse(res, 400, false, "Must be logged in to create an appointment");
     }
-        
+
     const appointment = new Appointment({
       ...req.body,
       caseNo,
       owner,
       image,
     });
-    await appointment.save();
+    const result = await appointment.save();
+
+    if (result) {
+      const departmentInfo = await Department.findById(req?.body?.department);
+
+      const title = "New appointment";
+      const description = `${departmentInfo?.name} department has new appointment.`;
+      const department = req?.body?.department;
+      const type = "receptionist";
+
+      const notify = await createNotification(title, description, department, type);
+      // console.log({ notify })
+    }
 
     sendResponse(res, 201, true, "Appointment created successfully", appointment);
   } catch (error) {

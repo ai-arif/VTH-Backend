@@ -14,8 +14,24 @@ import { User } from "../../models/user.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 
 export const getOverview = async (req, res) => {
+    const daysBefore = req.query?.daysBefore || 30;
+
+    const today = new Date();
+    const xDaysAgo = new Date(today);
+    xDaysAgo.setDate(today.getDate() - parseInt(daysBefore));
+
+    // Ensure time components are set correctly
+    today.setHours(23, 59, 59, 999); // End of today
+    xDaysAgo.setHours(0, 0, 0, 0); // Start of 5 days ago
+
+
     try {
         const staffsOverview = await Admin.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: xDaysAgo, $lte: today }
+                }
+            },
             {
                 $group: { _id: "$role", total: { $sum: 1 } }
             },
@@ -37,6 +53,11 @@ export const getOverview = async (req, res) => {
         const species = await Species.countDocuments();
 
         const complaintsOverview = await Complaint.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: xDaysAgo, $lte: today }
+                }
+            },
             {
                 $lookup: {
                     from: 'species',
@@ -73,11 +94,15 @@ export const getOverview = async (req, res) => {
         const { speciesComplaints, totalComplaints } = complaintsOverview?.[0] || {};
 
         const medicines = await Medicine.countDocuments();
-        const prescriptions = await Prescription.countDocuments();
-        const pharmacyOrders = await Pharmacy.countDocuments();
+        const prescriptions = await Prescription.countDocuments({ createdAt: { $gte: xDaysAgo, $lte: today } });
+        const pharmacyOrders = await Pharmacy.countDocuments({ createdAt: { $gte: xDaysAgo, $lte: today } });
 
         const AppointmentOverview = await Appointment.aggregate([
-            { $match: {} },
+            {
+                $match: {
+                    createdAt: { $gte: xDaysAgo, $lte: today }
+                }
+            },
             {
                 $project: { department: 1 }
             },
@@ -109,8 +134,8 @@ export const getOverview = async (req, res) => {
 
         const { allAppointments, totalAppointment } = AppointmentOverview?.[0] || {};
 
-        const testResults = await TestResult.countDocuments();
-        const totalPatientRegister = await PatientRegistrationForm.countDocuments();
+        const testResults = await TestResult.countDocuments({ createdAt: { $gte: xDaysAgo, $lte: today } });
+        const totalPatientRegister = await PatientRegistrationForm.countDocuments({ createdAt: { $gte: xDaysAgo, $lte: today } });
 
 
 
