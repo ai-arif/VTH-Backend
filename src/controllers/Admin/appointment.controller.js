@@ -48,9 +48,9 @@ export const getAllApprovedAppointments = async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
     const appointments = await Appointment.find({ status: "approved" })
+      .sort({ createdAt: sort })
       .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: sort });
+      .skip(skip);
 
     const count = await Appointment.countDocuments({ status: "approved" });
     const totalPages = Math.ceil(count / limit);
@@ -71,9 +71,9 @@ export const getAllPendingAppointments = async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
     const appointments = await Appointment.find({ status: "pending" })
+      .sort({ createdAt: sort })
       .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: sort });
+      .skip(skip);
 
     const count = await Appointment.countDocuments({ status: "pending" });
     const totalPages = Math.ceil(count / limit);
@@ -154,7 +154,7 @@ export const deleteAppointment = async (req, res) => {
 export const getAppointmentByPhone = async (req, res) => {
   const { phone } = req.params;
   try {
-    const appointment = await Appointment.find({ phone });
+    const appointment = await Appointment.find({ phone }).sort({ createdAt: -1 });
     if (!appointment) {
       return sendResponse(res, 404, false, "Did not found the appointment");
     }
@@ -199,10 +199,10 @@ export const searchAllAppointments = async (req, res) => {
     };
 
 
-    const appointments = await Appointment.find(query)
+    const appointments = await Appointment.find(query).sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
-      .sort({ createdAt: sort }).select({ phone: 1, caseNo: 1, ownerName: 1, date: 1 });
+      .select({ phone: 1, caseNo: 1, ownerName: 1, date: 1 });
 
     const count = await Appointment.countDocuments(query);
     const totalPages = Math.ceil(count / limit);

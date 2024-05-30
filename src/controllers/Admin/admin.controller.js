@@ -134,6 +134,7 @@ export const login = async (req, res) => {
   }
 };
 
+// to do to fix 
 export const getProfile = async (req, res) => {
   try {
     const user = await Admin.findById(req.id).select("-password");
@@ -151,6 +152,7 @@ export const getAllAdmins = async (req, res) => {
     const skip = (page - 1) * limit;
     const users = await Admin.find()
       .select("-password")
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip);
     // send pages
@@ -236,7 +238,7 @@ export const getUserByPhone = async (req, res) => {
 // get all users, except password
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
     return sendResponse(res, 200, true, "All users", users);
   } catch (error) {
     return sendResponse(res, 500, false, error.message);

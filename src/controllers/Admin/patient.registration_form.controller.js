@@ -195,7 +195,7 @@ export const getAllPatientRegistrationForms = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const patientRegistrationForms = await PatientRegistrationForm.find()
+    const patientRegistrationForms = await PatientRegistrationForm.find().sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("appointmentId");
@@ -253,7 +253,7 @@ export const searchPatientRegistrationForms = async (req, res) => {
           $or: condition,
         },
       },
-    ])
+    ]).sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 

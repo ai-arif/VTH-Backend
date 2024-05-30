@@ -9,9 +9,9 @@ export const getAllUsers = AsyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
     const users = await User.find()
+        .sort({ createdAt: sort })
         .limit(limit)
-        .skip(skip)
-        .sort({ createdAt: sort });
+        .skip(skip);
 
     const count = await User.countDocuments();
     const totalPages = Math.ceil(count / limit);
@@ -33,9 +33,9 @@ export const searchUsers = AsyncHandler(async (req, res) => {
             { phone: { $regex: search, $options: "i" } },
         ],
     })
+        .sort({ createdAt: sort })
         .limit(limit)
-        .skip(skip)
-        .sort({ createdAt: sort });
+        .skip(skip);
 
     const count = await User.countDocuments({
         $or: [

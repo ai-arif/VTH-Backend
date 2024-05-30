@@ -73,9 +73,9 @@ export const getMedicine = async (req, res) => {
     const totalPages = Math.ceil(totalMedicine / limit);
 
     const medicines = await Medicine.find()
+      .sort({ createdAt: sort })
       .limit(limit)
       .skip((page - 1) * limit)
-      .sort({ createdAt: sort })
       .exec();
 
     sendResponse(res, 200, true, "Successfully fetched medicines", {
@@ -205,9 +205,9 @@ export const searchMedicine = async (req, res) => {
         { brandName: { $regex: search, $options: "i" } },
       ],
     })
+      .sort({ createdAt: sort })
       .limit(limit)
-      .skip((page - 1) * limit)
-      .sort({ createdAt: sort });
+      .skip((page - 1) * limit);
 
     sendResponse(res, 200, true, "Successfully fetched medicines", {
       totalMedicine,
