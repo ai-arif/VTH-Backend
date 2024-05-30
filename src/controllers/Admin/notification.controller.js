@@ -103,3 +103,27 @@ export const deleteNotifications = AsyncHandler(async (req, res) => {
     }
 });
 
+// delete single notification 
+export const deleteNotificationById = async (req, res) => {
+    try {
+
+        await Notification.findByIdAndDelete(req.params?.id);
+        return sendResponse(res, 200, true, "Notification deleted successfully");
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
+// seen single notification 
+export const seenNotificationById = async (req, res) => {
+    try {
+
+        await Notification.findByIdAndUpdate(req.params?.id, { $set: { isViewed: true } }, { new: true });
+        return sendResponse(res, 200, true, "Notification read successfully");
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+}
+
