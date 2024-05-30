@@ -29,7 +29,7 @@ export const createComplaint = async (req, res) => {
 
 export const getComplaints = async (req, res) => {
     try {
-        const complaint = await Complaint.find().populate("species");
+        const complaint = await Complaint.find().sort({ createdAt: -1 }).populate("species");
         sendResponse(res, 200, true, "Complaint fetched successfully", complaint);
     } catch (error) {
         sendResponse(res, 500, error);

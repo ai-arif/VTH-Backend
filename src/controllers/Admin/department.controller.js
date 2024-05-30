@@ -35,9 +35,9 @@ export const getDepartments = async (req, res) => {
         const sort = -1;
         const departments = await Department.find()
             .populate('createdBy', 'fullName')
+            .sort({ createdAt: sort })
             .limit(limit)
-            .skip(skip)
-            .sort({ createdAt: sort });
+            .skip(skip);
 
         return sendResponse(res, 200, true, "Showing results", departments);
     } catch (error) {
@@ -112,9 +112,9 @@ export const searchDepartments = async (req, res) => {
 
         const departments = await Department.find({ name: { $regex: search, $options: 'i' } })
             .populate('createdBy')
+            .sort({ createdAt: sort })
             .limit(limit)
-            .skip(skip)
-            .sort({ createdAt: sort });
+            .skip(skip);
 
         return sendResponse(res, 200, true, "Showing results", { data: departments, totalPages });
     } catch (error) {

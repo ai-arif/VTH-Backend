@@ -67,7 +67,7 @@ export const Find = async (req, res) => {
         path: "department",
         model: "Department",
       },
-    });
+    }).sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
       data: prescriptions,
     });
@@ -134,7 +134,7 @@ export const Search = async (req, res) => {
   if (!caseNo) return sendResponse(res, 400, false, "Please provide case no");
 
   try {
-    const prescription = await Prescription.find({ caseNo });
+    const prescription = await Prescription.find({ caseNo }).sort({ createdAt: -1 });
     if (prescription.length === 0) {
       return sendResponse(
         res,
@@ -238,6 +238,9 @@ export const SearchBy = async (req, res) => {
           foreignField: "_id",
           as: "department",
         },
+      },
+      {
+        $sort: { createdAt: -1 }
       },
       {
         $skip: skip,

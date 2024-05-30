@@ -43,9 +43,9 @@ export const getTest = async (req, res) => {
     const totalPages = Math.ceil(totalTest / limit);
 
     const tests = await ClinicalTest.find()
+      .sort({ createdAt: sort })
       .limit(limit)
       .skip((page - 1) * limit)
-      .sort({ createdAt: sort })
       .exec();
 
     sendResponse(res, 200, true, "Successfully fetched clinical tests", {
@@ -115,9 +115,9 @@ export const searchTest = async (req, res) => {
     const tests = await ClinicalTest.find({
       testName: { $regex: search, $options: "i" },
     })
+      .sort({ createdAt: sort })
       .limit(limit)
-      .skip((page - 1) * limit)
-      .sort({ createdAt: sort });
+      .skip((page - 1) * limit);
 
     sendResponse(res, 200, true, "Successfully fetched clinical tests", {
       totalTest,
@@ -146,7 +146,7 @@ export const AddParameter = async (req, res) => {
 export const getParameter = async (req, res) => {
   try {
     const { id } = req.params;
-    const parameters = await TestParameter.find({ test: id });
+    const parameters = await TestParameter.find({ test: id }).sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Successfully fetched parameter", {
       data: parameters,
     });
@@ -157,7 +157,7 @@ export const getParameter = async (req, res) => {
 
 export const getAllParameter = async (req, res) => {
   try {
-    const parameters = await TestParameter.find();
+    const parameters = await TestParameter.find().sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Successfully fetched parameter", {
       data: parameters,
     });
@@ -216,7 +216,7 @@ export const AddSubParameter = async (req, res) => {
 
 export const getAllSubParameter = async (req, res) => {
   try {
-    const sub_parameters = await TestSubParameter.find();
+    const sub_parameters = await TestSubParameter.find().sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Successfully fetched sub parameter", {
       data: sub_parameters,
     });
@@ -281,7 +281,7 @@ export const AddAdditionalField = async (req, res) => {
 
 export const getAllAdditionalField = async (req, res) => {
   try {
-    const test_additional_field = await TestAdditionalField.find();
+    const test_additional_field = await TestAdditionalField.find().sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Successfully fetched all additional field", {
       data: test_additional_field,
     });
@@ -426,7 +426,7 @@ export const deleteTestResult = async (req, res) => {
 
 export const getAllTestResult = async (req, res) => {
   try {
-    const result = await TestResult.find();
+    const result = await TestResult.find().sort({ createdAt: -1 });
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
     });
@@ -434,6 +434,7 @@ export const getAllTestResult = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
+
 export const getTestResult = async (req, res) => {
   try {
     const { id } = req.params;

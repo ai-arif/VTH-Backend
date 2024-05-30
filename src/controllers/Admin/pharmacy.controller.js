@@ -107,9 +107,9 @@ export const FindAllOrders = async (req, res) => {
     const totalPages = Math.ceil(totalOrders.length / limit);
 
     const orders = await Pharmacy.find()
+      .sort({ createdAt: sort })
       .limit(limit)
-      .skip((page - 1) * limit)
-      .sort({ createdAt: sort });
+      .skip((page - 1) * limit);
     return sendResponse(res, 200, true, "Orders successfully retrieved", {
       data: orders,
       totalOrders: totalOrders.length,

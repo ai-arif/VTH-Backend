@@ -1,4 +1,4 @@
-import Species from "../../models/Species.model.js";
+import Species from "../../models/species.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
@@ -27,7 +27,7 @@ export const createSpecies = async (req, res) => {
 
 export const getSpecies = async (req, res) => {
     try {
-        const species = await Species.find();
+        const species = await Species.find().sort({ createdAt: -1 });
         sendResponse(res, 200, true, "Species fetched successfully", species);
     } catch (error) {
         sendResponse(res, 500, error);

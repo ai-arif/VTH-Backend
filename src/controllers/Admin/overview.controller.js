@@ -138,11 +138,200 @@ export const getOverview = async (req, res) => {
         const totalPatientRegister = await PatientRegistrationForm.countDocuments({ createdAt: { $gte: xDaysAgo, $lte: today } });
 
 
+        // monthly data 
+        const generateDates = (year, month) => {
+            const dates = [];
+            const date = new Date(year, month - 1, 1);
+            const currentDate = new Date();
+
+            while (date <= currentDate) {
+                dates.push(new Date(date));
+                date.setDate(date.getDate() + 1);
+            }
+
+            return dates;
+        };
+
+        const getDailyOrderStats = async () => {
+            try {
+                const dailyStats = await Pharmacy.aggregate([
+                    {
+                        $group: {
+                            _id: {
+                                year: { $year: "$createdAt" },
+                                month: { $month: "$createdAt" },
+                                day: { $dayOfMonth: "$createdAt" }
+                            },
+                            totalOrders: { $sum: 1 },
+                            totalSales: { $sum: "$totalPrice" }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            date: {
+                                $dateFromParts: {
+                                    year: "$_id.year",
+                                    month: "$_id.month",
+                                    day: "$_id.day"
+                                }
+                            },
+                            totalOrders: 1,
+                            totalSales: 1
+                        }
+                    },
+                    {
+                        $sort: {
+                            date: 1
+                        }
+                    }
+                ]);
+
+                return dailyStats;
+            } catch (error) {
+                console.error("Error aggregating daily stats:", error);
+                throw error;
+            }
+        };
+
+
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const formatDate = (isoDate) => {
+            const dateParts = isoDate.split("-");
+            const day = dateParts[2];
+            const monthIndex = parseInt(dateParts[1]) - 1;
+            const month = months[monthIndex];
+            const year = dateParts[0];
+            return `${day} ${month} ${year}`;
+        };
+
+        const mergeDailyStats = (allDates, dailyStats) => {
+            const statsMap = new Map(dailyStats.map(stat => [stat.date.toISOString().split('T')[0], stat]));
+            return allDates.map(date => {
+                const isoDate = date.toISOString().split('T')[0];
+                if (statsMap.has(isoDate)) {
+                    const stat = statsMap.get(isoDate);
+                    return { date: formatDate(isoDate), "Total Orders": stat.totalOrders, "Total Sales": stat.totalSales };
+                } else {
+                    return { date: formatDate(isoDate), "Total Orders": 0, "Total Sales": 0 };
+                }
+            });
+        };
+
+        const getCompleteDailyStats = async () => {
+            try {
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth() + 1; // getMonth() returns month index from 0 (Jan) to 11 (Dec)
+
+                const allDates = generateDates(year, month);
+                const dailyStats = await getDailyOrderStats();
+
+                const completeStats = mergeDailyStats(allDates, dailyStats);
+                return completeStats;
+            } catch (error) {
+                console.error("Error getting complete daily stats:", error);
+                throw error;
+            }
+        };
+        const dailyOrders = await getCompleteDailyStats();
+
+        // yearly data 
+        const generateMonths = (year) => {
+            const months = [];
+            const currentDate = new Date();
+
+            for (let month = 1; month <= currentDate.getMonth() + 1; month++) {
+                months.push({ year, month });
+            }
+
+            return months;
+        };
+
+        const getMonthlyOrderStats = async () => {
+            try {
+                const monthlyStats = await Pharmacy.aggregate([
+                    {
+                        $group: {
+                            _id: {
+                                year: { $year: "$createdAt" },
+                                month: { $month: "$createdAt" }
+                            },
+                            totalOrders: { $sum: 1 },
+                            totalSales: { $sum: "$totalPrice" }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            year: "$_id.year",
+                            month: "$_id.month",
+                            totalOrders: 1,
+                            totalSales: 1
+                        }
+                    },
+                    {
+                        $sort: {
+                            year: 1,
+                            month: 1
+                        }
+                    }
+                ]);
+
+                return monthlyStats;
+            } catch (error) {
+                console.error("Error aggregating monthly stats:", error);
+                throw error;
+            }
+        };
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        const mergeMonthlyStats = (allMonths, monthlyStats) => {
+            const statsMap = new Map(monthlyStats.map(stat => [`${stat.year}-${String(stat.month).padStart(2, '0')}`, stat]));
+            return allMonths.map(({ year, month }) => {
+                const key = `${year}-${String(month).padStart(2, '0')}`;
+                const monthName = monthNames[month - 1];
+                if (statsMap.has(key)) {
+                    const stat = statsMap.get(key);
+                    return { year: stat.year, month: monthName, "Total Orders": stat.totalOrders, "Total Sales": stat.totalSales };
+                } else {
+                    return { year, month: monthName, "Total Orders": 0, "Total Sales": 0 };
+                }
+            });
+        };
+
+        const getCompleteMonthlyStats = async () => {
+            try {
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+
+                const allMonths = generateMonths(year);
+                const monthlyStats = await getMonthlyOrderStats();
+
+                const completeStats = mergeMonthlyStats(allMonths, monthlyStats);
+                return completeStats;
+            } catch (error) {
+                console.error("Error getting complete monthly stats:", error);
+                throw error;
+            }
+        };
+
+        const monthlyOrders = await getCompleteMonthlyStats();
+
 
 
         // result |=========================>
         // const result = { testResults };
+
         const result = {
+            dailyOrders, monthlyOrders,
             totalRoles, staffs, totalStuffs, users, departments, clinicalTests,
             species, speciesComplaints, totalComplaints, medicines, allAppointments, totalAppointment,
             prescriptions, pharmacyOrders, testResults, totalPatientRegister
