@@ -1,6 +1,6 @@
 import { User } from "../../models/user.model.js";
-import sendResponse from "../../utils/sendResponse.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import sendResponse from "../../utils/sendResponse.js";
 
 // get all users with proper pagination , with total count of pages
 export const getAllUsers = AsyncHandler(async (req, res) => {
@@ -26,7 +26,7 @@ export const searchUsers = AsyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
     const search = req.query.search;
-    
+
     const users = await User.find({
         $or: [
             { fullName: { $regex: search, $options: "i" } },
