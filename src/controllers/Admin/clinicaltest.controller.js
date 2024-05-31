@@ -24,7 +24,10 @@ export const addTest = async (req, res) => {
       const department = null;
       const type = "lab";
 
-      await createNotification(title, description, department, type);
+      const destinationUrl = `/tests`
+
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
     }
 
     sendResponse(res, 200, true, "Successfully created clinical test", newTest);
@@ -88,8 +91,9 @@ export const deleteTest = async (req, res) => {
       const description = `Test: '${existTest?.testName}' has been removed`;
       const department = null;
       const type = "lab";
+      const destinationUrl = `/tests`
 
-      const notify = await createNotification(title, description, department, type);
+      const notify = await createNotification(title, description, department, type, destinationUrl);
       // console.log({ notify })
     }
 
@@ -383,8 +387,11 @@ export const AddTestResult = async (req, res) => {
       const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
+      // const destinationUrl = `/test-result/${result?.prescriptionId}`
+      const destinationUrl = `/incomming-test/${result?.prescriptionId}`
 
-      await createNotification(title, description, department, type)
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
     }
 
     sendResponse(res, 200, true, "Successfully added test result");

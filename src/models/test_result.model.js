@@ -10,6 +10,10 @@ const testResultSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Appointment",
     },
+    prescriptionId: {
+        type: Schema.Types.ObjectId,
+        ref: "Prescription",
+    },
     name: { type: String, required: true },
     phone: { type: String, required: true },
     data: { type: dynamicSubSchema },
