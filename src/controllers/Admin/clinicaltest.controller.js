@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
+import Prescription from "../../models/prescription.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestAdditionalField from "../../models/test_additional_field.model.js";
 import TestParameter from "../../models/test_parameter.model.js";
@@ -378,21 +379,21 @@ export const AddTestResult = async (req, res) => {
     const result = await newTestResult.save();
 
     // sending notification 
-    if (result) {
-      const r = await TestResult.findById(result?._id)
-        .populate("appointmentId")
-        .populate("testId");
+    // if (result) {
+    //   const r = await TestResult.findById(result?._id)
+    //     .populate("appointmentId")
+    //     .populate("testId");
 
-      const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
-      const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
-      const department = r?.appointmentId?.department;
-      const type = "doctor-test-result";
-      // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${result?.prescriptionId}`
+    //   const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
+    //   const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
+    //   const department = r?.appointmentId?.department;
+    //   const type = "doctor-test-result";
+    //   // const destinationUrl = `/test-result/${result?.prescriptionId}`
+    //   const destinationUrl = `/incomming-test/${result?.prescriptionId}`
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
-      // console.log({ notify })
-    }
+    //   const notify = await createNotification(title, description, department, type, destinationUrl);
+    //   // console.log({ notify })
+    // }
 
     sendResponse(res, 200, true, "Successfully added test result");
   } catch (error) {
@@ -400,6 +401,24 @@ export const AddTestResult = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
+
+// add / update test total const 
+export const updateTestCost = async (req, res) => {
+
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const updatedData = await Prescription.findByIdAndUpdate(id, {
+      $set: { totalTestCost: data?.amount }
+    }, { new: true });
+
+    sendResponse(res, 200, true, "Successfully updated test result");
+  } catch (error) {
+    console.log(error)
+    sendResponse(res, 500, false, error.message);
+  }
+}
 
 // update test result 
 export const updateTestResult = async (req, res) => {

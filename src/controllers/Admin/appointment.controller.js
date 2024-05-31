@@ -214,3 +214,23 @@ export const searchAllAppointments = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// update appointments payment status 
+export const updateAppointmentsPaymentStatusById = async (req, res) => {
+  const { id } = req.params;
+  const data = req?.body;
+  try {
+    const appointment = await Appointment.findById(id);
+    if (!appointment)
+      return sendResponse(res, 404, false, "Did not found the appointment");
+
+    await Appointment.updateOne({ _id: id }, {
+      $set: {
+        payment: data?.payment, amount: data?.amount
+      }
+    });
+    sendResponse(res, 200, true, "Updated successfully", appointment);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

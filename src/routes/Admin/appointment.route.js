@@ -10,7 +10,8 @@ import {
   getAppointmentByPhone,
   searchAllAppointments,
   updateAppointment,
-  updateAppointmentById
+  updateAppointmentById,
+  updateAppointmentsPaymentStatusById
 } from "../../controllers/Admin/appointment.controller.js";
 
 
@@ -22,6 +23,7 @@ appointmentRouter.get('/phone/:phone', getAppointmentByPhone)
 appointmentRouter.get('/:caseNo', getAppointment)
 appointmentRouter.put('/:caseNo', updateAppointment)
 appointmentRouter.delete('/:caseNo', deleteAppointment)
+appointmentRouter.patch('/:id', updateAppointmentsPaymentStatusById)
 
 // search all appointments 
 appointmentRouter.get('/', searchAllAppointments)
