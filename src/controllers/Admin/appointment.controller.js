@@ -24,8 +24,9 @@ export const createAppointment = async (req, res) => {
       const description = `${departmentInfo?.name} department has new appointment.`;
       const department = req?.body?.department;
       const type = "receptionist";
+      const destinationUrl = `/appointment/${result?.caseNo}`
 
-      const notify = await createNotification(title, description, department, type);
+      const notify = await createNotification(title, description, department, type, destinationUrl);
       // console.log({ notify })
     }
 

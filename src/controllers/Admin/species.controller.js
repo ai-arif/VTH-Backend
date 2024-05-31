@@ -14,8 +14,9 @@ export const createSpecies = async (req, res) => {
             const description = `'${result?.name}' has been as new species`;
             const department = null;
             const type = "admin";
+            const destinationUrl = `/species-complaints/species`
 
-            const notify = await createNotification(title, description, department, type);
+            const notify = await createNotification(title, description, department, type, destinationUrl);
             // console.log({ notify })
         }
 
@@ -79,8 +80,9 @@ export const deleteSpecies = async (req, res) => {
             const description = `'${species?.name}' has been from species list.`;
             const department = null;
             const type = "admin";
+            const destinationUrl = `/species-complaints/species`
 
-            const notify = await createNotification(title, description, department, type);
+            const notify = await createNotification(title, description, department, type, destinationUrl);
             // console.log({ notify })
         }
 

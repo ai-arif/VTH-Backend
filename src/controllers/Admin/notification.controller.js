@@ -5,9 +5,9 @@ import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import sendResponse from "../../utils/sendResponse.js";
 
 // just create a function to create notification, title, description, department, type will be passed in the body
-export const createNotification = async (title, description, department, type) => {
+export const createNotification = async (title, description, department, type, destinationUrl) => {
     try {
-        const notification = new Notification({ title, description, department, type });
+        const notification = new Notification({ title, description, department, type, destinationUrl });
         return await notification.save();
     }
     catch (error) {

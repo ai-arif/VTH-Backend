@@ -51,8 +51,9 @@ export const addMedicine = async (req, res) => {
       const description = `'${name}' added as a new medicine of brand: '${brandName}' and manufacturer: ${manufacturer}`;
       const department = null;
       const type = "pharmacy";
+      const destinationUrl = `/medicine/${newMed?._id}`
 
-      const notify = await createNotification(title, description, department, type);
+      const notify = await createNotification(title, description, department, type, destinationUrl);
       // console.log({ notify })
     }
 
@@ -158,8 +159,9 @@ export const deleteMedicine = async (req, res) => {
       const description = `Medicine: '${existMedicine?.name}' of brand: '${existMedicine?.brandName}' has been removed`;
       const department = null;
       const type = "pharmacy";
+      const destinationUrl = `/medicine/view`
 
-      const notify = await createNotification(title, description, department, type);
+      const notify = await createNotification(title, description, department, type, destinationUrl);
       // console.log({ notify })
     }
 
