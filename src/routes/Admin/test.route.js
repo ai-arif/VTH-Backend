@@ -28,6 +28,7 @@ import {
   updateParameter,
   updateSubParameter,
   updateTest,
+  updateTestCost,
   updateTestResult
 } from "../../controllers/Admin/clinicaltest.controller.js";
 
@@ -67,6 +68,8 @@ testRouter.get("/test-result", getAllTestResult);
 testRouter.get("/test-result/:id", getTestResult);
 testRouter.put("/test-result/:id", updateTestResult);
 testRouter.delete("/test-result/:id", deleteTestResult);
+//add or update test cost
+testRouter.patch("/test-result/:id", updateTestCost);
 
 
 

@@ -271,7 +271,7 @@ export const GetPrescriptionWhichHasTest = async (req, res) => {
       .populate("appointment")
       .populate("tests")
       .sort({ createdAt: -1 })
-      .select({ appointment: 1, tests: 1, therapeutics: 1, testStatue: 1 });
+      .select({ appointment: 1, tests: 1, therapeutics: 1, testStatue: 1, totalTestCost: 1 });
 
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
       data: prescriptions,
@@ -305,10 +305,26 @@ export const updatePrescriptionTestStatus = async (req, res) => {
       { new: true }
     );
 
+    if (result && req.body.status == 'success') {
+      const r = await Prescription.findById(req.params.id)
+        .populate("appointment");
+
+      const title = `Case no: ${r?.appointment?.caseNo}'s test result.`;
+      const description = `${r?.appointment?.ownerName}'s full test result has been submitted.`;
+      const department = r?.appointment?.department;
+      const type = "doctor-test-result";
+      // const destinationUrl = `/test-result/${result?.prescriptionId}`
+      const destinationUrl = `/incomming-test/${req.params.id}`
+
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
+    }
+
     sendResponse(res, 200, true, "Lab test status updated successfully", {
       data: result,
     });
   } catch (error) {
+    console.log({ error })
     sendResponse(res, 500, false, error.message);
   }
 };

@@ -41,8 +41,13 @@ const prescriptionSchema = new Schema(
       type: Date,
     },
     testStatue: {
-      type: Boolean,
-      default: false,
+      type: String,
+      enum: ["pending", "processing", "success"],
+      default: "pending"
+    },
+    totalTestCost: { // to do 
+      type: Number,
+      default: 0.0
     },
     tests: [
       {

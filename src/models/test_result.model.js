@@ -20,7 +20,7 @@ const testResultSchema = new Schema({
     status: {
         type: Boolean,
         default: false
-    }
+    },
 }, { timestamps: true });
 
 // Create the model
