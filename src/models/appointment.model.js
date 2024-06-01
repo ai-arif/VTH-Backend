@@ -74,9 +74,7 @@ const appointmentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Department',
     },
-    image: {
-      type: String,
-    },
+    images: [String],
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'User'

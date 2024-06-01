@@ -83,7 +83,52 @@ export const getAllNotifications = AsyncHandler(async (req, res) => {
         else {
             notifications = await Notification.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
         }
-        return sendResponse(res, 200, true, "Notifications successfully retrieved", { count: notifications.length, data: notifications });
+
+        // unvisited notification count 
+        let query2 = { isViewed: false };
+        if (department !== null && type !== null) {
+            query2 = {
+                $and: [
+                    { isViewed: false },
+                    {
+                        $or: [
+                            { department },
+                            { type: { $regex: type, $options: "i" } }
+                        ]
+                    }
+                ]
+            };
+
+        }
+        else if (department !== null) {
+            query2 = {
+                $and: [
+                    { isViewed: false },
+                    { department }
+                ]
+            }
+        }
+        else if (type !== null) {
+            query2 = {
+                $and: [
+                    { isViewed: false },
+                    { type: { $regex: type, $options: "i" } }
+                ]
+            }
+
+        }
+
+        let notificationsCount;
+        if (type === 'admin') {
+            notificationsCount = await Notification.countDocuments({ isViewed: false });
+        }
+        else {
+            notificationsCount = await Notification.countDocuments(query2);
+        }
+
+        // console.log({ notificationsCount, notifications: notifications?.length })
+
+        return sendResponse(res, 200, true, "Notifications successfully retrieved", { count: notificationsCount, data: notifications });
     }
     catch (error) {
         console.log({ error })

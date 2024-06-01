@@ -70,6 +70,8 @@ app.use("/api/v1/user-prescription", userPrescriptionRouter);
 //pharmacy routes
 app.use("/api/v1/pharmacy", pharmacyRoute);
 
+// photo 
+
 
 app.get("/", (req, res) => {
   res.json({
