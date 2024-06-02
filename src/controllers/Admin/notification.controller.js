@@ -172,3 +172,13 @@ export const seenNotificationById = async (req, res) => {
     }
 }
 
+export const seenAllNotifications = AsyncHandler(async (req, res) => {
+    try {
+        await Notification.updateMany({ isViewed: false }, { $set: { isViewed: true } }, { new: true });
+        return sendResponse(res, 200, true, "All notifications seen successfully");
+    }
+    catch (error) {
+        return sendResponse(res, 500, false, error.message);
+    }
+});
+

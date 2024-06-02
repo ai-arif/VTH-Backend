@@ -34,6 +34,19 @@ export const Create = async (req, res) => {
         department,
         type
       );
+
+      const title2 = `New Prescription created`;
+      const description2 = `New prescription created by ${appointment?.department?.name} department`;
+      const department2 = appointment?.department?._id;
+      const type2 = "pharmacy";
+
+      const notify2 = await createNotification(
+        title2,
+        description2,
+        department2,
+        type2
+      );
+
     } else {
       const title = `New Prescription created`;
       const description = `New prescription created by ${appointment?.department?.name} department`;
