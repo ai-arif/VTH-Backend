@@ -465,7 +465,7 @@ export const getTestResult = async (req, res) => {
   try {
     const { id } = req.params;
     // console.log({ id })
-    const result = await TestResult.find({ appointmentId: id });
+    const result = await TestResult.find({ appointmentId: id }).populate("appointmentId");
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
     });
