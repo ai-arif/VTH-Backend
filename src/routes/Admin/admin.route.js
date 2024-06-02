@@ -9,7 +9,7 @@ import {
   getProfile,
   getUserByPhone,
   login,
-  searchAllAppointments,
+  searchAllStaffs,
   updateAdmin,
 } from "../../controllers/Admin/admin.controller.js";
 
@@ -30,6 +30,6 @@ router.put("/update-admin/:id", updateAdmin);
 router.delete("/delete-admin/:id", deleteAdmin);
 
 // staff search
-router.get("/admins/search", searchAllAppointments);
+router.get("/admins/search", searchAllStaffs);
 
 export default router;

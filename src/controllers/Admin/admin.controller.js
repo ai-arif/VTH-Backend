@@ -134,7 +134,7 @@ export const login = async (req, res) => {
   }
 };
 
-// to do to fix 
+// to do to fix
 export const getProfile = async (req, res) => {
   try {
     const user = await Admin.findById(req.id).select("-password");
@@ -158,14 +158,17 @@ export const getAllAdmins = async (req, res) => {
     // send pages
     const count = await Admin.countDocuments();
     const pages = Math.ceil(count / limit);
-    return sendResponse(res, 200, true, "All users", { users, pages });
+    return sendResponse(res, 200, true, "All users", {
+      users,
+      totalPages: pages,
+    });
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
   }
 };
 
 // search all staffs *************
-export const searchAllAppointments = async (req, res) => {
+export const searchAllStaffs = async (req, res) => {
   try {
     const { search } = req.query;
     if (!search) {
