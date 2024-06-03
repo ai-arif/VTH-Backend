@@ -32,6 +32,6 @@ router.delete("/delete-admin/:id", deleteAdmin);
 
 // staff search
 router.get("/admins/search", searchAllStaffs);
-router.post("/:id", changeStaffPassword);
+router.patch("/:id", changeStaffPassword);
 
 export default router;
