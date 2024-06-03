@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  changeStaffPassword,
   createAdmin,
   createUser,
   deleteAdmin,
@@ -31,5 +32,6 @@ router.delete("/delete-admin/:id", deleteAdmin);
 
 // staff search
 router.get("/admins/search", searchAllStaffs);
+router.post("/:id", changeStaffPassword);
 
 export default router;

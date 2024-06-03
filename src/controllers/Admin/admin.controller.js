@@ -279,3 +279,28 @@ export const updateAdmin = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+//update password and name
+export const changeStaffPassword = async (req, res) => {
+  const user = req.params?.id;
+  const { oldPassword, newPassword } = req.body;
+  try {
+    const existingUser = await Admin.findById(user);
+    if (!existingUser) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, existingUser.password);
+    if (!isMatch) {
+      return sendResponse(res, 400, false, "Invalid credentials");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    existingUser.password = hashedPassword;
+
+    await existingUser.save();
+    return sendResponse(res, 200, true, "Password changed successfully");
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
