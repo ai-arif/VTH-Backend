@@ -73,6 +73,10 @@ export const Create = async (req, res) => {
 
 // Read All Prescriptions
 export const Find = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
   try {
     const prescriptions = await Prescription.find().populate({
       path: "appointment",
@@ -80,9 +84,14 @@ export const Find = async (req, res) => {
         path: "department",
         model: "Department",
       },
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+    const totalCount = await Prescription.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
+
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
-      data: prescriptions,
+      data: prescriptions, totalPages, totalDocuments: totalCount
     });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -143,11 +152,17 @@ export const Deleteby = async (req, res) => {
 // Search Prescription by caseNo
 export const Search = async (req, res) => {
   const caseNo = req.query.caseNo;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
   if (!caseNo) return sendResponse(res, 400, false, "Please provide case no");
 
   try {
-    const prescription = await Prescription.find({ caseNo }).sort({ createdAt: -1 });
+    const prescription = await Prescription.find({ caseNo }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const count = await Prescription.countDocuments({ caseNo });
+    const totalPages = count / limit;
+
     if (prescription.length === 0) {
       return sendResponse(
         res,
@@ -157,7 +172,7 @@ export const Search = async (req, res) => {
       );
     }
     sendResponse(res, 200, true, "Prescription fetched successfully", {
-      data: prescription,
+      data: prescription, totalPages: totalPages, totalDocuments: count
     });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -279,15 +294,23 @@ export const SearchBy = async (req, res) => {
 // prescription for lab test
 
 export const GetPrescriptionWhichHasTest = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
   try {
     const prescriptions = await Prescription.find({ tests: { $ne: [] } })
       .populate("appointment")
       .populate("tests")
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .select({ appointment: 1, tests: 1, therapeutics: 1, testStatue: 1, totalTestCost: 1 });
 
+    const totalCount = await Prescription.countDocuments({ tests: { $ne: [] } });
+    const totalPages = totalCount / limit;
+
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
-      data: prescriptions,
+      data: prescriptions, totalPages: totalPages, totalDocuments: totalCount
     });
   } catch (error) {
     console.log({ error });
