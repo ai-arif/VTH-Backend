@@ -27,24 +27,28 @@ export const Create = async (req, res) => {
       const description = `'${testString}' has been assigned by ${appointment?.department?.name} department`;
       const department = appointment?.department?._id;
       const type = "lab";
+      const destinationUrl = `/incomming-test`
 
       const notify = await createNotification(
         title,
         description,
         department,
-        type
+        type,
+        destinationUrl
       );
 
       const title2 = `New Prescription created`;
       const description2 = `New prescription created by ${appointment?.department?.name} department`;
       const department2 = appointment?.department?._id;
       const type2 = "pharmacy";
+      const destinationUrl2 = `/prescription/view`
 
       const notify2 = await createNotification(
         title2,
         description2,
         department2,
-        type2
+        type2,
+        destinationUrl2
       );
 
     } else {
@@ -52,12 +56,14 @@ export const Create = async (req, res) => {
       const description = `New prescription created by ${appointment?.department?.name} department`;
       const department = appointment?.department?._id;
       const type = "lab-pharmacy";
+      const destinationUrl = `/prescription/view`
 
       const notify = await createNotification(
         title,
         description,
         department,
-        type
+        type,
+        destinationUrl
       );
       // console.log({ notify })
     }
