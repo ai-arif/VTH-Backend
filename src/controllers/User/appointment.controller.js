@@ -26,12 +26,30 @@ export const createAppointment = async (req, res) => {
       images = await Promise.all(uploadPromises);
     }
 
-    const appointment = new Appointment({
-      ...req.body,
-      caseNo,
-      owner,
-      images,
-    });
+    const isOldPatient = await Appointment.findOne({ phone: req?.params?.phone });
+
+    let appointment;
+
+    if (isOldPatient) {
+      appointment = new Appointment({
+        ...req.body,
+        patientType: "old",
+        caseNo,
+        owner,
+        images,
+      });
+    }
+    else {
+      appointment = new Appointment({
+        ...req.body,
+        patientType: "new",
+        caseNo,
+        owner,
+        images,
+      });
+    }
+
+
 
     const result = await appointment.save();
     // console.log({ result })
