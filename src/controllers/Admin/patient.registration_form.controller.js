@@ -1,5 +1,8 @@
+import Appointment from "../../models/appointment.model.js";
+import ClinicalTest from "../../models/clinicaltest.model.js";
 import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import { createNotification } from "./notification.controller.js";
 
 export const createPatientRegistrationForm = async (req, res) => {
   try {
@@ -95,6 +98,60 @@ export const createPatientRegistrationForm = async (req, res) => {
     });
 
     await newPatientRegistrationForm.save();
+
+    const AppointmentResult = await Appointment.findById(appointmentId).populate("department").select({ caseNo: 1, department: 1 });
+
+    const testsResult = await ClinicalTest.find({ _id: { $in: req.body?.tests } });
+
+    const testString = testsResult?.map((t) => t?.testName).join(", ") || "";
+
+    if (testString) {
+      const title = `New Test Assigned`;
+      const description = `'${testString}' has been assigned to a new registered patient. Case no: ${AppointmentResult?.caseNo}`;
+      const department = AppointmentResult?.department;
+      const type = "lab";
+      const destinationUrl = `/incomming-test`
+
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
+
+      const title2 = `New patient registered`;
+      const description2 = `New patient registered to ${AppointmentResult?.department?.name} department`;
+      const department2 = AppointmentResult?.department;
+      const type2 = "admin-doctor";
+      const destinationUrl2 = `/patient-registration/view`
+
+      const notify2 = await createNotification(
+        title2,
+        description2,
+        department2,
+        type2,
+        destinationUrl2
+      );
+
+    } else {
+      const title2 = `New patient registered`;
+      const description2 = `New patient registered to ${AppointmentResult?.department?.name} department`;
+      const department2 = AppointmentResult?.department;
+      const type2 = "admin-doctor";
+      const destinationUrl2 = `/patient-registration/view`
+
+      const notify2 = await createNotification(
+        title2,
+        description2,
+        department2,
+        type2,
+        destinationUrl2
+      );
+      // console.log({ notify })
+    }
+
+
     return sendResponse(
       res,
       201,
@@ -103,6 +160,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       newPatientRegistrationForm
     );
   } catch (error) {
+    console.log({ error })
     return sendResponse(res, 500, false, error.message);
   }
 };
