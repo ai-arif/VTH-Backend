@@ -25,9 +25,15 @@ export const addTest = async (req, res) => {
       const department = null;
       const type = "lab";
 
-      const destinationUrl = `/tests`
+      const destinationUrl = `/tests`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -39,8 +45,8 @@ export const addTest = async (req, res) => {
 };
 
 export const getTest = async (req, res) => {
-  const page = parseInt(req.query.currentPage) || 1;
-  const limit = parseInt(req.query.limit) || "";
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 15;
   const sort = -1;
   try {
     const totalTest = await ClinicalTest.countDocuments();
@@ -92,9 +98,15 @@ export const deleteTest = async (req, res) => {
       const description = `Test: '${existTest?.testName}' has been removed`;
       const department = null;
       const type = "lab";
-      const destinationUrl = `/tests`
+      const destinationUrl = `/tests`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -151,7 +163,9 @@ export const AddParameter = async (req, res) => {
 export const getParameter = async (req, res) => {
   try {
     const { id } = req.params;
-    const parameters = await TestParameter.find({ test: id }).sort({ createdAt: -1 });
+    const parameters = await TestParameter.find({ test: id }).sort({
+      createdAt: -1,
+    });
     sendResponse(res, 200, true, "Successfully fetched parameter", {
       data: parameters,
     });
@@ -186,11 +200,14 @@ export const updateParameter = async (req, res) => {
     const { id } = req.params;
     const { name } = req.body;
 
-    await TestParameter.updateOne({ _id: id }, {
-      $set: {
-        name: name
+    await TestParameter.updateOne(
+      { _id: id },
+      {
+        $set: {
+          name: name,
+        },
       }
-    });
+    );
     sendResponse(res, 200, true, "Successfully updated parameter");
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -204,7 +221,7 @@ export const AddSubParameter = async (req, res) => {
     // console.log(req.body);
     //update by ak
     const newSubParameter = new TestSubParameter({
-      ...req.body
+      ...req.body,
     });
     // const newSubParameter = new TestSubParameter({
     //   sub_parameter_type,
@@ -221,7 +238,9 @@ export const AddSubParameter = async (req, res) => {
 
 export const getAllSubParameter = async (req, res) => {
   try {
-    const sub_parameters = await TestSubParameter.find().sort({ createdAt: -1 });
+    const sub_parameters = await TestSubParameter.find().sort({
+      createdAt: -1,
+    });
     sendResponse(res, 200, true, "Successfully fetched sub parameter", {
       data: sub_parameters,
     });
@@ -257,11 +276,14 @@ export const updateSubParameter = async (req, res) => {
   const { name } = req.body;
 
   try {
-    await TestSubParameter.updateOne({ _id: id }, {
-      $set: {
-        title: name
+    await TestSubParameter.updateOne(
+      { _id: id },
+      {
+        $set: {
+          title: name,
+        },
       }
-    });
+    );
 
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
@@ -269,12 +291,12 @@ export const updateSubParameter = async (req, res) => {
   }
 };
 
-// Additional Field 
+// Additional Field
 export const AddAdditionalField = async (req, res) => {
   try {
     const data = req.body;
     const newAdditionalField = new TestAdditionalField({
-      ...req.body
+      ...req.body,
     });
 
     await newAdditionalField.save();
@@ -286,7 +308,9 @@ export const AddAdditionalField = async (req, res) => {
 
 export const getAllAdditionalField = async (req, res) => {
   try {
-    const test_additional_field = await TestAdditionalField.find().sort({ createdAt: -1 });
+    const test_additional_field = await TestAdditionalField.find().sort({
+      createdAt: -1,
+    });
     sendResponse(res, 200, true, "Successfully fetched all additional field", {
       data: test_additional_field,
     });
@@ -298,7 +322,9 @@ export const getAllAdditionalField = async (req, res) => {
 export const getAdditionalField = async (req, res) => {
   try {
     const { id } = req.params;
-    const test_additional_field = await TestAdditionalField.find({ sub_test_parameter: id });
+    const test_additional_field = await TestAdditionalField.find({
+      sub_test_parameter: id,
+    });
     sendResponse(res, 200, true, "Successfully fetched additional field", {
       data: test_additional_field,
     });
@@ -322,11 +348,14 @@ export const updateAdditionalField = async (req, res) => {
   const { name } = req.body;
 
   try {
-    await TestAdditionalField.updateOne({ _id: id }, {
-      $set: {
-        additionalFieldTitle: name
+    await TestAdditionalField.updateOne(
+      { _id: id },
+      {
+        $set: {
+          additionalFieldTitle: name,
+        },
       }
-    });
+    );
 
     sendResponse(res, 200, true, "Successfully updated sub parameter");
   } catch (error) {
@@ -334,7 +363,7 @@ export const updateAdditionalField = async (req, res) => {
   }
 };
 
-// send all test result 
+// send all test result
 export const fullTestField = async (req, res) => {
   try {
     const { id } = req.params;
@@ -342,43 +371,54 @@ export const fullTestField = async (req, res) => {
     // Fetch the main clinical test data
     const testData = await ClinicalTest.findById(id);
     if (!testData) {
-      return sendResponse(res, 404, false, 'Clinical Test not found');
+      return sendResponse(res, 404, false, "Clinical Test not found");
     }
 
     // Fetch associated test parameters
     const testParams = await TestParameter.find({ test: testData._id });
     const data = {
       ...testData._doc,
-      testParams: await Promise.all(testParams.map(async (testParam) => {
-        // Fetch sub parameters for each test parameter
-        const subTestParams = await TestSubParameter.find({ test_parameter: testParam._id });
+      testParams: await Promise.all(
+        testParams.map(async (testParam) => {
+          // Fetch sub parameters for each test parameter
+          const subTestParams = await TestSubParameter.find({
+            test_parameter: testParam._id,
+          });
 
-        // Fetch additional fields for each subTestParam
-        const subTestParamsWithAdditionalFields = await Promise.all(subTestParams.map(async (subTestParam) => {
-          const additionalFields = await TestAdditionalField.find({ sub_test_parameter: subTestParam._id });
-          return { ...subTestParam._doc, additionalFields };
-        }));
+          // Fetch additional fields for each subTestParam
+          const subTestParamsWithAdditionalFields = await Promise.all(
+            subTestParams.map(async (subTestParam) => {
+              const additionalFields = await TestAdditionalField.find({
+                sub_test_parameter: subTestParam._id,
+              });
+              return { ...subTestParam._doc, additionalFields };
+            })
+          );
 
-        return { ...testParam._doc, subTestParams: subTestParamsWithAdditionalFields };
-      }))
+          return {
+            ...testParam._doc,
+            subTestParams: subTestParamsWithAdditionalFields,
+          };
+        })
+      ),
     };
 
     // Send the enriched data
     sendResponse(res, 200, true, "Successfully fetched additional field", data);
   } catch (error) {
-    console.error('Error fetching clinical test data:', error);
+    console.error("Error fetching clinical test data:", error);
     sendResponse(res, 500, false, error.message);
   }
-}
+};
 
-// test result 
+// test result
 export const AddTestResult = async (req, res) => {
   try {
     const data = req.body;
     const newTestResult = new TestResult(data);
     const result = await newTestResult.save();
 
-    // sending notification 
+    // sending notification
     // if (result) {
     //   const r = await TestResult.findById(result?._id)
     //     .populate("appointmentId")
@@ -397,47 +437,50 @@ export const AddTestResult = async (req, res) => {
 
     sendResponse(res, 200, true, "Successfully added test result");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     sendResponse(res, 500, false, error.message);
   }
 };
 
-// add / update test total const 
+// add / update test total const
 export const updateTestCost = async (req, res) => {
-
   try {
     const { id } = req.params;
     const data = req.body;
 
-    const updatedData = await Prescription.findByIdAndUpdate(id, {
-      $set: { totalTestCost: data?.amount }
-    }, { new: true });
+    const updatedData = await Prescription.findByIdAndUpdate(
+      id,
+      {
+        $set: { totalTestCost: data?.amount },
+      },
+      { new: true }
+    );
 
     sendResponse(res, 200, true, "Successfully updated test result");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     sendResponse(res, 500, false, error.message);
   }
-}
+};
 
-// update test result 
+// update test result
 export const updateTestResult = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
 
     const updatedData = await TestResult.findByIdAndUpdate(id, {
-      $set: { data: data }
-    })
+      $set: { data: data },
+    });
 
     sendResponse(res, 200, true, "Successfully updated test result");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     sendResponse(res, 500, false, error.message);
   }
 };
 
-// delete test result 
+// delete test result
 export const deleteTestResult = async (req, res) => {
   try {
     const { id } = req.params;
@@ -445,7 +488,7 @@ export const deleteTestResult = async (req, res) => {
     await TestResult.findByIdAndDelete(id);
     sendResponse(res, 200, true, "Deleted successfully!");
   } catch (error) {
-    console.log(error)
+    console.log(error);
     sendResponse(res, 500, false, error.message);
   }
 };
@@ -465,7 +508,9 @@ export const getTestResult = async (req, res) => {
   try {
     const { id } = req.params;
     // console.log({ id })
-    const result = await TestResult.find({ appointmentId: id }).populate("appointmentId");
+    const result = await TestResult.find({ appointmentId: id }).populate(
+      "appointmentId"
+    );
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
     });
@@ -473,7 +518,6 @@ export const getTestResult = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
-
 
 //APPOINTMENT TEST
 export const AddAppointmentTest = async (req, res) => {
@@ -483,8 +527,8 @@ export const AddAppointmentTest = async (req, res) => {
     const existTest = await AppointmentTest.findOne({ caseNo });
 
     if (existTest) {
-      let result = [...existTest.test]
-      result.push(test)
+      let result = [...existTest.test];
+      result.push(test);
       await AppointmentTest.updateOne({ caseNo }, { test: result });
     } else {
       const newAppointmentTest = new AppointmentTest({ caseNo, test });
