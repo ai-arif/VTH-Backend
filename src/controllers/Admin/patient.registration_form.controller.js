@@ -99,9 +99,13 @@ export const createPatientRegistrationForm = async (req, res) => {
 
     await newPatientRegistrationForm.save();
 
-    const AppointmentResult = await Appointment.findById(appointmentId).populate("department").select({ caseNo: 1, department: 1 });
+    const AppointmentResult = await Appointment.findById(appointmentId)
+      .populate("department")
+      .select({ caseNo: 1, department: 1 });
 
-    const testsResult = await ClinicalTest.find({ _id: { $in: req.body?.tests } });
+    const testsResult = await ClinicalTest.find({
+      _id: { $in: req.body?.tests },
+    });
 
     const testString = testsResult?.map((t) => t?.testName).join(", ") || "";
 
@@ -110,7 +114,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       const description = `'${testString}' has been assigned to a new registered patient. Case no: ${AppointmentResult?.caseNo}`;
       const department = AppointmentResult?.department;
       const type = "lab";
-      const destinationUrl = `/incomming-test`
+      const destinationUrl = `/incomming-test`;
 
       const notify = await createNotification(
         title,
@@ -124,7 +128,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       const description2 = `New patient registered to ${AppointmentResult?.department?.name} department`;
       const department2 = AppointmentResult?.department;
       const type2 = "admin-doctor";
-      const destinationUrl2 = `/patient-registration/view`
+      const destinationUrl2 = `/patient-registration/view`;
 
       const notify2 = await createNotification(
         title2,
@@ -133,13 +137,12 @@ export const createPatientRegistrationForm = async (req, res) => {
         type2,
         destinationUrl2
       );
-
     } else {
       const title2 = `New patient registered`;
       const description2 = `New patient registered to ${AppointmentResult?.department?.name} department`;
       const department2 = AppointmentResult?.department;
       const type2 = "admin-doctor";
-      const destinationUrl2 = `/patient-registration/view`
+      const destinationUrl2 = `/patient-registration/view`;
 
       const notify2 = await createNotification(
         title2,
@@ -151,7 +154,6 @@ export const createPatientRegistrationForm = async (req, res) => {
       // console.log({ notify })
     }
 
-
     return sendResponse(
       res,
       201,
@@ -160,7 +162,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       newPatientRegistrationForm
     );
   } catch (error) {
-    console.log({ error })
+    console.log({ error });
     return sendResponse(res, 500, false, error.message);
   }
 };
@@ -253,18 +255,21 @@ export const getAllPatientRegistrationForms = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const patientRegistrationForms = await PatientRegistrationForm.find().sort({ createdAt: -1 })
+    const patientRegistrationForms = await PatientRegistrationForm.find()
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("appointmentId");
-    const total = await PatientRegistrationForm.countDocuments();
+
+    const totalCount = await PatientRegistrationForm.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
 
     return sendResponse(
       res,
       200,
       true,
       "Patient registration forms retrieved successfully",
-      { data: patientRegistrationForms, total }
+      { data: patientRegistrationForms, totalPages }
     );
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
@@ -311,7 +316,8 @@ export const searchPatientRegistrationForms = async (req, res) => {
           $or: condition,
         },
       },
-    ]).sort({ createdAt: -1 })
+    ])
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -332,14 +338,14 @@ export const searchPatientRegistrationForms = async (req, res) => {
       },
     ]).count("total");
 
-    let totalPage = total.length > 0 ? Math.ceil(total[0].total / limit) : 0;
+    let totalPages = total.length > 0 ? Math.ceil(total[0].total / limit) : 0;
 
     return sendResponse(
       res,
       200,
       true,
       "Patient registration forms retrieved successfully",
-      { data: patientRegistrationForms, totalPage }
+      { data: patientRegistrationForms, totalPages }
     );
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
