@@ -27,7 +27,7 @@ export const Create = async (req, res) => {
       const description = `'${testString}' has been assigned by ${appointment?.department?.name} department`;
       const department = appointment?.department?._id;
       const type = "lab";
-      const destinationUrl = `/incomming-test`
+      const destinationUrl = `/incomming-test`;
 
       const notify = await createNotification(
         title,
@@ -41,7 +41,7 @@ export const Create = async (req, res) => {
       const description2 = `New prescription created by ${appointment?.department?.name} department`;
       const department2 = appointment?.department?._id;
       const type2 = "pharmacy";
-      const destinationUrl2 = `/prescription/view`
+      const destinationUrl2 = `/prescription/view`;
 
       const notify2 = await createNotification(
         title2,
@@ -50,13 +50,12 @@ export const Create = async (req, res) => {
         type2,
         destinationUrl2
       );
-
     } else {
       const title = `New Prescription created`;
       const description = `New prescription created by ${appointment?.department?.name} department`;
       const department = appointment?.department?._id;
       const type = "lab-pharmacy";
-      const destinationUrl = `/prescription/view`
+      const destinationUrl = `/prescription/view`;
 
       const notify = await createNotification(
         title,
@@ -84,20 +83,25 @@ export const Find = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const prescriptions = await Prescription.find().populate({
-      path: "appointment",
-      populate: {
-        path: "department",
-        model: "Department",
-      },
-    }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const prescriptions = await Prescription.find()
+      .populate({
+        path: "appointment",
+        populate: {
+          path: "department",
+          model: "Department",
+        },
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     const totalCount = await Prescription.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
 
-
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
-      data: prescriptions, totalPages, totalDocuments: totalCount
+      data: prescriptions,
+      totalPages,
+      totalDocuments: totalCount,
     });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -165,7 +169,10 @@ export const Search = async (req, res) => {
   if (!caseNo) return sendResponse(res, 400, false, "Please provide case no");
 
   try {
-    const prescription = await Prescription.find({ caseNo }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const prescription = await Prescription.find({ caseNo })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     const count = await Prescription.countDocuments({ caseNo });
     const totalPages = count / limit;
 
@@ -178,7 +185,9 @@ export const Search = async (req, res) => {
       );
     }
     sendResponse(res, 200, true, "Prescription fetched successfully", {
-      data: prescription, totalPages: totalPages, totalDocuments: count
+      data: prescription,
+      totalPages: totalPages,
+      totalDocuments: count,
     });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
@@ -274,7 +283,7 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
-        $sort: { createdAt: -1 }
+        $sort: { createdAt: -1 },
       },
       {
         $skip: skip,
@@ -310,13 +319,23 @@ export const GetPrescriptionWhichHasTest = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select({ appointment: 1, tests: 1, therapeutics: 1, testStatue: 1, totalTestCost: 1 });
+      .select({
+        appointment: 1,
+        tests: 1,
+        therapeutics: 1,
+        testStatue: 1,
+        totalTestCost: 1,
+      });
 
-    const totalCount = await Prescription.countDocuments({ tests: { $ne: [] } });
+    const totalCount = await Prescription.countDocuments({
+      tests: { $ne: [] },
+    });
     const totalPages = totalCount / limit;
 
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
-      data: prescriptions, totalPages: totalPages, totalDocuments: totalCount
+      data: prescriptions,
+      totalPages: totalPages,
+      totalDocuments: totalCount,
     });
   } catch (error) {
     console.log({ error });
@@ -347,18 +366,25 @@ export const updatePrescriptionTestStatus = async (req, res) => {
       { new: true }
     );
 
-    if (result && req.body.status == 'success') {
-      const r = await Prescription.findById(req.params.id)
-        .populate("appointment");
+    if (result && req.body.status == "success") {
+      const r = await Prescription.findById(req.params.id).populate(
+        "appointment"
+      );
 
       const title = `Case no: ${r?.appointment?.caseNo}'s test result.`;
       const description = `${r?.appointment?.ownerName}'s full test result has been submitted.`;
       const department = r?.appointment?.department;
       const type = "doctor-test-result";
       // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${req.params.id}`
+      const destinationUrl = `/prescription/view/${r?.appointment?._id}`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -366,7 +392,7 @@ export const updatePrescriptionTestStatus = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    console.log({ error })
+    console.log({ error });
     sendResponse(res, 500, false, error.message);
   }
 };
