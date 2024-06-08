@@ -45,6 +45,7 @@ export const getSpecies = async (req, res) => {
 
     const totalCount = await Species.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
+
     sendResponse(res, 200, true, "Species fetched successfully", {
       data: species,
       totalPages,

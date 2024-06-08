@@ -1,14 +1,25 @@
 import { Router } from "express";
-import { getComplaintsBySpecies,createComplaint,deleteComplaint,getComplaintById,getComplaints,updateComplaint } from "../../controllers/Admin/complaint.controller.js";
+import {
+  createComplaint,
+  deleteComplaint,
+  getComplaintById,
+  getComplaints,
+  getComplaintsBySpecies,
+  searchComplaints,
+  updateComplaint,
+} from "../../controllers/Admin/complaint.controller.js";
 
 const complaintRouter = Router();
 
-complaintRouter.post('/',createComplaint)
-complaintRouter.get('/',getComplaints)
-complaintRouter.get('/:id',getComplaintById)
-complaintRouter.put('/:id',updateComplaint)
+// search
+complaintRouter.get("/search", searchComplaints);
 
-complaintRouter.delete('/:id',deleteComplaint)
-complaintRouter.get('/species/:speciesId',getComplaintsBySpecies)
+complaintRouter.post("/", createComplaint);
+complaintRouter.get("/", getComplaints);
+complaintRouter.get("/:id", getComplaintById);
+complaintRouter.put("/:id", updateComplaint);
 
-export default complaintRouter
+complaintRouter.delete("/:id", deleteComplaint);
+complaintRouter.get("/species/:speciesId", getComplaintsBySpecies);
+
+export default complaintRouter;
