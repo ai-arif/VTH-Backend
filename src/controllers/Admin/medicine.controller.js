@@ -51,9 +51,15 @@ export const addMedicine = async (req, res) => {
       const description = `'${name}' added as a new medicine of brand: '${brandName}' and manufacturer: ${manufacturer}`;
       const department = null;
       const type = "pharmacy";
-      const destinationUrl = `/medicine/${newMed?._id}`
+      const destinationUrl = `/medicine/${newMed?._id}`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -65,8 +71,8 @@ export const addMedicine = async (req, res) => {
 };
 
 export const getMedicine = async (req, res) => {
-  const page = parseInt(req.query.currentPage) || 1;
-  const limit = parseInt(req.query.limit) || '';
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || "";
   const sort = -1;
 
   try {
@@ -82,7 +88,7 @@ export const getMedicine = async (req, res) => {
     sendResponse(res, 200, true, "Successfully fetched medicines", {
       totalMedicine,
       totalPages,
-      currentPage: page,
+      page,
       data: medicines,
     });
   } catch (error) {
@@ -113,7 +119,8 @@ export const updateMedicine = async (req, res) => {
 
   try {
     const existMedicine = await Medicine.findOne({ _id: id });
-    if (!existMedicine) return sendResponse(res, 404, false, "Did not find the medicine");
+    if (!existMedicine)
+      return sendResponse(res, 404, false, "Did not find the medicine");
 
     await Medicine.updateOne(
       { _id: id },
@@ -148,7 +155,8 @@ export const deleteMedicine = async (req, res) => {
 
   try {
     const existMedicine = await Medicine.findOne({ _id: id });
-    if (!existMedicine) return sendResponse(res, 404, false, "Did not find the medicine");
+    if (!existMedicine)
+      return sendResponse(res, 404, false, "Did not find the medicine");
 
     const result = await Medicine.deleteOne({ _id: id });
 
@@ -159,9 +167,15 @@ export const deleteMedicine = async (req, res) => {
       const description = `Medicine: '${existMedicine?.name}' of brand: '${existMedicine?.brandName}' has been removed`;
       const department = null;
       const type = "pharmacy";
-      const destinationUrl = `/medicine/view`
+      const destinationUrl = `/medicine/view`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -177,9 +191,12 @@ export const getMedicineById = async (req, res) => {
 
   try {
     const medicine = await Medicine.findOne({ _id: id });
-    if (!medicine) return sendResponse(res, 404, false, "Did not find the medicine");
+    if (!medicine)
+      return sendResponse(res, 404, false, "Did not find the medicine");
 
-    sendResponse(res, 200, true, "Successfully fetched medicine", { data: medicine });
+    sendResponse(res, 200, true, "Successfully fetched medicine", {
+      data: medicine,
+    });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
@@ -214,7 +231,7 @@ export const searchMedicine = async (req, res) => {
     sendResponse(res, 200, true, "Successfully fetched medicines", {
       totalMedicine,
       totalPages,
-      currentPage: page,
+      page,
       data: medicines,
     });
   } catch (error) {

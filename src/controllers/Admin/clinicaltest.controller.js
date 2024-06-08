@@ -61,7 +61,7 @@ export const getTest = async (req, res) => {
     sendResponse(res, 200, true, "Successfully fetched clinical tests", {
       totalTest,
       totalPages,
-      currentPage: page,
+      page,
       data: tests,
     });
   } catch (error) {
@@ -139,7 +139,7 @@ export const searchTest = async (req, res) => {
     sendResponse(res, 200, true, "Successfully fetched clinical tests", {
       totalTest,
       totalPages,
-      currentPage: page,
+      page,
       data: tests,
     });
   } catch (error) {
