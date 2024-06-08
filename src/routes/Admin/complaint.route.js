@@ -5,14 +5,10 @@ import {
   getComplaintById,
   getComplaints,
   getComplaintsBySpecies,
-  searchComplaints,
   updateComplaint,
 } from "../../controllers/Admin/complaint.controller.js";
 
 const complaintRouter = Router();
-
-// search
-complaintRouter.get("/search", searchComplaints);
 
 complaintRouter.post("/", createComplaint);
 complaintRouter.get("/", getComplaints);

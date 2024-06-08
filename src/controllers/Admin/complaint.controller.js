@@ -114,37 +114,3 @@ export const getComplaintsBySpecies = async (req, res) => {
     sendResponse(res, 500, error);
   }
 };
-
-export const searchComplaints = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 15;
-  const sort = -1;
-  const search = req.query.search;
-
-  if (!search) {
-    return sendResponse(res, 500, false, "Search params is required!");
-  }
-
-  try {
-    const totalCount = await Complaint.countDocuments({
-      complaint: { $regex: search, $options: "i" },
-    });
-    const totalPages = Math.ceil(totalCount / limit);
-
-    const complaint = await Complaint.find({
-      complaint: { $regex: search, $options: "i" },
-    })
-      .sort({ createdAt: sort })
-      .limit(limit)
-      .skip((page - 1) * limit);
-
-    sendResponse(res, 200, true, "Successfully fetched  complaint", {
-      totalCount,
-      totalPages,
-      page: page,
-      data: complaint,
-    });
-  } catch (error) {
-    sendResponse(res, 500, false, error.message);
-  }
-};

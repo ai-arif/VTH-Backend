@@ -335,6 +335,7 @@ export const GetPrescriptionWhichHasTest = async (req, res) => {
     sendResponse(res, 200, true, "Prescriptions successfully retrieved", {
       data: prescriptions,
       totalPages: totalPages,
+      page,
       totalDocuments: totalCount,
     });
   } catch (error) {
