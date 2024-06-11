@@ -54,7 +54,7 @@ const appointmentSchema = new Schema(
     },
     phone: {
       type: String,
-      required: true
+      required: true,
     },
     status: {
       type: String,
@@ -72,28 +72,34 @@ const appointmentSchema = new Schema(
     },
     department: {
       type: Schema.Types.ObjectId,
-      ref: 'Department',
+      ref: "Department",
     },
     images: [String],
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'User'
+      ref: "User",
     },
     prescription: {
       type: Schema.Types.ObjectId,
-      ref: 'Prescription'
+      ref: "Prescription",
     },
     tests: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Test'
-      }
-    ]
-
+        ref: "Test",
+      },
+    ],
+    species: {
+      type: Schema.Types.ObjectId,
+      ref: "Species",
+    },
+    breed: {
+      type: Schema.Types.ObjectId,
+      ref: "Complaint",
+    },
   },
   { timestamps: true }
 );
-
 
 const Appointment = model("Appointment", appointmentSchema);
 export default Appointment;
