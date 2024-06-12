@@ -4,11 +4,11 @@ const prescriptionSchema = new Schema(
   {
     isDeletedForPharmacy: {
       type: Boolean,
-      default: false
+      default: false,
     },
     takesMedicinesBefore: {
       type: Boolean,
-      default: false
+      default: false,
     },
     caseNo: Number,
     date: {
@@ -43,18 +43,35 @@ const prescriptionSchema = new Schema(
     testStatue: {
       type: String,
       enum: ["pending", "processing", "success"],
-      default: "pending"
+      default: "pending",
     },
-    totalTestCost: { // to do 
+    totalTestCost: {
+      // to do
       type: Number,
-      default: 0.0
+      default: 0.0,
     },
-    tests: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "ClinicalTest",
-      },
-    ],
+    // tests: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "ClinicalTest",
+    //   },
+    // ],
+    preAnestheticUsed: {
+      type: String,
+      required: true,
+    },
+    sutureMaterialsUsed: {
+      type: String,
+      required: true,
+    },
+    typeOfSurgery: {
+      type: String,
+      required: true,
+    },
+    postOperativeCare: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
