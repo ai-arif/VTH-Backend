@@ -4,16 +4,19 @@ import Department from "../../models/department.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
-
-
 export const createAppointment = async (req, res) => {
-
   try {
     const uuid = uuidv4();
     const numericPart = uuid.replace(/-/g, "").replace(/\D/g, "");
     const paddedNumericPart = numericPart.padStart(7, "0");
     const caseNo = paddedNumericPart.slice(0, 7);
-
+    if (!req.body.breed) {
+      delete req.body.breed;
+    }
+    // if req.body.complaint is null or undefined then remove complaint from the request body
+    if (!req.body.complaint) {
+      delete req.body.complaint;
+    }
     const appointment = new Appointment({ ...req.body, caseNo });
     const result = await appointment.save();
 
@@ -24,9 +27,15 @@ export const createAppointment = async (req, res) => {
       const description = `${departmentInfo?.name} department has new appointment.`;
       const department = req?.body?.department;
       const type = "receptionist";
-      const destinationUrl = `/appointment/${result?.caseNo}`
+      const destinationUrl = `/appointment/${result?.caseNo}`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -35,11 +44,10 @@ export const createAppointment = async (req, res) => {
       message: "Successfully created appointment",
     });
   } catch (error) {
-    console.log({ error })
+    console.log({ error });
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 export const getAllApprovedAppointments = async (req, res) => {
   try {
@@ -56,8 +64,10 @@ export const getAllApprovedAppointments = async (req, res) => {
     const count = await Appointment.countDocuments({ status: "approved" });
     const totalPages = Math.ceil(count / limit);
 
-    sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
-
+    sendResponse(res, 200, true, "Showing results", {
+      appointments,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -79,14 +89,14 @@ export const getAllPendingAppointments = async (req, res) => {
     const count = await Appointment.countDocuments({ status: "pending" });
     const totalPages = Math.ceil(count / limit);
 
-    sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
-
+    sendResponse(res, 200, true, "Showing results", {
+      appointments,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
 
 export const getAppointment = async (req, res) => {
   const { caseNo } = req.params;
@@ -103,7 +113,6 @@ export const getAppointment = async (req, res) => {
   }
 };
 
-
 export const updateAppointment = async (req, res) => {
   const { caseNo } = req.params;
   try {
@@ -112,7 +121,13 @@ export const updateAppointment = async (req, res) => {
       return res
         .status(404)
         .json({ success: false, message: "Did not found the appointment" });
-
+    // if breed is not present or empty, then remove it from the request body
+    if (!req.body.breed) {
+      delete req.body.breed;
+    }
+    if (!req.body.complaint) {
+      delete req.body.complaint;
+    }
     await Appointment.updateOne({ caseNo }, { ...req.body });
     res.json({ success: true, message: "Updated successfully" });
   } catch (error) {
@@ -134,7 +149,6 @@ export const updateAppointmentById = async (req, res) => {
   }
 };
 
-
 export const deleteAppointment = async (req, res) => {
   const { caseNo } = req.params;
   try {
@@ -155,26 +169,27 @@ export const deleteAppointment = async (req, res) => {
 export const getAppointmentByPhone = async (req, res) => {
   const { phone } = req.params;
   try {
-    const appointment = await Appointment.find({ phone }).sort({ createdAt: -1 });
+    const appointment = await Appointment.find({ phone }).sort({
+      createdAt: -1,
+    });
     if (!appointment) {
       return sendResponse(res, 404, false, "Did not found the appointment");
     }
     sendResponse(res, 200, true, "Showing result", appointment);
-  }
-  catch (error) {
+  } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
-}
+};
 
-
-// search all "pending", "approved", "rejected" appointments 
+// search all "pending", "approved", "rejected" appointments
 export const searchAllAppointments = async (req, res) => {
   try {
     const { search, status } = req.query;
     if (!search || !status) {
-      return res.status(500).json({ success: false, message: "Status and search query needed!" });
+      return res
+        .status(500)
+        .json({ success: false, message: "Status and search query needed!" });
     }
-
 
     // send with total pages
     const limit = parseInt(req.query.limit) || 15;
@@ -182,10 +197,14 @@ export const searchAllAppointments = async (req, res) => {
     const skip = (page - 1) * limit;
     const sort = -1;
 
-
     const conditions = [
-      { ownerName: { $regex: search.trim().replace(/\s+/g, ' '), $options: "i" } },
-      { phone: { $regex: search.trim().replace(/\s+/g, ' '), $options: "i" } },
+      {
+        ownerName: {
+          $regex: search.trim().replace(/\s+/g, " "),
+          $options: "i",
+        },
+      },
+      { phone: { $regex: search.trim().replace(/\s+/g, " "), $options: "i" } },
     ];
 
     // Add caseNo condition only if search can be parsed as a number
@@ -193,14 +212,13 @@ export const searchAllAppointments = async (req, res) => {
       conditions.push({ caseNo: search });
     }
 
-
     const query = {
       status: status,
-      $or: conditions
+      $or: conditions,
     };
 
-
-    const appointments = await Appointment.find(query).sort({ createdAt: -1 })
+    const appointments = await Appointment.find(query)
+      .sort({ createdAt: -1 })
       .limit(limit)
       .skip(skip)
       .select({ phone: 1, caseNo: 1, ownerName: 1, date: 1 });
@@ -208,14 +226,16 @@ export const searchAllAppointments = async (req, res) => {
     const count = await Appointment.countDocuments(query);
     const totalPages = Math.ceil(count / limit);
 
-    sendResponse(res, 200, true, "Showing results", { appointments, totalPages });
-
+    sendResponse(res, 200, true, "Showing results", {
+      appointments,
+      totalPages,
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// update appointments payment status 
+// update appointments payment status
 export const updateAppointmentsPaymentStatusById = async (req, res) => {
   const { id } = req.params;
   const data = req?.body;
@@ -224,11 +244,15 @@ export const updateAppointmentsPaymentStatusById = async (req, res) => {
     if (!appointment)
       return sendResponse(res, 404, false, "Did not found the appointment");
 
-    await Appointment.updateOne({ _id: id }, {
-      $set: {
-        payment: data?.payment, amount: data?.amount
+    await Appointment.updateOne(
+      { _id: id },
+      {
+        $set: {
+          payment: data?.payment,
+          amount: data?.amount,
+        },
       }
-    });
+    );
     sendResponse(res, 200, true, "Updated successfully", appointment);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
