@@ -2,18 +2,22 @@ import mongoose from "mongoose";
 const { Schema, model, models } = mongoose;
 
 const speciesSchema = new Schema(
-    {
-        name: {
-            type: String,
-            required: true,
-            trim: true,
-        },
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    {
-        timestamps: true,
-    }
+    fee: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
-
 
 const Species = models.Species || model("Species", speciesSchema);
 
