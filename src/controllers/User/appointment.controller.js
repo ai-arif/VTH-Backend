@@ -15,15 +15,38 @@ export const createAppointment = async (req, res) => {
     const caseNo = paddedNumericPart.slice(0, 7);
     let images = [];
     // check if complaint exists
-    if (req.body.complaint_text) {
+    // if req.breed is null then remove breed from the request body
+    if (!req.body.breed) {
+      delete req.body.breed;
+    }
+    // if req.body.complaint is null or undefined then remove complaint from the request body
+    if (!req.body.complaint) {
+      delete req.body.complaint;
+    }
+
+    try {
+      const existingComplaint = await Complaint.findOne({
+        _id: req.body.complaint,
+      });
+    } catch (error) {
       const complaint = await Complaint({
-        complaint: req.body.complaint_text,
+        complaint: req.body.complaint,
         species: req.body.species,
       });
       const newComplaint = await complaint.save();
-      // add the complaint id to the appointment
+
       req.body.complaint = newComplaint._id;
     }
+
+    // if (req.body.complaint_text) {
+    //   const complaint = await Complaint({
+    //     complaint: req.body.complaint_text,
+    //     species: req.body.species,
+    //   });
+    //   const newComplaint = await complaint.save();
+
+    //   req.body.complaint = newComplaint._id;
+    // }
 
     if (!owner) {
       return sendResponse(
