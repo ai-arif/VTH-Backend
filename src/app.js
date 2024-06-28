@@ -8,7 +8,7 @@ const app = express();
 dotenv.config({
   path: "./.env",
 });
-app.use('/uploads', express.static('uploads'));
+app.use("/uploads", express.static("uploads"));
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -16,7 +16,7 @@ app.use(
   })
 );
 
-app.use(cors())
+app.use(cors());
 
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
@@ -27,6 +27,7 @@ app.use(cookieParser());
 import adminRouter from "./routes/Admin/admin.route.js";
 import appointmentRouter from "./routes/Admin/appointment.route.js";
 import complaintRouter from "./routes/Admin/complaint.route.js";
+import breedRouter from "./routes/Admin/breed.route.js";
 import departmentRouter from "./routes/Admin/department.route.js";
 import medicineRouter from "./routes/Admin/medicine.route.js";
 import notificationRouter from "./routes/Admin/notification.route.js";
@@ -44,23 +45,21 @@ import userAppointmentRouter from "./routes/User/appointment.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
 import userRouter from "./routes/User/user.route.js";
 
-
-
 //Declaration of Routes Here
 app.use("/api/v1/overview", overviewRoute);
 app.use("/api/v1/staffs", adminRouter);
 // app.use("/api/v1/staffs", userRouter);
 app.use("/api/v1/admin-user", adminUserRouter);
-app.use('/api/v1/test', testRouter)
-app.use('/api/v1/appointment', appointmentRouter)
-app.use('/api/v1/department', departmentRouter)
-app.use('/api/v1/medicine', medicineRouter)
-app.use('/api/v1/prescription', prescriptionRouter)
-app.use('/api/v1/patient-registration', patientRegistrationRouter)
-app.use('/api/v1/notification', notificationRouter)
-app.use('/api/v1/species', speciesRouter)
-app.use('/api/v1/complaint', complaintRouter)
-
+app.use("/api/v1/test", testRouter);
+app.use("/api/v1/appointment", appointmentRouter);
+app.use("/api/v1/department", departmentRouter);
+app.use("/api/v1/medicine", medicineRouter);
+app.use("/api/v1/prescription", prescriptionRouter);
+app.use("/api/v1/patient-registration", patientRegistrationRouter);
+app.use("/api/v1/notification", notificationRouter);
+app.use("/api/v1/species", speciesRouter);
+app.use("/api/v1/complaint", complaintRouter);
+app.use("/api/v1/breed", breedRouter);
 
 //  user routes
 app.use("/api/v1/users", userRouter);
@@ -70,13 +69,10 @@ app.use("/api/v1/user-prescription", userPrescriptionRouter);
 //pharmacy routes
 app.use("/api/v1/pharmacy", pharmacyRoute);
 
-
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to the API",
   });
 });
 
-
 export { app };
-
