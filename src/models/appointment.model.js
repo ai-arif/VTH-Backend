@@ -96,6 +96,12 @@ const appointmentSchema = new Schema(
     breed: {
       type: Schema.Types.ObjectId,
       ref: "Breed",
+      required: false,
+    },
+    complaint: {
+      type: Schema.Types.ObjectId,
+      ref: "Complaint",
+      required: false,
     },
   },
   { timestamps: true }
