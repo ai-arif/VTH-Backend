@@ -3,7 +3,7 @@ import SSLCommerzPayment from "sslcommerz-lts";
 const store_id = process.env.PAYMENT_STORE_ID;
 const store_passwd = process.env.PAYMENT_STORE_PASSWD;
 //to do
-const is_live = process.env.PAYMENT_IS_LIVE;
+const is_live = false;
 
 import { ObjectId } from "mongodb";
 import Appointment from "../../models/appointment.model.js";
@@ -61,7 +61,8 @@ export const appointmentSSLPayment = async (req, res) => {
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
 
     sslcz.init(data).then((apiResponse) => {
-      // Redirect the user to payment gateway
+      console.log(is_live);
+      console.log(apiResponse);
       let GatewayPageURL = apiResponse.GatewayPageURL;
       return res.send({ url: GatewayPageURL, transId, totalPayment });
     });

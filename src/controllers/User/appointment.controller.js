@@ -116,7 +116,7 @@ export const getAllAppointments = async (req, res) => {
       .skip(skip)
       .sort({ createdAt: sort });
 
-    const count = await Appointment.countDocuments();
+    const count = await Appointment.countDocuments({ owner });
     const totalPages = Math.ceil(count / limit);
 
     sendResponse(res, 200, true, "Showing results", {
