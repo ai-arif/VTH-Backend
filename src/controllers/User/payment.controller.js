@@ -1,20 +1,24 @@
 import SSLCommerzPayment from "sslcommerz-lts";
+import { ObjectId } from "mongodb";
+import Appointment from "../../models/appointment.model.js";
+import { User } from "../../models/user.model.js";
+import Species from "../../models/species.model.js";
+
 // ssl config
 const store_id = process.env.PAYMENT_STORE_ID;
 const store_passwd = process.env.PAYMENT_STORE_PASSWD;
 //to do
 const is_live = process.env.PAYMENT_IS_LIVE == "no" ? false : true;
 
-import { ObjectId } from "mongodb";
-import Appointment from "../../models/appointment.model.js";
-import { User } from "../../models/user.model.js";
-
 export const appointmentSSLPayment = async (req, res) => {
   const formData = req.body;
   const id = req.params?.id;
 
   try {
-    const appointmentData = await Appointment.findById(id).select("phone");
+    const appointmentData = await Appointment.findById(id)
+      .select("phone")
+      .populate("species");
+
     const userData = await User.findOne({
       phone: appointmentData?.phone,
     }).select("-password");
@@ -24,7 +28,7 @@ export const appointmentSSLPayment = async (req, res) => {
     const transId = new ObjectId().toString();
 
     //to do
-    let totalPayment = process.env.APPOINTMENT_PRICE;
+    let totalPayment = appointmentData?.species?.fee;
 
     const data = {
       total_amount: totalPayment,
