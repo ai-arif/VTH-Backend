@@ -254,6 +254,7 @@ export const updateAdmin = async (req, res) => {
     const { fullName, password, phone, role } = req.body;
     const id = req.params.id;
     const admin = await Admin.findById(id);
+
     if (!admin) {
       return sendResponse(res, 404, false, "Admin not found");
     }
@@ -267,7 +268,16 @@ export const updateAdmin = async (req, res) => {
       admin.role = role;
     }
     if (password) {
-      admin.password = await bcrypt.hash(password, 10);
+      if (admin?._id == req.id || req.role == "admin") {
+        admin.password = await bcrypt.hash(password, 10);
+      } else {
+        return sendResponse(
+          res,
+          500,
+          false,
+          "You can't change password of others"
+        );
+      }
     }
     await admin.save();
     return sendResponse(res, 200, true, "Admin updated successfully", {

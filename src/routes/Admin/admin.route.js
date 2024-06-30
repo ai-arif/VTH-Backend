@@ -22,12 +22,12 @@ router.get("/admins", getAllAdmins);
 router.get("/:id", getLoginStaffOrAdmin);
 
 router.post("/create-admin", createAdmin);
-router.post("/create-staff", createUser);
+router.post("/create-staff", verifyAdminToken, createUser);
 router.post("/login", login);
 router.get("/", verifyAdminToken, getProfile);
 router.get("/user/:phone", getUserByPhone);
 router.get("/users", getAllUsers);
-router.put("/update-admin/:id", updateAdmin);
+router.put("/update-admin/:id", verifyAdminToken, updateAdmin);
 router.delete("/delete-admin/:id", deleteAdmin);
 
 // staff search

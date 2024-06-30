@@ -32,15 +32,17 @@ export const appointmentSSLPayment = async (req, res) => {
 
     const data = {
       total_amount: totalPayment,
+      
       currency: "BDT",
-      tran_id: transId, // use unique tran_id for each api call
+      tran_id: transId,
       success_url: `${process.env.APP_URL}/api/v1/user-appointment/payment/success/${id}?amount=${totalPayment}`,
       fail_url: `${process.env.APP_URL}/api/v1/user-appointment/payment/fail/${id}`,
       cancel_url: `${process.env.APP_URL}/api/v1/user-appointment/payment/fail/${id}}`,
-      ipn_url: "http://localhost:3030/ipn",
+      ipn_url: `${process.env.APP_URL}/ipn`,
       product_name: "Appointment fees",
       product_category: "Services",
       product_profile: "non-physical-goods",
+      emi_option: 0,
       cus_name: fullName,
       cus_email: "example@test.com",
       cus_add1: address,
@@ -50,7 +52,6 @@ export const appointmentSSLPayment = async (req, res) => {
       cus_phone: phone,
       ship_name: fullName,
       ship_country: "Bangladesh",
-
       shipping_method: "Courier",
       cus_state: "Mymensingh",
       cus_postcode: "2202",
@@ -65,8 +66,10 @@ export const appointmentSSLPayment = async (req, res) => {
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
 
     sslcz.init(data).then((apiResponse) => {
-      //   console.log(is_live);
-      //   console.log(apiResponse);
+      console.log("store_id", store_id);
+      console.log("store_pass", store_passwd);
+      console.log("is_live", is_live);
+      console.log(apiResponse);
       let GatewayPageURL = apiResponse.GatewayPageURL;
       return res.send({ url: GatewayPageURL, transId, totalPayment });
     });
