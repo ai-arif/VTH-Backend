@@ -28,9 +28,7 @@ const prescriptionSchema = new Schema(
     diagnosis: {
       type: String,
     },
-    therapeutics: {
-      type: String,
-    },
+    therapeutics: [],
     prognosis: {
       type: String,
     },
