@@ -14,7 +14,6 @@ const contentSchema = new Schema(
     video: {
       type: String,
     },
-
     image: {
       type: String,
     },
