@@ -36,6 +36,7 @@ import prescriptionRouter from "./routes/Admin/prescription.route.js";
 import speciesRouter from "./routes/Admin/species.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
+import medicineParamRouter from "./routes/Admin/medicine_params.route.js";
 
 // user routes
 
@@ -60,6 +61,7 @@ app.use("/api/v1/notification", notificationRouter);
 app.use("/api/v1/species", speciesRouter);
 app.use("/api/v1/complaint", complaintRouter);
 app.use("/api/v1/breed", breedRouter);
+app.use("/api/v1/medicine-params", medicineParamRouter);
 
 //  user routes
 app.use("/api/v1/users", userRouter);
