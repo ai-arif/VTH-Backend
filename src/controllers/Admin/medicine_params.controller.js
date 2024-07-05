@@ -26,13 +26,32 @@ export const createMedicineParams = AsyncHandler(async (req, res) => {
 // use proper paginatin query param limit, page
 export const getMedicineParams = AsyncHandler(async (req, res) => {
   try {
-    const medicineParams = await MedicineParams.find();
+    // const medicineParams = await MedicineParams.find();
+    // i want to get group by param_category
+    const medicineParams = await MedicineParams.aggregate([
+      {
+        $group: {
+          _id: "$param_category",
+          params: {
+            $push: {
+              id: "$_id",
+              param_name: "$param_name",
+            },
+          },
+        },
+      },
+    ]);
+
+    const transformedData = medicineParams.reduce((acc, current) => {
+      acc[current._id] = current.params;
+      return acc;
+    }, {});
     return sendResponse(
       res,
       200,
       true,
       "Medicine Params fetched successfully",
-      medicineParams
+      transformedData
     );
   } catch (error) {
     return sendResponse(res, 500, false, error.message);

@@ -6,6 +6,7 @@ const medicineParamsSchema = new Schema(
     param_category: {
       type: String,
       required: true,
+      enum: ["first", "second", "third"],
     },
     param_name: {
       type: String,

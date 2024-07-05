@@ -10,10 +10,10 @@ import {
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
 const medicineParamRouter = Router();
 
-medicineParamRouter.post("/", verifyAdminToken, createMedicineParams);
-medicineParamRouter.get("/", verifyAdminToken, getMedicineParams);
-medicineParamRouter.get("/:id", verifyAdminToken, getMedicineParam);
-medicineParamRouter.put("/:id", verifyAdminToken, updateMedicineParam);
-medicineParamRouter.delete("/:id", verifyAdminToken, deleteMedicineParam);
+medicineParamRouter.post("/", createMedicineParams);
+medicineParamRouter.get("/", getMedicineParams);
+medicineParamRouter.get("/:id", getMedicineParam);
+medicineParamRouter.put("/:id", updateMedicineParam);
+medicineParamRouter.delete("/:id", deleteMedicineParam);
 
 export default medicineParamRouter;
