@@ -47,6 +47,7 @@ import pharmacyRoute from "./routes/Admin/pharmacy.route.js";
 import userAppointmentRouter from "./routes/User/appointment.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
 import userRouter from "./routes/User/user.route.js";
+import homeRouter from "./routes/User/home.route.js";
 
 //Declaration of Routes Here
 app.use("/api/v1/overview", overviewRoute);
@@ -71,6 +72,7 @@ app.use("/api/v1/logo", logoRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/user-appointment", userAppointmentRouter);
 app.use("/api/v1/user-prescription", userPrescriptionRouter);
+app.use("/api/v1/home", homeRouter);
 
 //pharmacy routes
 app.use("/api/v1/pharmacy", pharmacyRoute);
