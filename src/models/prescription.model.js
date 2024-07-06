@@ -70,6 +70,14 @@ const prescriptionSchema = new Schema(
       type: String,
       required: true,
     },
+    briefSurgical: {
+      type: String,
+      required: true,
+    },
+    ambulatoryConsultation: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );
