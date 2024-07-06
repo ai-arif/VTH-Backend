@@ -36,6 +36,7 @@ export const getMedicineParams = AsyncHandler(async (req, res) => {
             $push: {
               id: "$_id",
               param_name: "$param_name",
+              param_category: "$param_category",
             },
           },
         },
