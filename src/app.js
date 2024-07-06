@@ -38,6 +38,7 @@ import testRouter from "./routes/Admin/test.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
 import medicineParamRouter from "./routes/Admin/medicine_params.route.js";
 import contentRouter from "./routes/Admin/content.route.js";
+import logoRouter from "./routes/Admin/logo.route.js";
 
 // user routes
 
@@ -64,6 +65,7 @@ app.use("/api/v1/complaint", complaintRouter);
 app.use("/api/v1/breed", breedRouter);
 app.use("/api/v1/medicine-params", medicineParamRouter);
 app.use("/api/v1/content", contentRouter);
+app.use("/api/v1/logo", logoRouter);
 
 //  user routes
 app.use("/api/v1/users", userRouter);
