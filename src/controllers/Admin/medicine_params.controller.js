@@ -101,11 +101,8 @@ export const updateMedicineParam = AsyncHandler(async (req, res) => {
 export const deleteMedicineParam = AsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const medicineParam = await MedicineParams.findById(id);
-    if (!medicineParam) {
-      return sendResponse(res, 404, false, "Medicine Param not found");
-    }
-    await medicineParam.remove();
+    const medicineParam = await MedicineParams.findByIdAndDelete(id);
+
     return sendResponse(res, 200, true, "Medicine Param deleted successfully");
   } catch (error) {
     return sendResponse(res, 500, false, error.message);

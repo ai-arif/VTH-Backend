@@ -32,7 +32,7 @@ export const appointmentSSLPayment = async (req, res) => {
 
     const data = {
       total_amount: totalPayment,
-      
+
       currency: "BDT",
       tran_id: transId,
       success_url: `${process.env.APP_URL}/api/v1/user-appointment/payment/success/${id}?amount=${totalPayment}`,
