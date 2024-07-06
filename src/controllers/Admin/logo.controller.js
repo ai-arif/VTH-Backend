@@ -9,6 +9,8 @@ export const createLogo = AsyncHandler(async (req, res) => {
 
     if (req.file) {
       image = await uploadFileToGCS(req.file.buffer, req.file.originalname);
+    } else {
+      image = req.body.image;
     }
     const newLogo = new Logo({
       image,
@@ -36,11 +38,12 @@ export const getLogos = AsyncHandler(async (req, res) => {
 export const deleteLogo = AsyncHandler(async (req, res) => {
   const { id } = req.params;
   try {
-    const logo = await Logo.findById(id);
+    // const logo = await Logo.findById(id);
+    // find by id and delete
+    const logo = await Logo.findByIdAndDelete(id);
     if (!logo) {
       return sendResponse(res, 404, false, "Logo not found");
     }
-    await logo.remove();
     return sendResponse(res, 200, true, "Logo deleted successfully");
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
