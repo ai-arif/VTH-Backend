@@ -1,7 +1,8 @@
 import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
-import CategoryWiseClinicalTest from "../../models/clinicalTestCategoryOne.model.js";
+
+import CategoryWiseClinicalTest from "../../models/clinicalTestByCategory.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
