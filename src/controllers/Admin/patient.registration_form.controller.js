@@ -353,3 +353,53 @@ export const searchPatientRegistrationForms = async (req, res) => {
     return sendResponse(res, 500, false, error.message);
   }
 };
+
+
+// prescription for lab test
+export const GetRegistrationFormsHasTest = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+  try {
+
+    const patientRegistrationForms = await PatientRegistrationForm.find({
+      tests: { $ne: [] },
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("appointmentId");
+
+
+
+    const totalCount = await PatientRegistrationForm.countDocuments({
+      tests: { $ne: [] },
+    });
+    const totalPages = Math.ceil(totalCount / limit);
+
+    sendResponse(res, 200, true, "Patient registration forms successfully retrieved", {
+      data: patientRegistrationForms,
+      totalPages: totalPages,
+      page,
+      totalDocuments: totalCount,
+    });
+  } catch (error) {
+    console.log({ error });
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const GetRegistrationFormsHasTestById = async (req, res) => {
+  try {
+    const prescriptions = await PatientRegistrationForm.findById(req.params.id)
+      .populate("appointmentId")
+      .populate("tests")
+      .select({ tests: 1, appointmentId: 1 });
+
+    sendResponse(res, 200, true, "Patient registration form successfully retrieved", {
+      data: prescriptions,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};

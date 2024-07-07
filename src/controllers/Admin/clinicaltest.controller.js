@@ -55,6 +55,16 @@ export const getClinicalTest = async (req, res) => {
   }
 };
 
+export const getClinicalTestById = async (req, res) => {
+
+  try {
+    const data = await CategoryWiseClinicalTest.findById(req.params?.id)
+    sendResponse(res, 200, true, "Successfully fetched clinical test", data);
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
 
 export const addTest = async (req, res) => {
   try {
