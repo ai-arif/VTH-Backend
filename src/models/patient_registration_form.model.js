@@ -191,8 +191,8 @@ const patientRegistrationFormSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         // old ref
-        ref: "ClinicalTest",
-        // ref: "CategoryWiseClinicalTest",
+        // ref: "ClinicalTest",
+        ref: "CategoryWiseClinicalTest",
       },
     ],
     createdBy: {
