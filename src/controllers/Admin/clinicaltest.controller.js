@@ -12,6 +12,8 @@ import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
+
+// updated code for test 
 export const addClinicalTest = async (req, res) => {
   try {
     console.log(req.body)
