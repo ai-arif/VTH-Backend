@@ -21,6 +21,7 @@ import {
   getAllSubParameter,
   getAllTestResult,
   getClinicalTest,
+  getClinicalTestById,
   getParameter,
   getSubParameter,
   getTest,
@@ -38,6 +39,7 @@ import {
 // to do 
 testRouter.post("/add", addClinicalTest);
 testRouter.get("/get", getClinicalTest);
+testRouter.get("/get/:id", getClinicalTestById);
 
 // test 
 testRouter.post("/", addTest);
