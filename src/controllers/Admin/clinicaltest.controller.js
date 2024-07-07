@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
+import CategoryWiseClinicalTest from "../../models/clinicalTestCategoryOne.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
@@ -10,6 +11,47 @@ import TestParameter from "../../models/test_parameter.model.js";
 import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
+
+export const addClinicalTest = async (req, res) => {
+  try {
+    console.log(req.body)
+    // const { testName, testDetails } = req.body;
+    const newClinicalTest = new CategoryWiseClinicalTest(req.body);
+    const newTest = await newClinicalTest.save();
+    console.log({ newTest })
+
+    sendResponse(res, 200, true, "Successfully created clinical test", newTest);
+  } catch (error) {
+    console.log(error);
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getClinicalTest = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 15;
+  const sort = -1;
+  try {
+    const totalTest = await CategoryWiseClinicalTest.countDocuments();
+    const totalPages = Math.ceil(totalTest / limit);
+
+    const tests = await CategoryWiseClinicalTest.find()
+      .sort({ createdAt: sort })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+
+    sendResponse(res, 200, true, "Successfully fetched clinical tests", {
+      totalTest,
+      totalPages,
+      page,
+      data: tests,
+    });
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
 
 export const addTest = async (req, res) => {
   try {

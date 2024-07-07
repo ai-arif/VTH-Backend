@@ -7,6 +7,7 @@ import {
   AddParameter,
   AddSubParameter,
   AddTestResult,
+  addClinicalTest,
   addTest,
   deleteAdditionalField,
   deleteParameter,
@@ -19,6 +20,7 @@ import {
   getAllParameter,
   getAllSubParameter,
   getAllTestResult,
+  getClinicalTest,
   getParameter,
   getSubParameter,
   getTest,
@@ -31,6 +33,11 @@ import {
   updateTestCost,
   updateTestResult
 } from "../../controllers/Admin/clinicaltest.controller.js";
+
+// updated test
+// to do 
+testRouter.post("/add", addClinicalTest);
+testRouter.get("/get", getClinicalTest);
 
 // test 
 testRouter.post("/", addTest);
