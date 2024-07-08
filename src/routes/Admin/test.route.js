@@ -28,6 +28,7 @@ import {
   getSubParameter,
   getTest,
   getTestResult,
+  getTestResultById,
   searchTest,
   updateAdditionalField,
   updateParameter,
@@ -78,6 +79,9 @@ testRouter.get("/parameter/all/additional", getAllAdditionalField)
 testRouter.delete("/parameter/additional/:id", deleteAdditionalField)
 testRouter.put("/parameter/additional/:id", updateAdditionalField)
 
+
+// single test
+testRouter.get("/single-test/:id", getTestResultById);
 // full test 
 testRouter.get("/full-test/:id", fullTestField);
 testRouter.post("/test-result", AddTestResult);
