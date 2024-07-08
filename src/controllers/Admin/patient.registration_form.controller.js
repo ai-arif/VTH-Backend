@@ -98,7 +98,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       dop: req.body.dop || "",
       doo: req.body.doo || "",
       tests: req.body.tests || [],
-      totalTestCost: req.body?.totalTestCost || 0.0
+      totalTestCost: req.body?.totalTestCost || 0.0,
     });
 
     await newPatientRegistrationForm.save();
@@ -356,35 +356,39 @@ export const searchPatientRegistrationForms = async (req, res) => {
   }
 };
 
-
 // prescription for lab test
 export const GetRegistrationFormsHasTest = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
   try {
-
     const patientRegistrationForms = await PatientRegistrationForm.find({
       tests: { $ne: [] },
+      isTestDeleteForLab: { $ne: true },
     })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .populate("appointmentId");
 
-
-
     const totalCount = await PatientRegistrationForm.countDocuments({
       tests: { $ne: [] },
+      isTestDeleteForLab: { $ne: true },
     });
     const totalPages = Math.ceil(totalCount / limit);
 
-    sendResponse(res, 200, true, "Patient registration forms successfully retrieved", {
-      data: patientRegistrationForms,
-      totalPages: totalPages,
-      page,
-      totalDocuments: totalCount,
-    });
+    sendResponse(
+      res,
+      200,
+      true,
+      "Patient registration forms successfully retrieved",
+      {
+        data: patientRegistrationForms,
+        totalPages: totalPages,
+        page,
+        totalDocuments: totalCount,
+      }
+    );
   } catch (error) {
     console.log({ error });
     sendResponse(res, 500, false, error.message);
@@ -398,9 +402,15 @@ export const GetRegistrationFormsHasTestById = async (req, res) => {
       .populate("tests")
       .select({ tests: 1, appointmentId: 1 });
 
-    sendResponse(res, 200, true, "Patient registration form successfully retrieved", {
-      data: prescriptions,
-    });
+    sendResponse(
+      res,
+      200,
+      true,
+      "Patient registration form successfully retrieved",
+      {
+        data: prescriptions,
+      }
+    );
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
