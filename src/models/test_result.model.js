@@ -42,9 +42,9 @@ const testResultSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Appointment",
     },
-    prescriptionId: {
+    registrationId: {
         type: Schema.Types.ObjectId,
-        ref: "Prescription",
+        ref: "PatientRegistrationForm",
     },
     name: { type: String, required: true },
     phone: { type: String, required: true },

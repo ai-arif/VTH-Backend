@@ -187,6 +187,16 @@ const patientRegistrationFormSchema = new Schema(
     doo: {
       type: Date,
     },
+    totalTestCost: {
+      // to do
+      type: Number,
+      default: 0.0,
+    },
+    testStatus: {
+      type: String,
+      enum: ["pending", "processing", "success"],
+      default: "pending",
+    },
     tests: [
       {
         type: Schema.Types.ObjectId,
