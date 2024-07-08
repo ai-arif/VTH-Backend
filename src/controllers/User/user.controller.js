@@ -3,6 +3,7 @@ import Jwt from "jsonwebtoken";
 import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import sendResponse from "../../utils/sendResponse.js";
+import sendEmail from "../../utils/sendMail.js";
 
 export const createUser = AsyncHandler(async (req, res) => {
   const { fullName, password, phone, district, upazila, address, nid } =
@@ -81,7 +82,7 @@ export const getAllUsers = async (req, res) => {
 // update user const { fullName,  phone, district, upazila, address, nid } = req.body;
 export const updateUser = async (req, res) => {
   const user = req.id;
-  const { fullName, phone, district, upazila, address, nid } = req.body;
+  const { fullName, phone, district, upazila, address, nid, email } = req.body;
   try {
     const existingUser = await User.findById(user);
     if (!existingUser) {
@@ -94,6 +95,7 @@ export const updateUser = async (req, res) => {
     existingUser.upazila = upazila;
     existingUser.address = address;
     existingUser.nid = nid;
+    existingUser.email = email;
     let message = "";
     // check if all fileds are filled the isCompleted will be true, otherwise give message which fields are missing
     if (fullName && phone && district && upazila && address) {
@@ -148,6 +150,71 @@ export const getUserById = async (req, res) => {
       return sendResponse(res, 404, false, "User not found");
     }
     return sendResponse(res, 200, true, "User", existingUser);
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+    // create a token
+    // generate a token for 1hr
+    // write code to generate here
+    const resetToken = await Jwt.sign(
+      { id: user._id },
+      process.env.ACCESS_TOKEN_USER_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+    console.log(resetUrl);
+    const message = `
+      <h1>You have requested a password reset</h1>
+      <p>Please go to this link to reset your password</p>
+      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+    `;
+    try {
+      await sendEmail(user.email, "Password reset request", message);
+      return sendResponse(res, 200, true, "Email sent");
+    } catch (error) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save();
+      return sendResponse(res, 500, false, "Email could not be sent");
+    }
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { password } = req.body;
+  const resetToken = req.params.resetToken;
+  try {
+    if (!resetToken) {
+      return sendResponse(res, 400, false, "Invalid token");
+    }
+
+    const decoded = Jwt.verify(
+      resetToken,
+      process.env.ACCESS_TOKEN_USER_SECRET
+    );
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return sendResponse(res, 200, true, "Password reset successful");
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
   }

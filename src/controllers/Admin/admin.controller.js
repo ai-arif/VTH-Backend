@@ -6,6 +6,7 @@ import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
+import sendEmail from "../../utils/sendMail.js";
 // const sendResponse = (res, statusCode,success, message, data) => {
 //     res.status(statusCode).json({success, message, data });
 //     };
@@ -35,7 +36,7 @@ export const createAdmin = AsyncHandler(async (req, res) => {
 });
 
 export const createUser = async (req, res) => {
-  const { fullName, password, phone, role, department } = req.body;
+  const { fullName, password, phone, role, department, email } = req.body;
 
   try {
     if (!fullName || !password || !phone || !role) {
@@ -53,6 +54,7 @@ export const createUser = async (req, res) => {
       password: hashedPassword,
       phone,
       role,
+      email,
       department, // Add department here
     });
 
@@ -251,7 +253,7 @@ export const getAllUsers = async (req, res) => {
 // update admin, if password is present, hash it and update
 export const updateAdmin = async (req, res) => {
   try {
-    const { fullName, password, phone, role } = req.body;
+    const { fullName, password, phone, role, email, department } = req.body;
     const id = req.params.id;
     const admin = await Admin.findById(id);
 
@@ -267,6 +269,17 @@ export const updateAdmin = async (req, res) => {
     if (role) {
       admin.role = role;
     }
+    if (email) {
+      admin.email = email;
+    }
+    if (department) {
+      const existingDepartment = await Department.findById(department);
+      if (!existingDepartment) {
+        return sendResponse(res, 400, false, "Department not found");
+      }
+      admin.department = department;
+    }
+
     if (password) {
       if (admin?._id == req.id || req.role == "admin") {
         admin.password = await bcrypt.hash(password, 10);
@@ -310,6 +323,52 @@ export const changeStaffPassword = async (req, res) => {
 
     await existingUser.save();
     return sendResponse(res, 200, true, "Password changed successfully");
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+// forgot password
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await Admin.findOne({ email });
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+    // send email
+    const token = Jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "1h" }
+    );
+    const link = `${process.env.ADMIN_URL}/reset-password/${token}`;
+    const message = `Click on the link to reset your password: ${link}`;
+    await sendEmail(email, "Reset Password", message);
+    return sendResponse(res, 200, true, "Reset link sent to email");
+  } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { resetToken, newPassword } = req.body;
+  try {
+    if (!resetToken) {
+      return sendResponse(res, 400, false, "Invalid token");
+    }
+
+    const decoded = Jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+
+    const user = await Admin.findById(decoded.id);
+    if (!user) {
+      return sendResponse(res, 404, false, "User not found");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return sendResponse(res, 200, true, "Password reset successfully");
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
   }

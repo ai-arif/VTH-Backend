@@ -12,6 +12,8 @@ import {
   login,
   searchAllStaffs,
   updateAdmin,
+  resetPassword,
+  forgotPassword,
 } from "../../controllers/Admin/admin.controller.js";
 
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
@@ -33,5 +35,8 @@ router.delete("/delete-admin/:id", deleteAdmin);
 // staff search
 router.get("/admins/search", searchAllStaffs);
 router.patch("/:id", changeStaffPassword);
+
+router.post("/reset-password", resetPassword);
+router.post("/forget-password", forgotPassword);
 
 export default router;
