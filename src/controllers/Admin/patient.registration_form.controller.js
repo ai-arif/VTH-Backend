@@ -97,6 +97,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       dop: req.body.dop || "",
       doo: req.body.doo || "",
       tests: req.body.tests || [],
+      totalTestCost: req.body?.totalTestCost || 0.0
     });
 
     await newPatientRegistrationForm.save();

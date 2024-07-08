@@ -42,6 +42,10 @@ const testResultSchema = new Schema(
       ref: "CategoryWiseClinicalTest",
       required: true,
     },
+    registrationId: {
+      type: Schema.Types.ObjectId,
+      ref: "PatientRegistrationForm",
+    },
     appointmentId: {
       type: Schema.Types.ObjectId,
       ref: "Appointment",

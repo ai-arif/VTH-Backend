@@ -2,9 +2,11 @@ import { faker } from "@faker-js/faker";
 import mongoose from "mongoose";
 import AppointmentTest from "../../models/appointment_test.model.js";
 
+import Appointment from "../../models/appointment.model.js";
 import CategoryWiseClinicalTest from "../../models/clinicalTestByCategory.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
+import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import Prescription from "../../models/prescription.model.js";
 import TestSubParameter from "../../models/sub_parameter.model.js";
 import TestAdditionalField from "../../models/test_additional_field.model.js";
@@ -15,6 +17,17 @@ import { createNotification } from "./notification.controller.js";
 
 
 // updated code for test 
+
+export const deleteCategoryWiseClinicalTest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await CategoryWiseClinicalTest.deleteOne({ _id: id });
+    sendResponse(res, 200, true, "Successfully deleted test");
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 export const addClinicalTest = async (req, res) => {
   try {
     console.log(req.body)
@@ -474,21 +487,21 @@ export const AddTestResult = async (req, res) => {
     const result = await newTestResult.save();
 
     // sending notification
-    // if (result) {
-    //   const r = await TestResult.findById(result?._id)
-    //     .populate("appointmentId")
-    //     .populate("testId");
+    if (result) {
+      const r = await TestResult.findById(result?._id)
+        .populate("appointmentId")
+        .populate("testId");
 
-    //   const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
-    //   const description = `${r?.appointmentId?.ownerName}'s '${r?.testId?.testName}' test's result has been submitted.`;
-    //   const department = r?.appointmentId?.department;
-    //   const type = "doctor-test-result";
-    //   // const destinationUrl = `/test-result/${result?.prescriptionId}`
-    //   const destinationUrl = `/incomming-test/${result?.prescriptionId}`
+      const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
+      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been submitted.`;
+      const department = r?.appointmentId?.department;
+      const type = "doctor-test-result";
+      // const destinationUrl = `/test-result/${result?.prescriptionId}`
+      const destinationUrl = `/incomming-test/${result?.registrationId}`
 
-    //   const notify = await createNotification(title, description, department, type, destinationUrl);
-    //   // console.log({ notify })
-    // }
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
+    }
 
     sendResponse(res, 200, true, "Successfully added test result");
   } catch (error) {
@@ -503,13 +516,32 @@ export const updateTestCost = async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
-    const updatedData = await Prescription.findByIdAndUpdate(
+    const result = await PatientRegistrationForm.findByIdAndUpdate(
       id,
       {
         $set: { totalTestCost: data?.amount },
       },
       { new: true }
     );
+
+    // console.log({ result })
+
+    // sending notification
+    if (result) {
+      const r = await Appointment.findById(result?.appointmentId);
+
+      // console.log({ r })
+
+      const title = `Case no: ${r?.caseNo}'s test payment.`;
+      const description = `${r?.ownerName}'s test's payment successful. Paid amount: ${data?.amount}`;
+      const department = r?.department;
+      const type = "test-result";
+
+      const destinationUrl = `/incomming-test`
+
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
+    }
 
     sendResponse(res, 200, true, "Successfully updated test result");
   } catch (error) {
@@ -524,13 +556,68 @@ export const updateTestResult = async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
-    const updatedData = await TestResult.findByIdAndUpdate(id, {
+    const result = await TestResult.findByIdAndUpdate(id, {
       $set: { data: data },
     });
+
+    // sending notification
+    if (result) {
+      const r = await TestResult.findById(result?._id)
+        .populate("appointmentId")
+        .populate("testId");
+
+      const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
+      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been updated.`;
+      const department = r?.appointmentId?.department;
+      const type = "doctor-test-result";
+      // const destinationUrl = `/test-result/${result?.prescriptionId}`
+      const destinationUrl = `/incomming-test/${result?.registrationId}`
+
+      const notify = await createNotification(title, description, department, type, destinationUrl);
+      // console.log({ notify })
+    }
 
     sendResponse(res, 200, true, "Successfully updated test result");
   } catch (error) {
     console.log(error);
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
+// update test payment status 
+export const updatePatientRegistrationTestStatus = async (req, res) => {
+  try {
+    const result = await PatientRegistrationForm.findByIdAndUpdate(
+      req.params.id,
+      { $set: { testStatus: req.body.status } },
+      { new: true }
+    );
+
+    if (result && req.body.status == "success") {
+      const r = await Appointment.findById(result?.appointmentId);
+
+      const title = `Case no: ${r?.caseNo}'s test result.`;
+      const description = `${r?.ownerName}'s full test result has been submitted.`;
+      const department = r?.appointment?.department;
+      const type = "doctor-test-result";
+      const destinationUrl = `/incomming-test/${req.params.id}`
+      // const destinationUrl = `/prescription/view/${r?.appointment?._id}`;
+
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
+      // console.log({ notify })
+    }
+
+    sendResponse(res, 200, true, "Lab test status updated successfully", {
+      data: result,
+    });
+  } catch (error) {
+    console.log({ error });
     sendResponse(res, 500, false, error.message);
   }
 };
