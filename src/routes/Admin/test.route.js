@@ -10,6 +10,7 @@ import {
   addClinicalTest,
   addTest,
   deleteAdditionalField,
+  deleteCategoryWiseClinicalTest,
   deleteParameter,
   deleteSubParameter,
   deleteTest,
@@ -40,6 +41,7 @@ import {
 testRouter.post("/add", addClinicalTest);
 testRouter.get("/get", getClinicalTest);
 testRouter.get("/get/:id", getClinicalTestById);
+testRouter.delete('/test/:id', deleteCategoryWiseClinicalTest)
 
 // test 
 testRouter.post("/", addTest);

@@ -15,6 +15,17 @@ import { createNotification } from "./notification.controller.js";
 
 
 // updated code for test 
+
+export const deleteCategoryWiseClinicalTest = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await CategoryWiseClinicalTest.deleteOne({ _id: id });
+    sendResponse(res, 200, true, "Successfully deleted test");
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 export const addClinicalTest = async (req, res) => {
   try {
     console.log(req.body)
