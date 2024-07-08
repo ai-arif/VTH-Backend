@@ -729,6 +729,22 @@ export const getTestResult = async (req, res) => {
   }
 };
 
+// test result by id 
+export const getTestResultById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log({ id })
+    const result = await TestResult.findById(id).populate(
+      "appointmentId"
+    ).populate("testId");
+    sendResponse(res, 200, true, "Successfully fetched test result", {
+      data: result,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 //APPOINTMENT TEST
 export const AddAppointmentTest = async (req, res) => {
   try {
