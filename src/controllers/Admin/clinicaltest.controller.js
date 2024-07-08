@@ -15,8 +15,7 @@ import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
-
-// updated code for test 
+// updated code for test
 
 export const deleteCategoryWiseClinicalTest = async (req, res) => {
   try {
@@ -30,11 +29,11 @@ export const deleteCategoryWiseClinicalTest = async (req, res) => {
 
 export const addClinicalTest = async (req, res) => {
   try {
-    console.log(req.body)
+    console.log(req.body);
     // const { testName, testDetails } = req.body;
     const newClinicalTest = new CategoryWiseClinicalTest(req.body);
     const newTest = await newClinicalTest.save();
-    console.log({ newTest })
+    console.log({ newTest });
 
     sendResponse(res, 200, true, "Successfully created clinical test", newTest);
   } catch (error) {
@@ -69,15 +68,13 @@ export const getClinicalTest = async (req, res) => {
 };
 
 export const getClinicalTestById = async (req, res) => {
-
   try {
-    const data = await CategoryWiseClinicalTest.findById(req.params?.id)
+    const data = await CategoryWiseClinicalTest.findById(req.params?.id);
     sendResponse(res, 200, true, "Successfully fetched clinical test", data);
   } catch (error) {
     return sendResponse(res, 500, false, error.message);
   }
 };
-
 
 export const addTest = async (req, res) => {
   try {
@@ -483,7 +480,13 @@ export const fullTestField = async (req, res) => {
 export const AddTestResult = async (req, res) => {
   try {
     const { data, id } = req.body;
-    const result = TestResult.findByIdAndUpdate(id, { $set: { data: data, status: true } });
+    const result = await TestResult.findByIdAndUpdate(
+      id,
+      {
+        $set: { data: data, status: true },
+      },
+      { new: true }
+    );
 
     // sending notification
     if (result) {
@@ -496,9 +499,15 @@ export const AddTestResult = async (req, res) => {
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
       // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${result?.registrationId}`
+      const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -537,9 +546,15 @@ export const updateTestCost = async (req, res) => {
       const department = r?.department;
       const type = "test-result";
 
-      const destinationUrl = `/incomming-test`
+      const destinationUrl = `/incomming-test`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -554,10 +569,10 @@ export const updateTestCost = async (req, res) => {
 export const updateTestResult = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = req.body;
+    const { data, status } = req.body;
 
     const result = await TestResult.findByIdAndUpdate(id, {
-      $set: { data: data },
+      $set: { data: data, status },
     });
 
     // sending notification
@@ -567,13 +582,19 @@ export const updateTestResult = async (req, res) => {
         .populate("testId");
 
       const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
-      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been updated.`;
+      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been ${status ? "updated" : "deleted"}.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
       // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${result?.registrationId}`
+      const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
-      const notify = await createNotification(title, description, department, type, destinationUrl);
+      const notify = await createNotification(
+        title,
+        description,
+        department,
+        type,
+        destinationUrl
+      );
       // console.log({ notify })
     }
 
@@ -584,7 +605,7 @@ export const updateTestResult = async (req, res) => {
   }
 };
 
-// update test payment status 
+// update test payment status
 export const updatePatientRegistrationTestStatus = async (req, res) => {
   try {
     const result = await PatientRegistrationForm.findByIdAndUpdate(
@@ -600,7 +621,7 @@ export const updatePatientRegistrationTestStatus = async (req, res) => {
       const description = `${r?.ownerName}'s full test result has been submitted.`;
       const department = r?.appointment?.department;
       const type = "doctor-test-result";
-      const destinationUrl = `/incomming-test/${req.params.id}`
+      const destinationUrl = `/incomming-test/${req.params.id}`;
       // const destinationUrl = `/prescription/view/${r?.appointment?._id}`;
 
       const notify = await createNotification(
@@ -634,11 +655,15 @@ export const deleteTestResult = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
-// delete test result of a registration form 
+// delete test result of a registration form
 export const deleteTestResultForARegistrationForm = async (req, res) => {
   try {
     const { id } = req.params;
-    await PatientRegistrationForm.findByIdAndUpdate(id, { $set: { isTestDeleteForLab: true } }, { new: true });
+    await PatientRegistrationForm.findByIdAndUpdate(
+      id,
+      { $set: { isTestDeleteForLab: true } },
+      { new: true }
+    );
     sendResponse(res, 200, true, "Deleted successfully!");
   } catch (error) {
     console.log(error);
@@ -649,7 +674,9 @@ export const deleteTestResultForARegistrationForm = async (req, res) => {
 export const getAllTestResult = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 15;
-  const search = req.query.search ? req.query.search.trim().replace(/\s+/g, " ") : '';
+  const search = req.query.search
+    ? req.query.search.trim().replace(/\s+/g, " ")
+    : "";
   const skip = (page - 1) * limit;
 
   try {
@@ -658,7 +685,7 @@ export const getAllTestResult = async (req, res) => {
     if (search) {
       const conditions = [
         { "appointmentDetails.ownerName": { $regex: search, $options: "i" } },
-        { "appointmentDetails.phone": { $regex: search, $options: "i" } }
+        { "appointmentDetails.phone": { $regex: search, $options: "i" } },
       ];
 
       // Add caseNo condition only if search can be parsed as a number
@@ -672,31 +699,31 @@ export const getAllTestResult = async (req, res) => {
     const result = await TestResult.aggregate([
       {
         $lookup: {
-          from: 'appointments',
-          localField: 'appointmentId',
-          foreignField: '_id',
-          as: 'appointmentDetails'
-        }
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointmentDetails",
+        },
       },
-      { $unwind: '$appointmentDetails' },
+      { $unwind: "$appointmentDetails" },
       { $match: matchStage },
       { $sort: { createdAt: -1 } },
       { $skip: skip },
-      { $limit: limit }
+      { $limit: limit },
     ]);
 
     const countResult = await TestResult.aggregate([
       {
         $lookup: {
-          from: 'appointments',
-          localField: 'appointmentId',
-          foreignField: '_id',
-          as: 'appointmentDetails'
-        }
+          from: "appointments",
+          localField: "appointmentId",
+          foreignField: "_id",
+          as: "appointmentDetails",
+        },
       },
-      { $unwind: '$appointmentDetails' },
+      { $unwind: "$appointmentDetails" },
       { $match: matchStage },
-      { $count: "total" }
+      { $count: "total" },
     ]);
 
     const count = countResult.length > 0 ? countResult[0].total : 0;
@@ -705,14 +732,12 @@ export const getAllTestResult = async (req, res) => {
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
       totalPages,
-      count
+      count,
     });
-
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
 };
-
 
 export const getTestResult = async (req, res) => {
   try {
@@ -729,14 +754,14 @@ export const getTestResult = async (req, res) => {
   }
 };
 
-// test result by id 
+// test result by id
 export const getTestResultById = async (req, res) => {
   try {
     const { id } = req.params;
     // console.log({ id })
-    const result = await TestResult.findById(id).populate(
-      "appointmentId"
-    ).populate("testId");
+    const result = await TestResult.findById(id)
+      .populate("appointmentId")
+      .populate("testId");
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
     });
