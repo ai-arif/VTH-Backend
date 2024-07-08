@@ -1,6 +1,8 @@
 import Appointment from "../../models/appointment.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
+import CategoryWiseClinicalTest from "../../models/clinicalTestByCategory.model.js";
 import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
+import TestResult from "../../models/test_result.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
@@ -101,19 +103,28 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalTestCost: req.body?.totalTestCost || 0.0,
     });
 
-    await newPatientRegistrationForm.save();
+    const registeredData = await newPatientRegistrationForm.save();
 
     const AppointmentResult = await Appointment.findById(appointmentId)
       .populate("department")
-      .select({ caseNo: 1, department: 1 });
+      .select({ caseNo: 1, department: 1, phone: 1 });
 
-    const testsResult = await ClinicalTest.find({
+    const testsResult = await CategoryWiseClinicalTest.find({
       _id: { $in: req.body?.tests },
     });
 
     const testString = testsResult?.map((t) => t?.testName).join(", ") || "";
 
-    if (testString) {
+    if (testString) {// test found 
+      const testResultData = testsResult?.map(async (t) => {
+        const data = {
+          testId: t?._id, registrationId: registeredData?._id, appointmentId, name: t?.testName, phone: AppointmentResult?.phone
+        }
+        const res = await TestResult.create(data)
+
+      });
+
+      // Notification 
       const title = `New Test Assigned`;
       const description = `'${testString}' has been assigned to a new registered patient. Case no: ${AppointmentResult?.caseNo}`;
       const department = AppointmentResult?.department;
