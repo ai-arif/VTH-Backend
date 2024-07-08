@@ -17,16 +17,27 @@ const adminSchema = new Schema(
       type: String,
       trim: true,
     },
+    email: {
+      type: String,
+      trim: true,
+      unique: true,
+    },
     role: {
       type: String,
-      enum: ["admin", "doctor", "lab", "pharmacy", "receptionist", "consultant"],
+      enum: [
+        "admin",
+        "doctor",
+        "lab",
+        "pharmacy",
+        "receptionist",
+        "consultant",
+      ],
       default: "lab",
     },
     department: {
       type: Schema.Types.ObjectId,
       ref: "Department",
     },
-
   },
 
   { timestamps: true }
@@ -34,4 +45,3 @@ const adminSchema = new Schema(
 
 const Admin = model("Admin", adminSchema);
 export default Admin;
-

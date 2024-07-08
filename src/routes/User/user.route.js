@@ -6,8 +6,9 @@ import {
   getUserById,
   updateUser,
   getAllUsers,
-  changePassword
-
+  changePassword,
+  forgotPassword,
+  resetPassword,
 } from "../../controllers/User/user.controller.js";
 import { verifyJWT } from "../../middlewares/auth.middleware.js";
 
@@ -18,8 +19,7 @@ userRouter.post("/login", loginUser);
 userRouter.put("/update", verifyJWT, updateUser);
 userRouter.get("/all", verifyJWT, getAllUsers);
 userRouter.put("/change-password", verifyJWT, changePassword);
-
-
-
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password/:resetToken", resetPassword);
 
 export default userRouter;
