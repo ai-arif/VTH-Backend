@@ -192,12 +192,12 @@ export const searchTest = async (req, res) => {
   const search = req.query.search;
 
   try {
-    const totalTest = await ClinicalTest.countDocuments({
+    const totalTest = await CategoryWiseClinicalTest.countDocuments({
       testName: { $regex: search, $options: "i" },
     });
     const totalPages = Math.ceil(totalTest / limit);
 
-    const tests = await ClinicalTest.find({
+    const tests = await CategoryWiseClinicalTest.find({
       testName: { $regex: search, $options: "i" },
     })
       .sort({ createdAt: sort })

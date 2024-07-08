@@ -18,7 +18,6 @@ const patientRegistrationFormSchema = new Schema(
     complaints: {
       type: String,
       trim: true,
-      required: true,
     },
     age: {
       type: String,
@@ -33,7 +32,6 @@ const patientRegistrationFormSchema = new Schema(
     breed: {
       type: String,
       trim: true,
-      required: true,
     },
     illnessDuration: {
       type: String,
