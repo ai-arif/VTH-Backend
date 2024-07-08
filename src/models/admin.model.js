@@ -19,7 +19,7 @@ const adminSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["admin", "doctor", "lab", "pharmacy", "receptionist"],
+      enum: ["admin", "doctor", "lab", "pharmacy", "receptionist", "consultant"],
       default: "lab",
     },
     department: {

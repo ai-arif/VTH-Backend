@@ -83,12 +83,10 @@ const patientRegistrationFormSchema = new Schema(
     respRate: {
       type: String,
       trim: true,
-      required: true,
     },
     pulseRate: {
       type: String,
       trim: true,
-      required: true,
     },
     temp: {
       type: String,
@@ -98,17 +96,14 @@ const patientRegistrationFormSchema = new Schema(
     sex: {
       type: String,
       trim: true,
-      required: true,
     },
     treatedBefore: {
       type: String,
       trim: true,
-      required: true,
     },
-    confusionWords: {
+    deworming: {
       type: String,
       trim: true,
-      required: true,
     },
     demeanour: {
       type: String,
