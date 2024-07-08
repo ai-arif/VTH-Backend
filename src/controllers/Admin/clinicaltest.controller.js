@@ -482,9 +482,8 @@ export const fullTestField = async (req, res) => {
 // test result
 export const AddTestResult = async (req, res) => {
   try {
-    const data = req.body;
-    const newTestResult = new TestResult(data);
-    const result = await newTestResult.save();
+    const { data, id } = req.body;
+    const result = TestResult.findByIdAndUpdate(id, { $set: { data: data, status: true } });
 
     // sending notification
     if (result) {
