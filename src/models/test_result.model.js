@@ -62,6 +62,14 @@ const testResultSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    amount: {
+      type: Number,
+      default: 0.0
+    },
+    paymentStatus: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

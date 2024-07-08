@@ -516,10 +516,11 @@ export const updateTestCost = async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
-    const result = await PatientRegistrationForm.findByIdAndUpdate(
+    // const result = await PatientRegistrationForm.findByIdAndUpdate(
+    const result = await TestResult.findByIdAndUpdate(
       id,
       {
-        $set: { totalTestCost: data?.amount },
+        $set: { amount: data?.amount, paymentStatus: true },
       },
       { new: true }
     );
@@ -647,15 +648,72 @@ export const deleteTestResultForARegistrationForm = async (req, res) => {
 };
 
 export const getAllTestResult = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 15;
+  const search = req.query.search ? req.query.search.trim().replace(/\s+/g, " ") : '';
+  const skip = (page - 1) * limit;
+
   try {
-    const result = await TestResult.find().sort({ createdAt: -1 });
+    let matchStage = {};
+
+    if (search) {
+      const conditions = [
+        { "appointmentDetails.ownerName": { $regex: search, $options: "i" } },
+        { "appointmentDetails.phone": { $regex: search, $options: "i" } }
+      ];
+
+      // Add caseNo condition only if search can be parsed as a number
+      if (!isNaN(search)) {
+        conditions.push({ "appointmentDetails.caseNo": Number(search) });
+      }
+
+      matchStage = { $or: conditions };
+    }
+
+    const result = await TestResult.aggregate([
+      {
+        $lookup: {
+          from: 'appointments',
+          localField: 'appointmentId',
+          foreignField: '_id',
+          as: 'appointmentDetails'
+        }
+      },
+      { $unwind: '$appointmentDetails' },
+      { $match: matchStage },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit }
+    ]);
+
+    const countResult = await TestResult.aggregate([
+      {
+        $lookup: {
+          from: 'appointments',
+          localField: 'appointmentId',
+          foreignField: '_id',
+          as: 'appointmentDetails'
+        }
+      },
+      { $unwind: '$appointmentDetails' },
+      { $match: matchStage },
+      { $count: "total" }
+    ]);
+
+    const count = countResult.length > 0 ? countResult[0].total : 0;
+    const totalPages = Math.ceil(count / limit);
+
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
+      totalPages,
+      count
     });
+
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
 };
+
 
 export const getTestResult = async (req, res) => {
   try {
