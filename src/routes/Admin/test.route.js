@@ -15,6 +15,7 @@ import {
   deleteSubParameter,
   deleteTest,
   deleteTestResult,
+  deleteTestResultForARegistrationForm,
   fullTestField,
   getAdditionalField,
   getAllAdditionalField,
@@ -43,7 +44,9 @@ testRouter.post("/add", addClinicalTest);
 testRouter.get("/get", getClinicalTest);
 testRouter.get("/get/:id", getClinicalTestById);
 testRouter.delete('/test/:id', deleteCategoryWiseClinicalTest)
+testRouter.delete('/incoming-test/:id', deleteTestResultForARegistrationForm)
 testRouter.patch('/status/:id', updatePatientRegistrationTestStatus)
+
 
 
 // test 

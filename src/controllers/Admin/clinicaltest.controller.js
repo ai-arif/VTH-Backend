@@ -634,6 +634,17 @@ export const deleteTestResult = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
+// delete test result of a registration form 
+export const deleteTestResultForARegistrationForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await PatientRegistrationForm.findByIdAndUpdate(id, { $set: { isTestDeleteForLab: true } }, { new: true });
+    sendResponse(res, 200, true, "Deleted successfully!");
+  } catch (error) {
+    console.log(error);
+    sendResponse(res, 500, false, error.message);
+  }
+};
 
 export const getAllTestResult = async (req, res) => {
   try {

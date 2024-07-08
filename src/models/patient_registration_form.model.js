@@ -190,6 +190,10 @@ const patientRegistrationFormSchema = new Schema(
       enum: ["pending", "processing", "success"],
       default: "pending",
     },
+    isTestDeleteForLab: {
+      type: Boolean,
+      default: false
+    },
     tests: [
       {
         type: Schema.Types.ObjectId,
