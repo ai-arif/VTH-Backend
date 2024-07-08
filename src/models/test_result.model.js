@@ -62,14 +62,18 @@ const testResultSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isDeletedForLab: {
+      type: Boolean,
+      default: false,
+    },
     amount: {
       type: Number,
-      default: 0.0
+      default: 0.0,
     },
     paymentStatus: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   { timestamps: true }
 );

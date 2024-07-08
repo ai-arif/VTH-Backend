@@ -29,7 +29,6 @@ export const deleteCategoryWiseClinicalTest = async (req, res) => {
 
 export const addClinicalTest = async (req, res) => {
   try {
-    console.log(req.body);
     // const { testName, testDetails } = req.body;
     const newClinicalTest = new CategoryWiseClinicalTest(req.body);
     const newTest = await newClinicalTest.save();
@@ -648,7 +647,11 @@ export const deleteTestResult = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await TestResult.findByIdAndDelete(id);
+    await TestResult.findByIdAndUpdate(
+      id,
+      { $set: { isDeletedForLab: true } },
+      { new: true }
+    );
     sendResponse(res, 200, true, "Deleted successfully!");
   } catch (error) {
     console.log(error);
@@ -680,7 +683,7 @@ export const getAllTestResult = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    let matchStage = {};
+    let matchStage = { isDeletedForLab: { $ne: true } };
 
     if (search) {
       const conditions = [
@@ -693,7 +696,7 @@ export const getAllTestResult = async (req, res) => {
         conditions.push({ "appointmentDetails.caseNo": Number(search) });
       }
 
-      matchStage = { $or: conditions };
+      matchStage = { $or: conditions, isDeletedForLab: { $ne: true } };
     }
 
     const result = await TestResult.aggregate([
