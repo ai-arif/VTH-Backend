@@ -19,10 +19,10 @@ export const getAllPrescriptions = async (req, res) => {
         },
       })
       .populate("medicines") // Populate medicines array
-      .populate({
-        path: "tests",
-        model: "ClinicalTest", // Populate tests array with ClinicalTest model
-      })
+      // .populate({
+      //   path: "tests",
+      //   model: "ClinicalTest", // Populate tests array with ClinicalTest model
+      // })
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: sort });
