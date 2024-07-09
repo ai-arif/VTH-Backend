@@ -497,8 +497,8 @@ export const AddTestResult = async (req, res) => {
       const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been submitted.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
-      // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${result?.registrationId}`;
+      const destinationUrl = `/test-result/${r?.registrationId}`
+      // const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
       const notify = await createNotification(
         title,
@@ -575,17 +575,17 @@ export const updateTestResult = async (req, res) => {
     });
 
     // sending notification
-    if (result) {
+    if (result && status) {
       const r = await TestResult.findById(result?._id)
         .populate("appointmentId")
         .populate("testId");
 
       const title = `Case no: ${r?.appointmentId?.caseNo}'s test result.`;
-      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been ${status ? "updated" : "deleted"}.`;
+      const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been updated.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
-      // const destinationUrl = `/test-result/${result?.prescriptionId}`
-      const destinationUrl = `/incomming-test/${result?.registrationId}`;
+      const destinationUrl = `/test-result/${r?.registrationId}`
+      // const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
       const notify = await createNotification(
         title,
