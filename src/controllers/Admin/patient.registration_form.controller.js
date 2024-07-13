@@ -21,8 +21,8 @@ export const createPatientRegistrationForm = async (req, res) => {
       parity,
       breed,
       illnessDuration,
-      drags,
-      breading,
+      drugs,
+      breeding,
       feedProvided,
       vaccinations,
       appetite,
@@ -47,6 +47,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalDeadAnimals,
       totalMortality,
       totalFatality,
+      heartBeat,
 
       dop,
       doo,
@@ -67,8 +68,8 @@ export const createPatientRegistrationForm = async (req, res) => {
       complaints: req.body.complaints || "",
       breed: req.body.breed || "",
       illnessDuration,
-      drags,
-      breading,
+      drugs,
+      breeding,
       feedProvided,
       vaccinations,
       appetite,
@@ -88,6 +89,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalDeadAnimals,
       totalMortality,
       totalFatality,
+      heartBeat,
       nid: req.body.nid || "",
       bcs: req.body.bcs || "",
       milkYield: req.body.milkYield || "",
@@ -115,16 +117,20 @@ export const createPatientRegistrationForm = async (req, res) => {
 
     const testString = testsResult?.map((t) => t?.testName).join(", ") || "";
 
-    if (testString) {// test found 
+    if (testString) {
+      // test found
       const testResultData = testsResult?.map(async (t) => {
         const data = {
-          testId: t?._id, registrationId: registeredData?._id, appointmentId, name: t?.testName, phone: AppointmentResult?.phone
-        }
-        const res = await TestResult.create(data)
-
+          testId: t?._id,
+          registrationId: registeredData?._id,
+          appointmentId,
+          name: t?.testName,
+          phone: AppointmentResult?.phone,
+        };
+        const res = await TestResult.create(data);
       });
 
-      // Notification 
+      // Notification
       const title = `New Test Assigned`;
       const description = `'${testString}' has been assigned to a new registered patient. Case no: ${AppointmentResult?.caseNo}`;
       const department = AppointmentResult?.department;
