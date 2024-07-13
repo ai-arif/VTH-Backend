@@ -193,9 +193,8 @@ export const getPatientRegistrationFormById = async (
   res
 ) => {
   try {
-    // const patientRegistrationForm = await PatientRegistrationForm.findById(id).populate("appointmentId");
-    const patientRegistrationForm = await PatientRegistrationForm.findById(id);
-
+    const patientRegistrationForm =
+      await PatientRegistrationForm.findById(id).populate("appointmentId");
     if (!patientRegistrationForm) {
       return sendResponse(
         res,
@@ -204,13 +203,6 @@ export const getPatientRegistrationFormById = async (
         "Patient registration form not found"
       );
     }
-
-    const appointmentDetails = await Appointment.findById(patientRegistrationForm?.appointmentId).populate("complaint")
-      .populate("species").populate("breed");
-
-    patientRegistrationForm.appointmentId = appointmentDetails;
-
-
     return sendResponse(
       res,
       200,
@@ -219,7 +211,6 @@ export const getPatientRegistrationFormById = async (
       patientRegistrationForm
     );
   } catch (error) {
-    console.log({ error })
     return sendResponse(res, 500, false, error.message);
   }
 };

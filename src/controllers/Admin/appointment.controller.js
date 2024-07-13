@@ -165,13 +165,15 @@ export const deleteAppointment = async (req, res) => {
   }
 };
 
+
 // get appointment list by phone
 export const getAppointmentByPhone = async (req, res) => {
   const { phone } = req.params;
   try {
-    const appointment = await Appointment.find({ phone }).sort({
-      createdAt: -1,
-    });
+    const appointment = await Appointment.find({ phone }).populate("complaint")
+      .populate("species").populate("breed").sort({
+        createdAt: -1,
+      });
     if (!appointment) {
       return sendResponse(res, 404, false, "Did not found the appointment");
     }
