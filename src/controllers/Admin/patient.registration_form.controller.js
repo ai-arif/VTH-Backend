@@ -172,7 +172,7 @@ export const createPatientRegistrationForm = async (req, res) => {
         type2,
         destinationUrl2
       );
-      // console.log({ notify })
+
     }
 
     return sendResponse(
