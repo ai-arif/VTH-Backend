@@ -41,6 +41,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       treatedBefore,
       confusionWords,
       demeanour,
+      deworming,
       physicalCondition,
       totalAnimals,
       totalSickAnimals,
@@ -83,6 +84,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       treatedBefore,
       confusionWords,
       demeanour,
+      deworming,
       physicalCondition,
       totalAnimals,
       totalSickAnimals,
@@ -172,7 +174,6 @@ export const createPatientRegistrationForm = async (req, res) => {
         type2,
         destinationUrl2
       );
-
     }
 
     return sendResponse(
@@ -205,11 +206,14 @@ export const getPatientRegistrationFormById = async (
       );
     }
 
-    const appointmentDetails = await Appointment.findById(patientRegistrationForm?.appointmentId).populate("complaint")
-      .populate("species").populate("breed");
+    const appointmentDetails = await Appointment.findById(
+      patientRegistrationForm?.appointmentId
+    )
+      .populate("complaint")
+      .populate("species")
+      .populate("breed");
 
     patientRegistrationForm.appointmentId = appointmentDetails;
-
 
     return sendResponse(
       res,
@@ -219,7 +223,7 @@ export const getPatientRegistrationFormById = async (
       patientRegistrationForm
     );
   } catch (error) {
-    console.log({ error })
+    console.log({ error });
     return sendResponse(res, 500, false, error.message);
   }
 };
