@@ -96,6 +96,32 @@ export const getMedicine = async (req, res) => {
   }
 };
 
+export const getMedicinesBrandName = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || "";
+  const sort = -1;
+
+  try {
+    const totalMedicine = await Medicine.countDocuments();
+    const totalPages = Math.ceil(totalMedicine / limit);
+
+    const medicines = await Medicine.find().select({ brandName: 1, _id: 1 })
+      .sort({ createdAt: sort })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
+
+    sendResponse(res, 200, true, "Successfully fetched medicines brand name", {
+      totalMedicine,
+      totalPages,
+      page,
+      data: medicines,
+    });
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
+
 export const updateMedicine = async (req, res) => {
   const {
     name,

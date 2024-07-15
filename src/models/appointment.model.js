@@ -92,17 +92,20 @@ const appointmentSchema = new Schema(
     species: {
       type: Schema.Types.ObjectId,
       ref: "Species",
+      required: true,
     },
     breed: {
-      // type: Schema.Types.ObjectId,
-      type: String,
-      // ref: "Breed",
-      required: false,
+      type: Schema.Types.ObjectId,
+      ref: "Breed",
+      required: true,
     },
     complaint: {
-      // type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
+      ref: "Complaint",
+      required: false,
+    },
+    notes: {
       type: String,
-      // ref: "Complaint",
       required: false,
     },
   },

@@ -10,15 +10,15 @@ const patientRegistrationFormSchema = new Schema(
       type: Date,
       required: true,
     },
-    species: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    complaints: {
-      type: String,
-      trim: true,
-    },
+    // species: {
+    //   type: String,
+    //   trim: true,
+    //   required: true,
+    // },
+    // complaints: {
+    //   type: String,
+    //   trim: true,
+    // },
     age: {
       type: String,
       trim: true,
@@ -29,21 +29,21 @@ const patientRegistrationFormSchema = new Schema(
       trim: true,
       required: true,
     },
-    breed: {
-      type: String,
-      trim: true,
-    },
+    // breed: {
+    //   type: String,
+    //   trim: true,
+    // },
     illnessDuration: {
       type: String,
       trim: true,
       required: true,
     },
-    drags: {
+    drugs: {
       type: String,
       trim: true,
       required: true,
     },
-    breading: {
+    breeding: {
       type: String,
       trim: true,
       required: true,
@@ -170,6 +170,10 @@ const patientRegistrationFormSchema = new Schema(
       type: String,
       trim: true,
     },
+    heartBeat: {
+      type: String,
+      trim: true,
+    },
     others: {
       type: String,
       trim: true,
@@ -192,7 +196,7 @@ const patientRegistrationFormSchema = new Schema(
     },
     isTestDeleteForLab: {
       type: Boolean,
-      default: false
+      default: false,
     },
     tests: [
       {

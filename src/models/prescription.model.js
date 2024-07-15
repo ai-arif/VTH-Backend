@@ -56,27 +56,23 @@ const prescriptionSchema = new Schema(
     // ],
     preAnestheticUsed: {
       type: String,
-      required: true,
+      // required: true,
     },
     sutureMaterialsUsed: {
       type: String,
-      required: true,
+      // required: true,
     },
     typeOfSurgery: {
       type: String,
-      required: true,
+      // required: true,
     },
     postOperativeCare: {
       type: String,
-      required: true,
+      // required: true,
     },
     briefSurgical: {
       type: String,
-      required: true,
-    },
-    ambulatoryConsultation: {
-      type: String,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }
