@@ -39,8 +39,8 @@ export const createPatientRegistrationForm = async (req, res) => {
       sex,
       pregnancyStatus,
       treatedBefore,
-      confusionWords,
       demeanour,
+      deworming,
       physicalCondition,
       totalAnimals,
       totalSickAnimals,
@@ -48,10 +48,10 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalMortality,
       totalFatality,
       heartBeat,
-
       dop,
       doo,
       tests,
+      diarrhea,
     } = req.body;
 
     // Check for required fields
@@ -73,17 +73,17 @@ export const createPatientRegistrationForm = async (req, res) => {
       feedProvided,
       vaccinations,
       appetite,
-      salvation,
-      lacrimation,
-      nasalDischarge,
+      salvation: req.body.salvation || "",
+      lacrimation: req.body.lacrimation || "",
+      nasalDischarge: req.body.nasalDischarge || "",
       respRate,
-      pulseRate,
+      pulseRate: req.body.pulseRate || "",
       temp,
       sex,
       treatedBefore,
-      confusionWords,
-      demeanour,
-      physicalCondition,
+      demeanour: req.body.demeanour || "",
+      deworming,
+      physicalCondition: req.body.physicalCondition || "",
       totalAnimals,
       totalSickAnimals,
       totalDeadAnimals,
@@ -103,6 +103,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       doo: req.body.doo || "",
       tests: req.body.tests || [],
       totalTestCost: req.body?.totalTestCost || 0.0,
+      diarrhea: req.body.diarrhea || "",
     });
 
     const registeredData = await newPatientRegistrationForm.save();
@@ -172,7 +173,6 @@ export const createPatientRegistrationForm = async (req, res) => {
         type2,
         destinationUrl2
       );
-
     }
 
     return sendResponse(
@@ -205,11 +205,14 @@ export const getPatientRegistrationFormById = async (
       );
     }
 
-    const appointmentDetails = await Appointment.findById(patientRegistrationForm?.appointmentId).populate("complaint")
-      .populate("species").populate("breed");
+    const appointmentDetails = await Appointment.findById(
+      patientRegistrationForm?.appointmentId
+    )
+      .populate("complaint")
+      .populate("species")
+      .populate("breed");
 
     patientRegistrationForm.appointmentId = appointmentDetails;
-
 
     return sendResponse(
       res,
@@ -219,7 +222,7 @@ export const getPatientRegistrationFormById = async (
       patientRegistrationForm
     );
   } catch (error) {
-    console.log({ error })
+    console.log({ error });
     return sendResponse(res, 500, false, error.message);
   }
 };
