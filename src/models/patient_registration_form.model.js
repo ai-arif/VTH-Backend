@@ -58,10 +58,10 @@ const patientRegistrationFormSchema = new Schema(
       trim: true,
       required: true,
     },
-    appetite: {
-      type: String,
-      trim: true,
-    },
+    // appetite: {
+    //   type: String,
+    //   trim: true,
+    // },
     salvation: {
       type: String,
       trim: true,

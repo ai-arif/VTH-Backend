@@ -25,7 +25,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       breeding,
       feedProvided,
       vaccinations,
-      appetite,
+      // appetite,
       rumination,
       salvation,
       lacrimation,
@@ -72,7 +72,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       breeding,
       feedProvided,
       vaccinations,
-      appetite,
+      // appetite,
       salvation: req.body.salvation || "",
       lacrimation: req.body.lacrimation || "",
       nasalDischarge: req.body.nasalDischarge || "",
@@ -232,8 +232,91 @@ export const updatePatientRegistrationFormById = async (
   res
 ) => {
   try {
-    const updatedPatientRegistrationForm =
-      await PatientRegistrationForm.findByIdAndUpdate(id, body, { new: true });
+
+    const previousTest = await PatientRegistrationForm.findById(id).select("tests");
+
+    const updatedPatientRegistrationForm = await PatientRegistrationForm.findByIdAndUpdate(id, body, { new: true });
+
+    if (previousTest || body?.tests) {
+      const previousTestsIdsArray = previousTest?.tests.map(test => test.toString());
+      const newTests = body?.tests;
+
+      // adding new assigned tests 
+      newTests.forEach(async newTest => {
+        if (previousTestsIdsArray.includes(newTest)) {
+          // nothing to do
+        }
+        else {
+          const testsResult = await CategoryWiseClinicalTest.findOne({
+            _id: newTest,
+          });
+
+          const data = {
+            testId: newTest,
+            registrationId: id,
+            appointmentId: body?.appointmentId._id,
+            name: testsResult?.testName,
+            phone: body?.appointmentId?.phone,
+          };
+
+          const result = await TestResult.create(data);
+
+          if (result) {
+            const title = `New Test Assigned`;
+            const description = `'${testsResult?.testName}' has been assigned to a new registered patient. Case no: ${body?.appointmentId?.caseNo}`;
+            const department = body?.appointmentId?.department;
+            const type = "lab";
+            const destinationUrl = `/incomming-test`;
+
+            const notify = await createNotification(
+              title,
+              description,
+              department,
+              type,
+              destinationUrl
+            );
+          }
+        }
+      })
+
+      previousTestsIdsArray.forEach(async test => {
+        if (newTests.includes(test)) {
+          // nothing to  do 
+        }
+        else {
+          const result = await TestResult.findOneAndDelete({ testId: test, registrationId: id, });
+        }
+      })
+
+      // console.log({ previousTestsIdsArray })
+
+    }
+
+    if (updatedPatientRegistrationForm) {
+      const title2 = `Updated a patient registered data`;
+      const description2 = `Updated patient registered data of "${body?.appointmentId?.ownerName}" contact no: ${body?.appointmentId?.phone}`;
+      const department2 = body?.appointmentId?.department;
+      const type2 = "admin-doctor";
+      const destinationUrl2 = `/patient-registration/view`;
+
+      const notify2 = await createNotification(
+        title2,
+        description2,
+        department2,
+        type2,
+        destinationUrl2
+      );
+    }
+
+    // to be delete 
+    // return sendResponse(
+    //   res,
+    //   200,
+    //   true,
+    //   "Patient registration form updated successfully",
+    // );
+
+
     if (!updatedPatientRegistrationForm) {
       return sendResponse(
         res,
