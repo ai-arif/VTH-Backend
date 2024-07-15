@@ -61,7 +61,6 @@ const patientRegistrationFormSchema = new Schema(
     // appetite: {
     //   type: String,
     //   trim: true,
-    //   required: true,
     // },
     salvation: {
       type: String,
