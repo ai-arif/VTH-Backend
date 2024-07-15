@@ -7,14 +7,14 @@ const medicineSchema = new Schema(
       required: true,
       trim: true,
     },
-    price: {
-      type: Number,
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-    },
+    // price: {
+    //   type: Number,
+    //   required: true,
+    // },
+    // quantity: {
+    //   type: Number,
+    //   required: true,
+    // },
     description: {
       type: String,
     },
@@ -27,10 +27,10 @@ const medicineSchema = new Schema(
       type: String,
       required: true,
     },
-    composition: {
-      type: String,
-      required: true,
-    },
+    // composition: {
+    //   type: String,
+    //   required: true,
+    // },
     class: {
       type: String,
       required: true,
@@ -43,10 +43,10 @@ const medicineSchema = new Schema(
       type: String,
       required: true,
     },
-    unitPrice: {
-      type: Number,
-      required: true,
-    },
+    // unitPrice: {
+    //   type: Number,
+    //   required: true,
+    // },
     packSize: {
       type: String,
       required: true,
@@ -62,13 +62,13 @@ const medicineSchema = new Schema(
       type: String,
       required: true,
     },
-    strength: {
-      type: String,
-      required: true,
-    },
-    animalType: {
-      type: String,
-    },
+    // strength: {
+    //   type: String,
+    //   required: true,
+    // },
+    // animalType: {
+    //   type: String,
+    // },
   },
   { timestamps: true }
 );
