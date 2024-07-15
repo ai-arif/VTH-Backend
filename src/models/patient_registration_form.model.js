@@ -66,21 +66,22 @@ const patientRegistrationFormSchema = new Schema(
     salvation: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     lacrimation: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     nasalDischarge: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     respRate: {
       type: String,
       trim: true,
+      required: true,
     },
     pulseRate: {
       type: String,
@@ -106,12 +107,12 @@ const patientRegistrationFormSchema = new Schema(
     demeanour: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     physicalCondition: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     totalAnimals: {
       type: Number,
@@ -173,6 +174,7 @@ const patientRegistrationFormSchema = new Schema(
     heartBeat: {
       type: String,
       trim: true,
+      required: true,
     },
     others: {
       type: String,
@@ -188,6 +190,10 @@ const patientRegistrationFormSchema = new Schema(
       // to do
       type: Number,
       default: 0.0,
+    },
+    diarrhea: {
+      type: String,
+      trim: true,
     },
     testStatus: {
       type: String,

@@ -39,7 +39,6 @@ export const createPatientRegistrationForm = async (req, res) => {
       sex,
       pregnancyStatus,
       treatedBefore,
-      confusionWords,
       demeanour,
       deworming,
       physicalCondition,
@@ -49,10 +48,10 @@ export const createPatientRegistrationForm = async (req, res) => {
       totalMortality,
       totalFatality,
       heartBeat,
-
       dop,
       doo,
       tests,
+      diarrhea,
     } = req.body;
 
     // Check for required fields
@@ -74,18 +73,17 @@ export const createPatientRegistrationForm = async (req, res) => {
       feedProvided,
       vaccinations,
       appetite,
-      salvation,
-      lacrimation,
-      nasalDischarge,
+      salvation: req.body.salvation || "",
+      lacrimation: req.body.lacrimation || "",
+      nasalDischarge: req.body.nasalDischarge || "",
       respRate,
-      pulseRate,
+      pulseRate: req.body.pulseRate || "",
       temp,
       sex,
       treatedBefore,
-      confusionWords,
-      demeanour,
+      demeanour: req.body.demeanour || "",
       deworming,
-      physicalCondition,
+      physicalCondition: req.body.physicalCondition || "",
       totalAnimals,
       totalSickAnimals,
       totalDeadAnimals,
@@ -105,6 +103,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       doo: req.body.doo || "",
       tests: req.body.tests || [],
       totalTestCost: req.body?.totalTestCost || 0.0,
+      diarrhea: req.body.diarrhea || "",
     });
 
     const registeredData = await newPatientRegistrationForm.save();
