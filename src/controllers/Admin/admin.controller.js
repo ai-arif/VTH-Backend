@@ -128,7 +128,10 @@ export const login = async (req, res) => {
     }
     const token = Jwt.sign(
       { id: admin._id, role: admin.role },
-      process.env.ACCESS_TOKEN_SECRET
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "300d",
+      }
     );
     return sendResponse(res, 200, true, "Login successful", { token });
   } catch (error) {
