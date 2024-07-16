@@ -513,10 +513,11 @@ export const GetRegistrationFormsHasTestById = async (req, res) => {
   try {
     // species, breed which are inside appointmentId
     const prescriptions = await PatientRegistrationForm.findById(req.params.id)
-      .populate("appointmentId")
-      .populate("tests")
-      .populate("appointmentId.species")
-      .populate("appointmentId.breed");
+      .populate({
+        path: "appointmentId",
+        populate: [{ path: "species" }, { path: "breed" }],
+      })
+      .populate("tests");
 
     sendResponse(
       res,
