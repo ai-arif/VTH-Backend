@@ -52,8 +52,12 @@ export const getAllFeedback = async (req, res) => {
     const feedbacks = await Feedback.find()
       .sort({ createdAt: sort })
       .skip(skip)
-      .limit(limit);
-    sendResponse(res, 200, true, "All feedbacks", feedbacks);
+      .limit(limit)
+      .populate("user", "fullName");
+
+    // count total feedbacks
+    const count = await Feedback.countDocuments();
+    sendResponse(res, 200, true, "All feedbacks", { feedbacks, total: count });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
