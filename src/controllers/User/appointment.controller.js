@@ -29,13 +29,15 @@ export const createAppointment = async (req, res) => {
         _id: req.body.complaint,
       });
     } catch (error) {
-      const complaint = await Complaint({
-        complaint: req.body.complaint,
-        species: req.body.species,
-      });
-      const newComplaint = await complaint.save();
+      if (req.body.complaint != undefined) {
+        const complaint = await Complaint({
+          complaint: req.body.complaint,
+          species: req.body.species,
+        });
+        const newComplaint = await complaint.save();
 
-      req.body.complaint = newComplaint._id;
+        req.body.complaint = newComplaint._id;
+      }
     }
 
     // if (req.body.complaint_text) {
