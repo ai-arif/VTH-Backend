@@ -3,6 +3,7 @@ import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import { createNotification } from "./notification.controller.js";
 
 //Create Prescription
@@ -83,17 +84,59 @@ export const Find = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const prescriptions = await Prescription.find()
-      .populate({
-        path: "appointment",
-        populate: {
-          path: "department",
-          model: "Department",
+    // const prescriptions = await Prescription.find()
+    //   .populate({
+    //     path: "appointment",
+    //     populate: {
+    //       path: "department",
+    //       model: "Department",
+    //     },
+    //   })
+    //   .sort({ createdAt: -1 })
+    //   .skip(skip)
+    //   .limit(limit);
+    // PatientRegistrationForm join with prescription by appointmentId, and merge the data with appointment
+    const prescriptions = await Prescription.aggregate([
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointment",
+          foreignField: "_id",
+          as: "appointment",
         },
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      },
+      {
+        $unwind: "$appointment",
+      },
+      {
+        $lookup: {
+          from: "patientregistrationforms",
+          localField: "appointment._id",
+          foreignField: "appointmentId",
+          as: "patient",
+        },
+      },
+      {
+        $unwind: "$patient",
+      },
+      {
+        $lookup: {
+          from: "departments",
+          localField: "appointment.department",
+          foreignField: "_id",
+          as: "department",
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
 
     const totalCount = await Prescription.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
