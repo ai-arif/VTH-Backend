@@ -57,7 +57,10 @@ export const getAllFeedback = async (req, res) => {
 
     // count total feedbacks
     const count = await Feedback.countDocuments();
-    sendResponse(res, 200, true, "All feedbacks", { feedbacks, total: count });
+    sendResponse(res, 200, true, "All feedbacks", {
+      data: feedbacks,
+      total: count,
+    });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
