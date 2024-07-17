@@ -41,3 +41,20 @@ export const deleteFeedback = async (req, res) => {
     sendResponse(res, 500, false, error.message);
   }
 };
+
+// get all feedback
+export const getAllFeedback = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 15;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+    const sort = -1;
+    const feedbacks = await Feedback.find()
+      .sort({ createdAt: sort })
+      .skip(skip)
+      .limit(limit);
+    sendResponse(res, 200, true, "All feedbacks", feedbacks);
+  } catch (error) {
+    sendResponse(res, 500, false, error.message);
+  }
+};
