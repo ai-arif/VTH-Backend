@@ -9,7 +9,7 @@ export const getAllPrescriptions = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
     const sort = -1;
-    const prescriptions = await Prescription.aggregate([
+    let prescriptions = await Prescription.aggregate([
       {
         $lookup: {
           from: "appointments",
