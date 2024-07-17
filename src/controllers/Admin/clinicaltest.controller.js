@@ -497,7 +497,7 @@ export const AddTestResult = async (req, res) => {
       const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been submitted.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
-      const destinationUrl = `/test-result/${r?.registrationId}`
+      const destinationUrl = `/test-result/${r?.registrationId}`;
       // const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
       const notify = await createNotification(
@@ -584,7 +584,7 @@ export const updateTestResult = async (req, res) => {
       const description = `${r?.appointmentId?.ownerName}'s "${r?.testId?.testName}" test's result has been updated.`;
       const department = r?.appointmentId?.department;
       const type = "doctor-test-result";
-      const destinationUrl = `/test-result/${r?.registrationId}`
+      const destinationUrl = `/test-result/${r?.registrationId}`;
       // const destinationUrl = `/incomming-test/${result?.registrationId}`;
 
       const notify = await createNotification(
@@ -763,7 +763,10 @@ export const getTestResultById = async (req, res) => {
     const { id } = req.params;
     // console.log({ id })
     const result = await TestResult.findById(id)
-      .populate("appointmentId")
+      .populate({
+        path: "appointmentId",
+        populate: [{ path: "species" }, { path: "breed" }],
+      })
       .populate("testId");
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
