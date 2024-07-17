@@ -57,9 +57,10 @@ export const getAllFeedback = async (req, res) => {
 
     // count total feedbacks
     const count = await Feedback.countDocuments();
+    const totalPages = Math.ceil(count / limit);
     sendResponse(res, 200, true, "All feedbacks", {
       data: feedbacks,
-      totalPages: count,
+      totalPages,
     });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
