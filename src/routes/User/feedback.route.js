@@ -11,7 +11,7 @@ import { verifyJWT } from "../../middlewares/auth.middleware.js";
 const feedbackRouter = Router();
 
 feedbackRouter.post("/", verifyJWT, createFeedback);
-feedbackRouter.get("/", getUserFeedbacks);
+feedbackRouter.get("/", verifyJWT, getUserFeedbacks);
 feedbackRouter.get("/:id", getFeedback);
 feedbackRouter.put("/:id", verifyJWT, updateFeedback);
 feedbackRouter.delete("/:id", verifyJWT, deleteFeedback);
