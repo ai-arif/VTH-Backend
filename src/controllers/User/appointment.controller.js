@@ -37,6 +37,8 @@ export const createAppointment = async (req, res) => {
         const newComplaint = await complaint.save();
 
         req.body.complaint = newComplaint._id;
+      } else {
+        delete req.body.complaint;
       }
     }
 
