@@ -22,6 +22,9 @@ export const getAllPrescriptions = async (req, res) => {
         $unwind: "$appointment",
       },
       {
+        $match: { "appointment.owner": owner },
+      },
+      {
         $lookup: {
           from: "patientregistrationforms",
           localField: "appointment._id",
