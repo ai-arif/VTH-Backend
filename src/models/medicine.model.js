@@ -56,7 +56,7 @@ const medicineSchema = new Schema(
     },
     dose: {
       type: String,
-      required: true,
+      required: false,
     },
     route: {
       type: String,
