@@ -28,20 +28,26 @@ export const createAppointment = async (req, res) => {
       const existingComplaint = await Complaint.findOne({
         _id: req.body.complaint,
       });
+      if (!existingComplaint) {
+        delete req.body.complaint;
+      }
     } catch (error) {
-      if (req.body.complaint != undefined) {
-        const complaint = await Complaint({
+      if (
+        req.body.complaint !== undefined &&
+        req.body.complaint !== null &&
+        req.body.complaint !== "" &&
+        req.body.complaint !== "undefined"
+      ) {
+        const complaint = new Complaint({
           complaint: req.body.complaint,
           species: req.body.species,
         });
         const newComplaint = await complaint.save();
-
         req.body.complaint = newComplaint._id;
       } else {
         delete req.body.complaint;
       }
     }
-
     // if (req.body.complaint_text) {
     //   const complaint = await Complaint({
     //     complaint: req.body.complaint_text,
