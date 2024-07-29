@@ -1,6 +1,6 @@
 import Prescription from "../../models/prescription.model.js";
 import sendResponse from "../../utils/sendResponse.js";
-
+import { User } from "../../models/user.model.js";
 // get all prescriptions with pagination and populate appointment and department, with decending order
 export const getAllPrescriptions = async (req, res) => {
   try {
@@ -9,6 +9,7 @@ export const getAllPrescriptions = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
     const sort = -1;
+    const user = await User.findById(owner);
     let prescriptions = await Prescription.aggregate([
       {
         $lookup: {
@@ -22,7 +23,7 @@ export const getAllPrescriptions = async (req, res) => {
         $unwind: "$appointment",
       },
       {
-        $match: { "appointment.owner": owner },
+        $match: { "appointment.phone": user.phone },
       },
       {
         $lookup: {
