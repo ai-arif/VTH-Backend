@@ -154,7 +154,7 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$prescribedBy",
+        $unwind: { path: "$prescribedBy", preserveNullAndEmptyArrays: true },
       },
       {
         $sort: { createdAt: -1 },
@@ -214,6 +214,7 @@ export const Find = async (req, res) => {
           createdAt: 1,
           updatedAt: 1,
           patient: 1,
+          prescribedBy: 1,
         },
       },
     ]);
@@ -248,6 +249,10 @@ export const FindBy = async (req, res) => {
         {
           path: "breed",
           model: "Breed",
+        },
+        {
+          path: "prescribedBy",
+          model: "Admin",
         },
       ],
     });
