@@ -235,27 +235,25 @@ export const Find = async (req, res) => {
 // Read Prescription by ID
 export const FindBy = async (req, res) => {
   try {
-    const prescription = await Prescription.findById(req.params.id).populate({
-      path: "appointment",
-      populate: [
-        {
-          path: "department",
-          model: "Department",
-        },
-        {
-          path: "species",
-          model: "Species",
-        },
-        {
-          path: "breed",
-          model: "Breed",
-        },
-        {
-          path: "prescribedBy",
-          model: "Admin",
-        },
-      ],
-    });
+    const prescription = await Prescription.findById(req.params.id)
+      .populate({
+        path: "appointment",
+        populate: [
+          {
+            path: "department",
+            model: "Department",
+          },
+          {
+            path: "species",
+            model: "Species",
+          },
+          {
+            path: "breed",
+            model: "Breed",
+          },
+        ],
+      })
+      .populate("prescribedBy");
 
     if (!prescription) {
       sendResponse(res, 404, false, "Prescription did not found");
