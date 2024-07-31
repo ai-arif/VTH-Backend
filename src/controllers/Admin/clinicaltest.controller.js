@@ -751,7 +751,8 @@ export const getTestResult = async (req, res) => {
         path: "appointmentId",
         populate: [{ path: "species" }, { path: "breed" }],
       })
-      .populate("registrationId");
+      .populate("registrationId")
+      .populate("testedBy");
     sendResponse(res, 200, true, "Successfully fetched test result", {
       data: result,
     });

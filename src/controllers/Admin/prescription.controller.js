@@ -23,7 +23,10 @@ export const Create = async (req, res) => {
       .populate("department")
       .select("department");
     const tests = await ClinicalTest.find({ _id: { $in: req.body?.tests } });
-
+    // hasPrescription: true on appointment
+    Appointment.findByIdAndUpdate(req.body?.appointment, {
+      hasPrescription: true,
+    });
     const testString = tests?.map((t) => t?.testName).join(", ") || "";
 
     if (testString) {
@@ -85,20 +88,7 @@ export const Find = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-
   try {
-    // const prescriptions = await Prescription.find()
-    //   .populate({
-    //     path: "appointment",
-    //     populate: {
-    //       path: "department",
-    //       model: "Department",
-    //     },
-    //   })
-    //   .sort({ createdAt: -1 })
-    //   .skip(skip)
-    //   .limit(limit);
-    // PatientRegistrationForm join with prescription by appointmentId, and merge the data with appointment
     const prescriptions = await Prescription.aggregate([
       {
         $lookup: {
@@ -154,6 +144,17 @@ export const Find = async (req, res) => {
       },
       {
         $unwind: "$appointment.breed",
+      },
+      {
+        $lookup: {
+          from: "admins",
+          localField: "prescribedBy",
+          foreignField: "_id",
+          as: "prescribedBy",
+        },
+      },
+      {
+        $unwind: "$prescribedBy",
       },
       {
         $sort: { createdAt: -1 },
