@@ -482,7 +482,7 @@ export const AddTestResult = async (req, res) => {
     const result = await TestResult.findByIdAndUpdate(
       id,
       {
-        $set: { data: data, status: true },
+        $set: { data: { ...data, testedBy: req.id }, status: true },
       },
       { new: true }
     );

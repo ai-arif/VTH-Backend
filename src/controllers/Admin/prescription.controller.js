@@ -9,7 +9,10 @@ import { createNotification } from "./notification.controller.js";
 //Create Prescription
 export const Create = async (req, res) => {
   try {
-    const prescription = new Prescription(req.body);
+    const prescription = new Prescription({
+      ...req.body,
+      prescribedBy: req.id,
+    });
     const prescriptionData = await prescription.save();
     const appointmentData = await Prescription.findById(
       prescriptionData?._id

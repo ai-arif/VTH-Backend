@@ -19,6 +19,10 @@ const prescriptionSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Appointment",
     },
+    prescribedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "Admin",
+    },
     medicines: [
       {
         type: Schema.Types.ObjectId,

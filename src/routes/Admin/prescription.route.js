@@ -1,4 +1,5 @@
 import { Router } from "express";
+import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
 const prescriptionRouter = Router();
 
 import {
@@ -11,25 +12,20 @@ import {
   Search,
   SearchBy,
   Updateby,
-  updatePrescriptionTestStatus
+  updatePrescriptionTestStatus,
 } from "../../controllers/Admin/prescription.controller.js";
 
-prescriptionRouter.post('/', Create)
-prescriptionRouter.get('/', Find)
-prescriptionRouter.get('/:id', FindBy)
-prescriptionRouter.put('/:id', Updateby)
-prescriptionRouter.delete('/:id', Deleteby)
-prescriptionRouter.get('/search/by', SearchBy)
+prescriptionRouter.post("/", verifyAdminToken, Create);
+prescriptionRouter.get("/", Find);
+prescriptionRouter.get("/:id", FindBy);
+prescriptionRouter.put("/:id", verifyAdminToken, Updateby);
+prescriptionRouter.delete("/:id", Deleteby);
+prescriptionRouter.get("/search/by", SearchBy);
 
-// for lab test 
-prescriptionRouter.get('/lab/test', GetPrescriptionWhichHasTest)
-prescriptionRouter.get('/lab/test/:id', GetPrescriptionWhichHasTestById)
+// for lab test
+prescriptionRouter.get("/lab/test", GetPrescriptionWhichHasTest);
+prescriptionRouter.get("/lab/test/:id", GetPrescriptionWhichHasTestById);
 // update status in prescription for test result status
-prescriptionRouter.patch('/lab/test/:id', updatePrescriptionTestStatus)
+prescriptionRouter.patch("/lab/test/:id", updatePrescriptionTestStatus);
 
-
-
-
-
-
-export default prescriptionRouter
+export default prescriptionRouter;
