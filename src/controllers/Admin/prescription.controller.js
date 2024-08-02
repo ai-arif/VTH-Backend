@@ -86,8 +86,9 @@ export const Create = async (req, res) => {
 // Read All Prescriptions
 export const Find = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || 15;
   const skip = (page - 1) * limit;
+
   try {
     const prescriptions = await Prescription.aggregate([
       {
@@ -99,7 +100,7 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$appointment",
+        $unwind: { path: "$appointment", preserveNullAndEmptyArrays: true },
       },
       {
         $lookup: {
@@ -110,7 +111,7 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$patient",
+        $unwind: { path: "$patient", preserveNullAndEmptyArrays: true },
       },
       {
         $lookup: {
@@ -121,7 +122,7 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$department",
+        $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
       },
       {
         $lookup: {
@@ -132,7 +133,10 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$appointment.species",
+        $unwind: {
+          path: "$appointment.species",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
@@ -143,7 +147,10 @@ export const Find = async (req, res) => {
         },
       },
       {
-        $unwind: "$appointment.breed",
+        $unwind: {
+          path: "$appointment.breed",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $lookup: {
@@ -160,64 +167,21 @@ export const Find = async (req, res) => {
         $sort: { createdAt: -1 },
       },
       {
+        $group: {
+          _id: "$_id",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" },
+      },
+      {
         $skip: skip,
       },
       {
         $limit: limit,
       },
-      {
-        $project: {
-          _id: 1,
-          isDeletedForPharmacy: 1,
-          takesMedicinesBefore: 1,
-          date: 1,
-          appointment: {
-            _id: 1,
-            date: 1,
-            time: 1,
-            caseNo: 1,
-            district: 1,
-            upazila: 1,
-            address: 1,
-            numberOfAnimals: 1,
-            registrationType: 1,
-            patientType: 1,
-            caseType: 1,
-            ownerName: 1,
-            phone: 1,
-            status: 1,
-            payment: 1,
-            amount: 1,
-            department: "$department",
-            images: 1,
-            tests: 1,
-            species: 1,
-            breed: 1,
-            complaint: 1,
-            notes: 1,
-            createdAt: 1,
-            updatedAt: 1,
-          },
-          medicines: 1,
-          diagnosis: 1,
-          therapeutics: 1,
-          prognosis: 1,
-          advice: 1,
-          nextVisit: 1,
-          testStatue: 1,
-          totalTestCost: 1,
-          preAnestheticUsed: 1,
-          sutureMaterialsUsed: 1,
-          typeOfSurgery: 1,
-          postOperativeCare: 1,
-          briefSurgical: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          patient: 1,
-          prescribedBy: 1,
-        },
-      },
-    ]);
+    ]).sort({ createdAt: -1 });
 
     const totalCount = await Prescription.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
