@@ -10,7 +10,7 @@ export const createPatientRegistrationForm = async (req, res) => {
   try {
     const {
       appointmentId,
-      date,
+      // date,
       nid,
       // species,
       // complaints,
@@ -61,7 +61,7 @@ export const createPatientRegistrationForm = async (req, res) => {
 
     const newPatientRegistrationForm = new PatientRegistrationForm({
       appointmentId,
-      date,
+      // date,
       age,
       weight,
       // species,

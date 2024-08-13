@@ -6,10 +6,10 @@ const patientRegistrationFormSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Appointment",
     },
-    date: {
-      type: Date,
-      required: true,
-    },
+    // date: {
+    //   type: Date,
+    //   required: true,
+    // },
     // species: {
     //   type: String,
     //   trim: true,
