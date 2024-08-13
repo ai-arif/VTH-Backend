@@ -170,7 +170,11 @@ export const getAppointmentByPhone = async (req, res) => {
   const { phone } = req.params;
   try {
     const appointment = await Appointment.find({
-      $or: [{ phone: phone }, { caseNo: phone }, { ownerName: phone }],
+      $or: [
+        { phone: phone },
+        { caseNo: phone },
+        { ownerName: { $regex: phone, $options: "i" } },
+      ],
     })
       .populate("complaint")
       .populate("species")
