@@ -300,17 +300,21 @@ export const Search = async (req, res) => {
 // handle proper pagination and also return total number of document based on the condition
 export const SearchBy = async (req, res) => {
   const search = req.query.search;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  if (page < 1) page = 1;
+  if (limit < 1) limit = 10;
+
   const skip = (page - 1) * limit;
 
-  if (!search)
+  if (!search) {
     return sendResponse(
       res,
       400,
       false,
-      "Please provide search query parameter"
+      "Please provide a search query parameter"
     );
+  }
 
   const condition = [
     { "appointment.ownerName": { $regex: search, $options: "i" } },
@@ -341,14 +345,6 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: "departments",
-          localField: "appointment.department",
-          foreignField: "_id",
-          as: "department",
-        },
-      },
-      {
         $group: {
           _id: null,
           totalCount: { $sum: 1 },
@@ -368,12 +364,23 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
-        $unwind: "$appointment",
+        $unwind: { path: "$appointment", preserveNullAndEmptyArrays: true },
       },
       {
         $match: {
           $or: condition,
         },
+      },
+      {
+        $lookup: {
+          from: "patientregistrationforms",
+          localField: "appointment._id",
+          foreignField: "appointmentId",
+          as: "patient",
+        },
+      },
+      {
+        $unwind: { path: "$patient", preserveNullAndEmptyArrays: true },
       },
       {
         $lookup: {
@@ -384,7 +391,58 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
+        $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "species",
+          localField: "appointment.species",
+          foreignField: "_id",
+          as: "appointment.species",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.species",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "breeds",
+          localField: "appointment.breed",
+          foreignField: "_id",
+          as: "appointment.breed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.breed",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "admins",
+          localField: "prescribedBy",
+          foreignField: "_id",
+          as: "prescribedBy",
+        },
+      },
+      {
+        $unwind: { path: "$prescribedBy", preserveNullAndEmptyArrays: true },
+      },
+      {
         $sort: { createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" },
       },
       {
         $skip: skip,
@@ -394,12 +452,17 @@ export const SearchBy = async (req, res) => {
       },
     ]);
 
-    const totalPages = Math.ceil(totalCountResult?.[0]?.totalCount / limit);
+    const totalDocuments = totalCountResult?.[0]?.totalCount || 0;
+    const totalPages = Math.ceil(totalDocuments / limit);
+
+    // Adjust page number if it exceeds totalPages
+    if (page > totalPages) page = totalPages;
 
     sendResponse(res, 200, true, "Prescription fetched successfully", {
       data: prescriptions,
-      totalPages: totalPages,
-      totalDocuments: totalCountResult?.[0]?.totalCount,
+      totalPages,
+      totalDocuments,
+      currentPage: page,
     });
   } catch (error) {
     console.log({ error });

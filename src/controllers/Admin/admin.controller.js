@@ -392,7 +392,6 @@ export const getTotalAmountsByDateRange = async (req, res) => {
         "Start date and end date are required"
       );
     }
-    console.log(start_date, end_date);
     // Convert dates to ISO format if necessary
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
