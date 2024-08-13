@@ -165,18 +165,22 @@ export const deleteAppointment = async (req, res) => {
   }
 };
 
-
 // get appointment list by phone
 export const getAppointmentByPhone = async (req, res) => {
   const { phone } = req.params;
   try {
-    const appointment = await Appointment.find({ phone }).populate("complaint")
-      .populate("species").populate("breed").sort({
-        createdAt: -1,
-      });
-    if (!appointment) {
-      return sendResponse(res, 404, false, "Did not found the appointment");
+    const appointment = await Appointment.find({
+      $or: [{ phone: phone }, { caseNo: phone }, { ownerName: phone }],
+    })
+      .populate("complaint")
+      .populate("species")
+      .populate("breed")
+      .sort({ createdAt: -1 });
+
+    if (!appointment || appointment.length === 0) {
+      return sendResponse(res, 404, false, "No appointments found");
     }
+
     sendResponse(res, 200, true, "Showing result", appointment);
   } catch (error) {
     sendResponse(res, 500, false, error.message);
