@@ -2,6 +2,7 @@ import Appointment from "../../models/appointment.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
+import Medicine from "../../models/medicine.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import { createNotification } from "./notification.controller.js";
