@@ -5,10 +5,52 @@ import Prescription from "../../models/prescription.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import { createNotification } from "./notification.controller.js";
+import mongoose from "mongoose";
+
+const createNewMedicine = async (name) => {
+  const newMedicine = new Medicine({ name });
+  const savedMedicine = await newMedicine.save();
+  return savedMedicine._id;
+};
 
 //Create Prescription
 export const Create = async (req, res) => {
   try {
+    const { medicines, therapeutics } = req.body;
+
+    // Process medicines array
+    const processedMedicines = await Promise.all(
+      medicines.map(async (medicineIdOrName) => {
+        if (mongoose.Types.ObjectId.isValid(medicineIdOrName)) {
+          // If valid ObjectId, return it
+          return medicineIdOrName;
+        } else {
+          // If not a valid ObjectId, create a new Medicine and return its ID
+          return await createNewMedicine(medicineIdOrName);
+        }
+      })
+    );
+
+    // Process therapeutics array
+    const processedTherapeutics = await Promise.all(
+      therapeutics.map(async (therapeutic) => {
+        if (mongoose.Types.ObjectId.isValid(therapeutic.medicine_id)) {
+          // If valid ObjectId, return the therapeutic object as is
+          return therapeutic;
+        } else {
+          // If not a valid ObjectId, create a new Medicine and replace its ID
+          const newMedicineId = await createNewMedicine(
+            therapeutic.medicine_name
+          );
+          return { ...therapeutic, medicine_id: newMedicineId };
+        }
+      })
+    );
+
+    // Update the request body with the processed arrays
+    req.body.medicines = processedMedicines;
+    req.body.therapeutics = processedTherapeutics;
+
     const prescription = new Prescription({
       ...req.body,
       prescribedBy: req.id,
@@ -74,7 +116,7 @@ export const Create = async (req, res) => {
       // console.log({ notify })
     }
 
-    sendResponse(res, 200, true, "Prescription successfully", {
+    sendResponse(res, 200, true, "Prescription successfully created", {
       data: appointmentData,
     });
   } catch (error) {
@@ -233,15 +275,55 @@ export const FindBy = async (req, res) => {
 // Update Prescription
 export const Updateby = async (req, res) => {
   try {
+    const { medicines, therapeutics } = req.body;
+
+    // Process medicines array
+    if (medicines) {
+      req.body.medicines = await Promise.all(
+        medicines.map(async (medicineIdOrName) => {
+          if (mongoose.Types.ObjectId.isValid(medicineIdOrName)) {
+            // If valid ObjectId, return it
+            return medicineIdOrName;
+          } else {
+            // If not a valid ObjectId, create a new Medicine and return its ID
+            return await createNewMedicine(medicineIdOrName);
+          }
+        })
+      );
+    }
+
+    // Process therapeutics array
+    if (therapeutics) {
+      req.body.therapeutics = await Promise.all(
+        therapeutics.map(async (therapeutic) => {
+          if (mongoose.Types.ObjectId.isValid(therapeutic.medicine_id)) {
+            // If valid ObjectId, return the therapeutic object as is
+            return therapeutic;
+          } else {
+            // If not a valid ObjectId, create a new Medicine and replace its ID
+            const newMedicineId = await createNewMedicine(
+              therapeutic.medicine_name
+            );
+            return { ...therapeutic, medicine_id: newMedicineId };
+          }
+        })
+      );
+    }
+
+    // Update the prescription with the processed data
     const prescription = await Prescription.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
+
     if (!prescription) {
-      sendResponse(res, 404, false, "Prescription did not found");
+      return sendResponse(res, 404, false, "Prescription not found");
     }
-    sendResponse(res, 200, true, "Prescription updated successfully");
+
+    sendResponse(res, 200, true, "Prescription updated successfully", {
+      data: prescription,
+    });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
