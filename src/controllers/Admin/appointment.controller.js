@@ -20,7 +20,6 @@ export const createAppointment = async (req, res) => {
       delete req.body.complaint;
     }
     if (req.body.complaint) {
-      // first check if complaint is an object id or text, if text then create a new complaint, else use the complaint id
       if (req.body.complaint?.length === 24) {
         const complaint = await Complaint.findById(req.body.complaint);
         if (!complaint) {
@@ -29,10 +28,12 @@ export const createAppointment = async (req, res) => {
             message: "Complaint not found",
           });
         }
-
         req.body.complaint = complaint._id;
       } else {
-        const newComplaint = new Complaint({ title: req.body.complaint });
+        const newComplaint = new Complaint({
+          species: req.body.species,
+          complaint: req.body.complaint,
+        });
         const complaint = await newComplaint.save();
         req.body.complaint = complaint._id;
       }
@@ -63,6 +64,7 @@ export const createAppointment = async (req, res) => {
     res.json({
       success: true,
       message: "Successfully created appointment",
+      data: result,
     });
   } catch (error) {
     console.log({ error });
