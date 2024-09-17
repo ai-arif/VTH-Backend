@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import Appointment from "../../models/appointment.model.js";
 import Department from "../../models/department.model.js";
+import Complaint from "../../models/complaint.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
@@ -10,6 +11,7 @@ export const createAppointment = async (req, res) => {
     const numericPart = uuid.replace(/-/g, "").replace(/\D/g, "");
     const paddedNumericPart = numericPart.padStart(7, "0");
     const caseNo = paddedNumericPart.slice(0, 7);
+
     if (!req.body.breed) {
       delete req.body.breed;
     }
@@ -17,6 +19,25 @@ export const createAppointment = async (req, res) => {
     if (!req.body.complaint) {
       delete req.body.complaint;
     }
+    if (req.body.complaint) {
+      // first check if complaint is an object id or text, if text then create a new complaint, else use the complaint id
+      if (req.body.complaint?.length === 24) {
+        const complaint = await Complaint.findById(req.body.complaint);
+        if (!complaint) {
+          return res.status(404).json({
+            success: false,
+            message: "Complaint not found",
+          });
+        }
+
+        req.body.complaint = complaint._id;
+      } else {
+        const newComplaint = new Complaint({ title: req.body.complaint });
+        const complaint = await newComplaint.save();
+        req.body.complaint = complaint._id;
+      }
+    }
+
     const appointment = new Appointment({ ...req.body, caseNo });
     const result = await appointment.save();
 
