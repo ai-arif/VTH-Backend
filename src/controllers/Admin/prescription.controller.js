@@ -2,13 +2,60 @@ import Appointment from "../../models/appointment.model.js";
 import ClinicalTest from "../../models/clinicaltest.model.js";
 import Department from "../../models/department.model.js";
 import Prescription from "../../models/prescription.model.js";
+import Medicine from "../../models/medicine.model.js";
 import sendResponse from "../../utils/sendResponse.js";
+import PatientRegistrationForm from "../../models/patient_registration_form.model.js";
 import { createNotification } from "./notification.controller.js";
+import mongoose from "mongoose";
+
+const createNewMedicine = async (name) => {
+  const newMedicine = new Medicine({ name });
+  const savedMedicine = await newMedicine.save();
+  return savedMedicine._id;
+};
 
 //Create Prescription
 export const Create = async (req, res) => {
   try {
-    const prescription = new Prescription(req.body);
+    const { medicines, therapeutics } = req.body;
+
+    // Process medicines array
+    const processedMedicines = await Promise.all(
+      medicines.map(async (medicineIdOrName) => {
+        if (mongoose.Types.ObjectId.isValid(medicineIdOrName)) {
+          // If valid ObjectId, return it
+          return medicineIdOrName;
+        } else {
+          // If not a valid ObjectId, create a new Medicine and return its ID
+          return await createNewMedicine(medicineIdOrName);
+        }
+      })
+    );
+
+    // Process therapeutics array
+    const processedTherapeutics = await Promise.all(
+      therapeutics.map(async (therapeutic) => {
+        if (mongoose.Types.ObjectId.isValid(therapeutic.medicine_id)) {
+          // If valid ObjectId, return the therapeutic object as is
+          return therapeutic;
+        } else {
+          // If not a valid ObjectId, create a new Medicine and replace its ID
+          const newMedicineId = await createNewMedicine(
+            therapeutic.medicine_name
+          );
+          return { ...therapeutic, medicine_id: newMedicineId };
+        }
+      })
+    );
+
+    // Update the request body with the processed arrays
+    req.body.medicines = processedMedicines;
+    req.body.therapeutics = processedTherapeutics;
+
+    const prescription = new Prescription({
+      ...req.body,
+      prescribedBy: req.id,
+    });
     const prescriptionData = await prescription.save();
     const appointmentData = await Prescription.findById(
       prescriptionData?._id
@@ -19,7 +66,10 @@ export const Create = async (req, res) => {
       .populate("department")
       .select("department");
     const tests = await ClinicalTest.find({ _id: { $in: req.body?.tests } });
-
+    // hasPrescription: true on appointment
+    Appointment.findByIdAndUpdate(req.body?.appointment, {
+      hasPrescription: true,
+    });
     const testString = tests?.map((t) => t?.testName).join(", ") || "";
 
     if (testString) {
@@ -67,7 +117,7 @@ export const Create = async (req, res) => {
       // console.log({ notify })
     }
 
-    sendResponse(res, 200, true, "Prescription successfully", {
+    sendResponse(res, 200, true, "Prescription successfully created", {
       data: appointmentData,
     });
   } catch (error) {
@@ -79,21 +129,102 @@ export const Create = async (req, res) => {
 // Read All Prescriptions
 export const Find = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = parseInt(req.query.limit) || 15;
   const skip = (page - 1) * limit;
 
   try {
-    const prescriptions = await Prescription.find()
-      .populate({
-        path: "appointment",
-        populate: {
-          path: "department",
-          model: "Department",
+    const prescriptions = await Prescription.aggregate([
+      {
+        $lookup: {
+          from: "appointments",
+          localField: "appointment",
+          foreignField: "_id",
+          as: "appointment",
         },
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      },
+      {
+        $unwind: { path: "$appointment", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "patientregistrationforms",
+          localField: "appointment._id",
+          foreignField: "appointmentId",
+          as: "patient",
+        },
+      },
+      {
+        $unwind: { path: "$patient", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "departments",
+          localField: "appointment.department",
+          foreignField: "_id",
+          as: "department",
+        },
+      },
+      {
+        $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "species",
+          localField: "appointment.species",
+          foreignField: "_id",
+          as: "appointment.species",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.species",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "breeds",
+          localField: "appointment.breed",
+          foreignField: "_id",
+          as: "appointment.breed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.breed",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "admins",
+          localField: "prescribedBy",
+          foreignField: "_id",
+          as: "prescribedBy",
+        },
+      },
+      {
+        $unwind: { path: "$prescribedBy", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]).sort({ createdAt: -1 });
 
     const totalCount = await Prescription.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
@@ -111,13 +242,26 @@ export const Find = async (req, res) => {
 // Read Prescription by ID
 export const FindBy = async (req, res) => {
   try {
-    const prescription = await Prescription.findById(req.params.id).populate({
-      path: "appointment",
-      populate: {
-        path: "department",
-        model: "Department",
-      },
-    });
+    const prescription = await Prescription.findById(req.params.id)
+      .populate({
+        path: "appointment",
+        populate: [
+          {
+            path: "department",
+            model: "Department",
+          },
+          {
+            path: "species",
+            model: "Species",
+          },
+          {
+            path: "breed",
+            model: "Breed",
+          },
+        ],
+      })
+      .populate("prescribedBy");
+
     if (!prescription) {
       sendResponse(res, 404, false, "Prescription did not found");
     }
@@ -132,15 +276,55 @@ export const FindBy = async (req, res) => {
 // Update Prescription
 export const Updateby = async (req, res) => {
   try {
+    const { medicines, therapeutics } = req.body;
+
+    // Process medicines array
+    if (medicines) {
+      req.body.medicines = await Promise.all(
+        medicines.map(async (medicineIdOrName) => {
+          if (mongoose.Types.ObjectId.isValid(medicineIdOrName)) {
+            // If valid ObjectId, return it
+            return medicineIdOrName;
+          } else {
+            // If not a valid ObjectId, create a new Medicine and return its ID
+            return await createNewMedicine(medicineIdOrName);
+          }
+        })
+      );
+    }
+
+    // Process therapeutics array
+    if (therapeutics) {
+      req.body.therapeutics = await Promise.all(
+        therapeutics.map(async (therapeutic) => {
+          if (mongoose.Types.ObjectId.isValid(therapeutic.medicine_id)) {
+            // If valid ObjectId, return the therapeutic object as is
+            return therapeutic;
+          } else {
+            // If not a valid ObjectId, create a new Medicine and replace its ID
+            const newMedicineId = await createNewMedicine(
+              therapeutic.medicine_name
+            );
+            return { ...therapeutic, medicine_id: newMedicineId };
+          }
+        })
+      );
+    }
+
+    // Update the prescription with the processed data
     const prescription = await Prescription.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
+
     if (!prescription) {
-      sendResponse(res, 404, false, "Prescription did not found");
+      return sendResponse(res, 404, false, "Prescription not found");
     }
-    sendResponse(res, 200, true, "Prescription updated successfully");
+
+    sendResponse(res, 200, true, "Prescription updated successfully", {
+      data: prescription,
+    });
   } catch (error) {
     sendResponse(res, 500, false, error.message);
   }
@@ -199,17 +383,21 @@ export const Search = async (req, res) => {
 // handle proper pagination and also return total number of document based on the condition
 export const SearchBy = async (req, res) => {
   const search = req.query.search;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  if (page < 1) page = 1;
+  if (limit < 1) limit = 10;
+
   const skip = (page - 1) * limit;
 
-  if (!search)
+  if (!search) {
     return sendResponse(
       res,
       400,
       false,
-      "Please provide search query parameter"
+      "Please provide a search query parameter"
     );
+  }
 
   const condition = [
     { "appointment.ownerName": { $regex: search, $options: "i" } },
@@ -240,14 +428,6 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
-        $lookup: {
-          from: "departments",
-          localField: "appointment.department",
-          foreignField: "_id",
-          as: "department",
-        },
-      },
-      {
         $group: {
           _id: null,
           totalCount: { $sum: 1 },
@@ -267,12 +447,23 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
-        $unwind: "$appointment",
+        $unwind: { path: "$appointment", preserveNullAndEmptyArrays: true },
       },
       {
         $match: {
           $or: condition,
         },
+      },
+      {
+        $lookup: {
+          from: "patientregistrationforms",
+          localField: "appointment._id",
+          foreignField: "appointmentId",
+          as: "patient",
+        },
+      },
+      {
+        $unwind: { path: "$patient", preserveNullAndEmptyArrays: true },
       },
       {
         $lookup: {
@@ -283,7 +474,58 @@ export const SearchBy = async (req, res) => {
         },
       },
       {
+        $unwind: { path: "$department", preserveNullAndEmptyArrays: true },
+      },
+      {
+        $lookup: {
+          from: "species",
+          localField: "appointment.species",
+          foreignField: "_id",
+          as: "appointment.species",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.species",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "breeds",
+          localField: "appointment.breed",
+          foreignField: "_id",
+          as: "appointment.breed",
+        },
+      },
+      {
+        $unwind: {
+          path: "$appointment.breed",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "admins",
+          localField: "prescribedBy",
+          foreignField: "_id",
+          as: "prescribedBy",
+        },
+      },
+      {
+        $unwind: { path: "$prescribedBy", preserveNullAndEmptyArrays: true },
+      },
+      {
         $sort: { createdAt: -1 },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          doc: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $replaceRoot: { newRoot: "$doc" },
       },
       {
         $skip: skip,
@@ -293,12 +535,17 @@ export const SearchBy = async (req, res) => {
       },
     ]);
 
-    const totalPages = Math.ceil(totalCountResult?.[0]?.totalCount / limit);
+    const totalDocuments = totalCountResult?.[0]?.totalCount || 0;
+    const totalPages = Math.ceil(totalDocuments / limit);
+
+    // Adjust page number if it exceeds totalPages
+    if (page > totalPages) page = totalPages;
 
     sendResponse(res, 200, true, "Prescription fetched successfully", {
       data: prescriptions,
-      totalPages: totalPages,
-      totalDocuments: totalCountResult?.[0]?.totalCount,
+      totalPages,
+      totalDocuments,
+      currentPage: page,
     });
   } catch (error) {
     console.log({ error });

@@ -39,6 +39,7 @@ import prescriptionRouter from "./routes/Admin/prescription.route.js";
 import speciesRouter from "./routes/Admin/species.route.js";
 import testRouter from "./routes/Admin/test.route.js";
 import adminUserRouter from "./routes/Admin/user.route.js";
+import adminFeedbackRouter from "./routes/Admin/feedback.route.js";
 
 // user routes
 
@@ -48,6 +49,7 @@ import userAppointmentRouter from "./routes/User/appointment.route.js";
 import homeRouter from "./routes/User/home.route.js";
 import userPrescriptionRouter from "./routes/User/prescription.route.js";
 import userRouter from "./routes/User/user.route.js";
+import userFeedbackRouter from "./routes/User/feedback.route.js";
 
 //Declaration of Routes Here
 app.use("/api/v1/overview", overviewRoute);
@@ -67,11 +69,13 @@ app.use("/api/v1/breed", breedRouter);
 app.use("/api/v1/medicine-params", medicineParamRouter);
 app.use("/api/v1/content", contentRouter);
 app.use("/api/v1/logo", logoRouter);
+app.use("/api/v1/feedback", adminFeedbackRouter);
 
 //  user routes
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/user-appointment", userAppointmentRouter);
 app.use("/api/v1/user-prescription", userPrescriptionRouter);
+app.use("/api/v1/user-feedback", userFeedbackRouter);
 app.use("/api/v1/home", homeRouter);
 
 //pharmacy routes
@@ -84,4 +88,3 @@ app.get("/", (req, res) => {
 });
 
 export { app };
-

@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import Admin from "../../models/admin.model.js";
 import Department from "../../models/department.model.js";
+import Appointment from "../../models/appointment.model.js";
+import TestResult from "../../models/test_result.model.js";
 import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
 import sendResponse from "../../utils/sendResponse.js";
@@ -373,6 +375,80 @@ export const resetPassword = async (req, res) => {
     await user.save();
     return sendResponse(res, 200, true, "Password reset successfully");
   } catch (error) {
+    return sendResponse(res, 500, false, error.message);
+  }
+};
+
+export const getTotalAmountsByDateRange = async (req, res) => {
+  const { start_date, end_date } = req.query;
+
+  try {
+    // Validate dates
+    if (!start_date || !end_date) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Start date and end date are required"
+      );
+    }
+    // Convert dates to ISO format if necessary
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    // Ensure dates are valid
+    if (isNaN(startDate) || isNaN(endDate)) {
+      return sendResponse(res, 400, false, "Invalid date format");
+    }
+    // Query to find the total sum of amounts in the Appointment collection
+    const appointmentTotal = await Appointment.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    // Query to find the total sum of amounts in the TestResult collection
+    const testResultTotal = await TestResult.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    // If no records found, return 0 for each
+    const totalAppointmentAmount =
+      appointmentTotal.length > 0 ? appointmentTotal[0].total : 0;
+    const totalTestResultAmount =
+      testResultTotal.length > 0 ? testResultTotal[0].total : 0;
+
+    // Return both totals in the response
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Total amounts calculated successfully",
+      {
+        totalAppointmentAmount,
+        totalTestResultAmount,
+      }
+    );
+  } catch (error) {
+    console.log(start_date, end_date);
     return sendResponse(res, 500, false, error.message);
   }
 };

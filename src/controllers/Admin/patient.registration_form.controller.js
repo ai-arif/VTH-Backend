@@ -10,7 +10,7 @@ export const createPatientRegistrationForm = async (req, res) => {
   try {
     const {
       appointmentId,
-      date,
+      // date,
       nid,
       // species,
       // complaints,
@@ -61,7 +61,7 @@ export const createPatientRegistrationForm = async (req, res) => {
 
     const newPatientRegistrationForm = new PatientRegistrationForm({
       appointmentId,
-      date,
+      // date,
       age,
       weight,
       // species,
@@ -232,21 +232,23 @@ export const updatePatientRegistrationFormById = async (
   res
 ) => {
   try {
+    const previousTest =
+      await PatientRegistrationForm.findById(id).select("tests");
 
-    const previousTest = await PatientRegistrationForm.findById(id).select("tests");
-
-    const updatedPatientRegistrationForm = await PatientRegistrationForm.findByIdAndUpdate(id, body, { new: true });
+    const updatedPatientRegistrationForm =
+      await PatientRegistrationForm.findByIdAndUpdate(id, body, { new: true });
 
     if (previousTest || body?.tests) {
-      const previousTestsIdsArray = previousTest?.tests.map(test => test.toString());
+      const previousTestsIdsArray = previousTest?.tests.map((test) =>
+        test.toString()
+      );
       const newTests = body?.tests;
 
-      // adding new assigned tests 
-      newTests.forEach(async newTest => {
+      // adding new assigned tests
+      newTests.forEach(async (newTest) => {
         if (previousTestsIdsArray.includes(newTest)) {
           // nothing to do
-        }
-        else {
+        } else {
           const testsResult = await CategoryWiseClinicalTest.findOne({
             _id: newTest,
           });
@@ -277,19 +279,20 @@ export const updatePatientRegistrationFormById = async (
             );
           }
         }
-      })
+      });
 
-      previousTestsIdsArray.forEach(async test => {
+      previousTestsIdsArray.forEach(async (test) => {
         if (newTests.includes(test)) {
-          // nothing to  do 
+          // nothing to  do
+        } else {
+          const result = await TestResult.findOneAndDelete({
+            testId: test,
+            registrationId: id,
+          });
         }
-        else {
-          const result = await TestResult.findOneAndDelete({ testId: test, registrationId: id, });
-        }
-      })
+      });
 
       // console.log({ previousTestsIdsArray })
-
     }
 
     if (updatedPatientRegistrationForm) {
@@ -308,14 +311,13 @@ export const updatePatientRegistrationFormById = async (
       );
     }
 
-    // to be delete 
+    // to be delete
     // return sendResponse(
     //   res,
     //   200,
     //   true,
     //   "Patient registration form updated successfully",
     // );
-
 
     if (!updatedPatientRegistrationForm) {
       return sendResponse(
@@ -509,10 +511,13 @@ export const GetRegistrationFormsHasTest = async (req, res) => {
 
 export const GetRegistrationFormsHasTestById = async (req, res) => {
   try {
+    // species, breed which are inside appointmentId
     const prescriptions = await PatientRegistrationForm.findById(req.params.id)
-      .populate("appointmentId")
-      .populate("tests")
-      .select({ tests: 1, appointmentId: 1 });
+      .populate({
+        path: "appointmentId",
+        populate: [{ path: "species" }, { path: "breed" }],
+      })
+      .populate("tests");
 
     sendResponse(
       res,

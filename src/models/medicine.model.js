@@ -7,14 +7,7 @@ const medicineSchema = new Schema(
       required: true,
       trim: true,
     },
-    // price: {
-    //   type: Number,
-    //   required: true,
-    // },
-    // quantity: {
-    //   type: Number,
-    //   required: true,
-    // },
+
     description: {
       type: String,
     },
@@ -25,7 +18,7 @@ const medicineSchema = new Schema(
     },
     brandName: {
       type: String,
-      required: true,
+      required: false,
     },
     // composition: {
     //   type: String,
@@ -33,15 +26,15 @@ const medicineSchema = new Schema(
     // },
     class: {
       type: String,
-      required: true,
+      required: false,
     },
     form: {
       type: String,
-      required: true,
+      required: false,
     },
     manufacturer: {
       type: String,
-      required: true,
+      required: false,
     },
     // unitPrice: {
     //   type: Number,
@@ -49,18 +42,18 @@ const medicineSchema = new Schema(
     // },
     packSize: {
       type: String,
-      required: true,
+      required: false,
     },
     withdrawalPeriod: {
       type: String,
     },
     dose: {
       type: String,
-      required: true,
+      required: false,
     },
     route: {
       type: String,
-      required: true,
+      required: false,
     },
     // strength: {
     //   type: String,

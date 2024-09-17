@@ -108,6 +108,10 @@ const appointmentSchema = new Schema(
       type: String,
       required: false,
     },
+    hasPrescription: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
