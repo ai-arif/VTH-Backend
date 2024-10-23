@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import Admin from "../../models/admin.model.js";
-import Department from "../../models/department.model.js";
 import Appointment from "../../models/appointment.model.js";
+import Department from "../../models/department.model.js";
 import TestResult from "../../models/test_result.model.js";
 import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
+import sendEmail from "../../utils/sendMail.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
-import sendEmail from "../../utils/sendMail.js";
 // const sendResponse = (res, statusCode,success, message, data) => {
 //     res.status(statusCode).json({success, message, data });
 //     };

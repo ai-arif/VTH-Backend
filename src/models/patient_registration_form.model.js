@@ -19,25 +19,25 @@ const patientRegistrationFormSchema = new Schema(
     //   type: String,
     //   trim: true,
     // },
-    age: {
-      type: String,
-      trim: true,
-      required: true,
-    },
-    weight: {
-      type: String,
-      trim: true,
-      required: true,
-    },
+    // age: {
+    //   type: String,
+    //   trim: true,
+    //   required: true,
+    // },
+    // weight: {
+    //   type: String,
+    //   trim: true,
+    //   required: true,
+    // },
     // breed: {
     //   type: String,
     //   trim: true,
     // },
-    illnessDuration: {
-      type: String,
-      trim: true,
-      required: true,
-    },
+    // illnessDuration: {
+    //   type: String,
+    //   trim: true,
+    //   required: true,
+    // },
     drugs: {
       type: String,
       trim: true,
@@ -80,7 +80,7 @@ const patientRegistrationFormSchema = new Schema(
     respRate: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     pulseRate: {
       type: String,
@@ -89,12 +89,12 @@ const patientRegistrationFormSchema = new Schema(
     temp: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
-    sex: {
-      type: String,
-      trim: true,
-    },
+    // sex: {
+    //   type: String,
+    //   trim: true,
+    // },
     treatedBefore: {
       type: String,
       trim: true,
@@ -113,31 +113,31 @@ const patientRegistrationFormSchema = new Schema(
       trim: true,
       // required: true,
     },
-    totalAnimals: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
-    totalSickAnimals: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
-    totalDeadAnimals: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
-    totalMortality: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
-    totalFatality: {
-      type: Number,
-      trim: true,
-      required: true,
-    },
+    // totalAnimals: {
+    //   type: Number,
+    //   trim: true,
+    //   required: true,
+    // },
+    // totalSickAnimals: {
+    //   type: Number,
+    //   trim: true,
+    //   required: true,
+    // },
+    // totalDeadAnimals: {
+    //   type: Number,
+    //   trim: true,
+    //   required: true,
+    // },
+    // totalMortality: {
+    //   type: Number,
+    //   trim: true,
+    //   required: true,
+    // },
+    // totalFatality: {
+    //   type: Number,
+    //   trim: true,
+    //   required: true,
+    // },
     nid: {
       type: String,
       trim: true,
@@ -173,7 +173,7 @@ const patientRegistrationFormSchema = new Schema(
     heartBeat: {
       type: String,
       trim: true,
-      required: true,
+      // required: true,
     },
     others: {
       type: String,
