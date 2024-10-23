@@ -112,6 +112,52 @@ const appointmentSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    // 23 October 2024
+    age: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    sex: {
+      type: String,
+      trim: true,
+    },
+    weight: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    illnessDuration: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    totalAnimals: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
+    totalSickAnimals: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
+    totalDeadAnimals: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
+    totalMortality: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
+    totalFatality: {
+      type: Number,
+      trim: true,
+      required: true,
+    },
+
   },
   { timestamps: true }
 );
