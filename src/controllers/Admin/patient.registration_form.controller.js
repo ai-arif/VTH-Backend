@@ -79,7 +79,7 @@ export const createPatientRegistrationForm = async (req, res) => {
       respRate,
       pulseRate: req.body.pulseRate || "",
       temp,
-      sex,
+      // sex,
       treatedBefore,
       demeanour: req.body.demeanour || "",
       deworming,
