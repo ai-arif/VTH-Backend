@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import Appointment from "../../models/appointment.model.js";
-import Department from "../../models/department.model.js";
 import Complaint from "../../models/complaint.model.js";
+import Department from "../../models/department.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 import { createNotification } from "./notification.controller.js";
 
+//create new appointment 
 export const createAppointment = async (req, res) => {
   try {
     const uuid = uuidv4();
