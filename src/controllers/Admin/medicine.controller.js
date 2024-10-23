@@ -234,22 +234,19 @@ export const searchMedicine = async (req, res) => {
   const limit = parseInt(req.query.limit) || 10;
   const sort = -1;
   const search = req.query.search;
+  const searchOn = req.query?.searchOn;
 
+  const searchOnArray = searchOn?.split(" ");
+  const filter = {
+    $or: []
+  }
+
+  searchOnArray?.forEach(onField => filter.$or.push({ [onField]: { $regex: search, $options: "i" } }));
   try {
-    const totalMedicine = await Medicine.countDocuments({
-      $or: [
-        { name: { $regex: search, $options: "i" } },
-        { brandName: { $regex: search, $options: "i" } },
-      ],
-    });
+    const totalMedicine = await Medicine.countDocuments(filter);
     const totalPages = Math.ceil(totalMedicine / limit);
 
-    const medicines = await Medicine.find({
-      $or: [
-        { name: { $regex: search, $options: "i" } },
-        { brandName: { $regex: search, $options: "i" } },
-      ],
-    })
+    const medicines = await Medicine.find(filter)
       .sort({ createdAt: sort })
       .limit(limit)
       .skip((page - 1) * limit);
