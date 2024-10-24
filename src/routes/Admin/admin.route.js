@@ -4,17 +4,17 @@ import {
   createAdmin,
   createUser,
   deleteAdmin,
+  forgotPassword,
   getAllAdmins,
   getAllUsers,
   getLoginStaffOrAdmin,
   getProfile,
+  getTotalAmountsByDateRange,
   getUserByPhone,
   login,
+  resetPassword,
   searchAllStaffs,
   updateAdmin,
-  resetPassword,
-  forgotPassword,
-  getTotalAmountsByDateRange,
 } from "../../controllers/Admin/admin.controller.js";
 
 import verifyAdminToken from "../../middlewares/verifyAdminToken.js";
