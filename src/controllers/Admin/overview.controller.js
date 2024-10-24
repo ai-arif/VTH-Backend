@@ -9,7 +9,7 @@ import Pharmacy from "../../models/pharmacy.model.js";
 import Prescription from "../../models/prescription.model.js";
 import Species from "../../models/species.model.js";
 import TestResult from "../../models/test_result.model.js";
-// import Species from "../../models/species.model.js";
+
 import { User } from "../../models/user.model.js";
 import sendResponse from "../../utils/sendResponse.js";
 
@@ -29,11 +29,11 @@ export const getOverview = async (req, res) => {
 
     try {
         const staffsOverview = await Admin.aggregate([
-            {
-                $match: {
-                    createdAt: { $gte: startDate, $lte: endDate }
-                }
-            },
+            // {
+            //     $match: {
+            //         createdAt: { $gte: startDate, $lte: endDate }
+            //     }
+            // },
             {
                 $group: { _id: "$role", total: { $sum: 1 } }
             },
@@ -350,3 +350,102 @@ export const getOverview = async (req, res) => {
         return sendResponse(res, 500, false, error.message);
     }
 }
+
+
+export const getOverview2 = async (req, res) => {
+    try {
+        const { start_date, end_date, daysBefore } = req.query;
+
+        // Convert start and end dates to ISO format
+        const startDate = new Date(start_date);
+        const endDate = new Date(end_date);
+
+        // Calculate today's date range (from midnight to the end of the day)
+        const todaysDate = new Date();
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999); // Set to the end of the day
+
+        // Function to subtract days from a date
+        function subtractDays(date, days) {
+            const result = new Date(date);
+            result.setDate(result.getDate() - days);
+            result.setHours(0, 0, 0, 0);
+            return result;
+        }
+
+        const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 0);
+
+        const Species = await Appointment.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: todayStart, $lte: todayEnd },
+                }
+            },
+            {
+                $project: { species: 1 }
+            },
+            {
+                $lookup: {
+                    from: "species",
+                    localField: "species",
+                    foreignField: "_id",
+                    as: "species"
+                }
+            },
+            { $unwind: "$species" },
+            {
+                $group: {
+                    _id: "$species.name",
+                    count: { $sum: 1 }
+                }
+
+            },
+            {
+                $group: {
+                    _id: null,
+                    allAppointments: { $push: { species: "$_id", count: "$count" } },
+                    totalAppointment: { $sum: "$count" }
+                }
+            },
+
+        ]);
+
+        const Upazila = await Appointment.aggregate([
+            {
+                $match: {
+                    createdAt: { $gte: todayStart, $lte: todayEnd },
+                }
+            },
+            {
+                $project: { upazila: 1 }
+            },
+            {
+                $group: {
+                    _id: "$upazila",
+                    count: { $sum: 1 }
+                }
+
+            },
+            {
+                $group: {
+                    _id: null,
+                    allAppointments: { $push: { upazila: "$_id", count: "$count" } },
+                    totalAppointment: { $sum: "$count" }
+                }
+            },
+
+        ]);
+
+        return res.status(200).json({
+            success: true,
+            data: { Upazila, Species },
+            // data: Species,
+        });
+    } catch (error) {
+        console.error("Error fetching appointments:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
