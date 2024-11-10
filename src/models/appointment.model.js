@@ -11,6 +11,10 @@ const appointmentSchema = new Schema(
     date: {
       type: Date,
     },
+    division: {
+      type: String,
+      trim: true,
+    },
     district: {
       type: String,
       trim: true,

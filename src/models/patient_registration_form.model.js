@@ -41,22 +41,18 @@ const patientRegistrationFormSchema = new Schema(
     drugs: {
       type: String,
       trim: true,
-      required: true,
     },
     breeding: {
       type: String,
       trim: true,
-      required: true,
     },
     feedProvided: {
       type: String,
       trim: true,
-      required: true,
     },
     vaccinations: {
       type: String,
       trim: true,
-      required: true,
     },
     // appetite: {
     //   type: String,

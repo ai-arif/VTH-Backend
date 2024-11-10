@@ -375,6 +375,42 @@ export const getOverview2 = async (req, res) => {
 
         const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 0);
 
+        // const Species = await Appointment.aggregate([
+        //     {
+        //         $match: {
+        //             createdAt: { $gte: todayStart, $lte: todayEnd },
+        //         }
+        //     },
+        //     {
+        //         $project: { species: 1 }
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: "species",
+        //             localField: "species",
+        //             foreignField: "_id",
+        //             as: "species"
+        //         }
+        //     },
+        //     { $unwind: "$species" },
+        //     {
+        //         $group: {
+        //             _id: "$species.name",
+        //             count: { $sum: 1 }
+        //         }
+
+        //     },
+        //     {
+        //         $group: {
+        //             _id: null,
+        //             allAppointments: { $push: { species: "$_id", count: "$count" } },
+        //             totalAppointment: { $sum: "$count" }
+        //         }
+        //     },
+
+        // ]);
+
+
         const Species = await Appointment.aggregate([
             {
                 $match: {
@@ -382,7 +418,10 @@ export const getOverview2 = async (req, res) => {
                 }
             },
             {
-                $project: { species: 1 }
+                $project: {
+                    species: 1,
+                    createdAt: 1
+                }
             },
             {
                 $lookup: {
@@ -395,20 +434,47 @@ export const getOverview2 = async (req, res) => {
             { $unwind: "$species" },
             {
                 $group: {
-                    _id: "$species.name",
+                    _id: { speciesName: "$species.name", date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } } },
                     count: { $sum: 1 }
                 }
-
             },
             {
                 $group: {
-                    _id: null,
-                    allAppointments: { $push: { species: "$_id", count: "$count" } },
-                    totalAppointment: { $sum: "$count" }
+                    _id: "$_id.date",
+                    speciesData: {
+                        $push: {
+                            speciesName: "$_id.speciesName",
+                            count: "$count"
+                        }
+                    }
                 }
             },
-
+            { $sort: { _id: 1 } } // Sort by date
         ]);
+
+        // List of all species names for default inclusion
+        const speciesList = [
+            "Chicken", "Cattle", "Pet birds [Moyna, parrot, etc.]", "Cat", "Dog", "Zoo animals", "Duck", "Goats"
+        ];
+
+        // Format the results into the desired structure
+        const formattedData = Species.map(item => {
+            const dateFormatted = item._id; // Date as string (YYYY-MM-DD)
+            const speciesData = speciesList.map(species => {
+                // Find the species count for this date
+                const speciesRecord = item.speciesData.find(speciesRecord => speciesRecord.speciesName === species);
+                return {
+                    [species]: speciesRecord ? speciesRecord.count : 0
+                };
+            });
+            const formattedObject = { date: dateFormatted, ...speciesData.reduce((acc, curr) => ({ ...acc, ...curr }), {}) };
+            return formattedObject;
+        });
+
+        // console.log(formattedData);
+
+
+        // console.log(formattedSpecies);
 
         const Upazila = await Appointment.aggregate([
             {
@@ -438,7 +504,7 @@ export const getOverview2 = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: { Upazila, Species },
+            data: { Upazila, Species: formattedData },
             // data: Species,
         });
     } catch (error) {
