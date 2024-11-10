@@ -6,8 +6,16 @@ import sendEmail from "../../utils/sendMail.js";
 import sendResponse from "../../utils/sendResponse.js";
 
 export const createUser = AsyncHandler(async (req, res) => {
-  const { fullName, password, phone, district, upazila, address, nid, division } =
-    req.body;
+  const {
+    fullName,
+    password,
+    phone,
+    district,
+    upazila,
+    address,
+    nid,
+    division,
+  } = req.body;
   try {
     const existingUser = await User.findOne({ phone });
     if (existingUser) {
@@ -83,7 +91,8 @@ export const getAllUsers = async (req, res) => {
 // update user const { fullName,  phone, district, upazila, address, nid } = req.body;
 export const updateUser = async (req, res) => {
   const user = req.id;
-  const { fullName, phone, district, upazila, address, nid, email, division } = req.body;
+  const { fullName, phone, district, upazila, address, nid, email, division } =
+    req.body;
   try {
     const existingUser = await User.findById(user);
     if (!existingUser) {
@@ -100,7 +109,7 @@ export const updateUser = async (req, res) => {
     existingUser.email = email;
     let message = "";
     // check if all fileds are filled the isCompleted will be true, otherwise give message which fields are missing
-    if (fullName && phone && district && upazila && address) {
+    if (fullName && phone && district && upazila && address && division) {
       existingUser.isCompleted = true;
     } else {
       // mention which fields are missing
@@ -177,7 +186,7 @@ export const forgotPassword = async (req, res) => {
     );
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    console.log(resetUrl);
+    // console.log(resetUrl);
     const message = `
       <h1>You have requested a password reset</h1>
       <p>Please go to this link to reset your password</p>

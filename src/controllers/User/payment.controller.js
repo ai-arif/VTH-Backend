@@ -1,8 +1,8 @@
-import SSLCommerzPayment from "sslcommerz-lts";
 import { ObjectId } from "mongodb";
+import SSLCommerzPayment from "sslcommerz-lts";
 import Appointment from "../../models/appointment.model.js";
-import { User } from "../../models/user.model.js";
 import Species from "../../models/species.model.js";
+import { User } from "../../models/user.model.js";
 
 // ssl config
 const store_id = process.env.PAYMENT_STORE_ID;
@@ -66,10 +66,10 @@ export const appointmentSSLPayment = async (req, res) => {
     const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live);
 
     sslcz.init(data).then((apiResponse) => {
-      console.log("store_id", store_id);
-      console.log("store_pass", store_passwd);
-      console.log("is_live", is_live);
-      console.log(apiResponse);
+      // console.log("store_id", store_id);
+      // console.log("store_pass", store_passwd);
+      // console.log("is_live", is_live);
+      // console.log(apiResponse);
       let GatewayPageURL = apiResponse.GatewayPageURL;
       return res.send({ url: GatewayPageURL, transId, totalPayment });
     });
