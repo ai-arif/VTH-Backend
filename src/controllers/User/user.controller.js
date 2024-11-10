@@ -2,11 +2,11 @@ import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 import { User } from "../../models/user.model.js";
 import { AsyncHandler } from "../../utils/AsyncHandler.js";
-import sendResponse from "../../utils/sendResponse.js";
 import sendEmail from "../../utils/sendMail.js";
+import sendResponse from "../../utils/sendResponse.js";
 
 export const createUser = AsyncHandler(async (req, res) => {
-  const { fullName, password, phone, district, upazila, address, nid } =
+  const { fullName, password, phone, district, upazila, address, nid, division } =
     req.body;
   try {
     const existingUser = await User.findOne({ phone });
@@ -20,6 +20,7 @@ export const createUser = AsyncHandler(async (req, res) => {
       password: hashedPassword,
       phone,
       district,
+      division,
       upazila,
       address,
       nid,
@@ -82,7 +83,7 @@ export const getAllUsers = async (req, res) => {
 // update user const { fullName,  phone, district, upazila, address, nid } = req.body;
 export const updateUser = async (req, res) => {
   const user = req.id;
-  const { fullName, phone, district, upazila, address, nid, email } = req.body;
+  const { fullName, phone, district, upazila, address, nid, email, division } = req.body;
   try {
     const existingUser = await User.findById(user);
     if (!existingUser) {
@@ -92,6 +93,7 @@ export const updateUser = async (req, res) => {
     existingUser.fullName = fullName;
     existingUser.phone = phone;
     existingUser.district = district;
+    existingUser.division = division;
     existingUser.upazila = upazila;
     existingUser.address = address;
     existingUser.nid = nid;
@@ -105,6 +107,7 @@ export const updateUser = async (req, res) => {
       if (!fullName) message += "Full name is required, \n";
       if (!phone) message += "Phone number is required, \n";
       if (!district) message += "District is required, \n";
+      if (!division) message += "Division is required, \n";
       if (!upazila) message += "Upazila is required, \n";
       if (!address) message += "Address is required, \n";
     }

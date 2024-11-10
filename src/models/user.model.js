@@ -22,6 +22,10 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
       trim: true,
     },
+    division: {
+      type: String,
+      trim: true,
+    },
     district: {
       type: String,
       trim: true,
@@ -54,3 +58,4 @@ const userSchema = new Schema(
 const User = model("User", userSchema);
 
 export { User };
+
