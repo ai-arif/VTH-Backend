@@ -355,7 +355,6 @@ export const getOverview = async (req, res) => {
 export const getOverview2 = async (req, res) => {
     try {
         const { start_date, end_date, daysBefore } = req.query;
-
         // Convert start and end dates to ISO format
         const startDate = new Date(start_date);
         const endDate = new Date(end_date);
@@ -372,7 +371,9 @@ export const getOverview2 = async (req, res) => {
             result.setHours(0, 0, 0, 0);
             return result;
         }
-        const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 0);
+        const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 30);
+
+        console.log({ todayStart, daysBefore })
 
 
         const SpeciesInfo = await Appointment.aggregate([
@@ -435,68 +436,6 @@ export const getOverview2 = async (req, res) => {
         });
 
 
-        // // Get the start and end of the last 12 months
-        // const twelveMonthsAgo = new Date();
-        // twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-        // const twelveMonthsEnd = new Date();
-
-        // // Get Monthly Data for Last 12 Months
-        // const monthlyData = await Appointment.aggregate([
-        //     {
-        //         $match: {
-        //             createdAt: { $gte: twelveMonthsAgo, $lte: twelveMonthsEnd },
-        //         }
-        //     },
-        //     {
-        //         $project: {
-        //             species: 1,
-        //             createdAt: 1
-        //         }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: "species",
-        //             localField: "species",
-        //             foreignField: "_id",
-        //             as: "species"
-        //         }
-        //     },
-        //     { $unwind: "$species" },
-        //     {
-        //         $group: {
-        //             _id: { speciesName: "$species.name", month: { $dateToString: { format: "%b-%Y", date: "$createdAt" } } },
-        //             count: { $sum: 1 }
-        //         }
-        //     },
-        //     {
-        //         $group: {
-        //             _id: "$_id.month",
-        //             speciesData: {
-        //                 $push: {
-        //                     speciesName: "$_id.speciesName",
-        //                     count: "$count"
-        //                 }
-        //             }
-        //         }
-        //     },
-        //     { $sort: { _id: 1 } } // Sort by month
-        // ]);
-
-
-        // // Format the results for monthly data
-        // const formattedMonthlyData = monthlyData.map(item => {
-        //     const monthFormatted = item._id; // Month formatted as "Nov-2024"
-        //     const speciesData = speciesList.map(species => {
-        //         // Find the species count for this month
-        //         const speciesRecord = item.speciesData.find(speciesRecord => speciesRecord.speciesName === species);
-        //         return {
-        //             [species]: speciesRecord ? speciesRecord.count : 0
-        //         };
-        //     });
-        //     const formattedObject = { month: monthFormatted, ...speciesData.reduce((acc, curr) => ({ ...acc, ...curr }), {}) };
-        //     return formattedObject;
-        // });
-
         // Get the start and end of the last 12 months
         const twelveMonthsAgo = new Date();
         twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
@@ -546,7 +485,13 @@ export const getOverview2 = async (req, res) => {
 
         // Format the results for monthly data
         const formattedMonthlyData = monthlyData.map(item => {
-            const monthFormatted = item._id.replace("-", " "); // Format as "Nov 2024"
+            // const monthFormatted = item._id.replace("-", "/"); // Format as "Nov 2024"
+
+            const [year, month] = item._id.split('-'); // Split year and month
+            const date = new Date(`${year}-${month}-01`); // Create a Date object
+            const options = { year: 'numeric', month: 'long' }; // Options for the format
+            const monthFormatted = date.toLocaleDateString('en-US', options); // Format as 'August 2024'
+
             const speciesData = speciesList.map(species => {
                 // Find the species count for this month
                 const speciesRecord = item.speciesData.find(speciesRecord => speciesRecord.speciesName === species);
@@ -557,6 +502,8 @@ export const getOverview2 = async (req, res) => {
             const formattedObject = { month: monthFormatted, ...speciesData.reduce((acc, curr) => ({ ...acc, ...curr }), {}) };
             return formattedObject;
         });
+
+
 
 
 
