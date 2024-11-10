@@ -32,7 +32,7 @@ export const addClinicalTest = async (req, res) => {
     // const { testName, testDetails } = req.body;
     const newClinicalTest = new CategoryWiseClinicalTest(req.body);
     const newTest = await newClinicalTest.save();
-    console.log({ newTest });
+    // console.log({ newTest });
 
     sendResponse(res, 200, true, "Successfully created clinical test", newTest);
   } catch (error) {
