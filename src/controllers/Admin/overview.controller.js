@@ -364,6 +364,9 @@ export const getOverview2 = async (req, res) => {
         const todayEnd = new Date();
         todayEnd.setHours(23, 59, 59, 999);
 
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+
         // Function to subtract days from a date
         function subtractDays(date, days) {
             const result = new Date(date);
@@ -373,13 +376,12 @@ export const getOverview2 = async (req, res) => {
         }
         const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 30);
 
-        console.log({ todayStart, daysBefore })
-
 
         const SpeciesInfo = await Appointment.aggregate([
             {
                 $match: {
-                    createdAt: { $gte: todayStart, $lte: todayEnd },
+                    createdAt: { $gte: startDate, $lte: endDate },
+                    // createdAt: { $gte: todayStart, $lte: todayEnd },
                 }
             },
             {
@@ -504,10 +506,6 @@ export const getOverview2 = async (req, res) => {
         });
 
 
-
-
-
-
         return res.status(200).json({
             success: true,
             data: { speciesList, Species: formattedData, monthlyData: formattedMonthlyData },
@@ -522,158 +520,3 @@ export const getOverview2 = async (req, res) => {
     }
 };
 
-
-// export const getOverview2 = async (req, res) => {
-//     try {
-//         const { start_date, end_date, daysBefore } = req.query;
-
-//         // Convert start and end dates to ISO format
-//         const startDate = new Date(start_date);
-//         const endDate = new Date(end_date);
-
-//         // Calculate today's date range (from midnight to the end of the day)
-//         const todaysDate = new Date();
-//         const todayEnd = new Date();
-//         todayEnd.setHours(23, 59, 59, 999);
-
-//         // Function to subtract days from a date
-//         function subtractDays(date, days) {
-//             const result = new Date(date);
-//             result.setDate(result.getDate() - days);
-//             result.setHours(0, 0, 0, 0);
-//             return result;
-//         }
-//         const todayStart = subtractDays(todaysDate, parseInt(daysBefore) || 0);
-
-//         // Get the start and end of the last 12 months
-//         const twelveMonthsAgo = new Date();
-//         twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-//         const twelveMonthsEnd = new Date();
-
-//         const SpeciesInfo = await Appointment.aggregate([
-//             {
-//                 $match: {
-//                     createdAt: { $gte: todayStart, $lte: todayEnd },
-//                 }
-//             },
-//             {
-//                 $project: {
-//                     species: 1,
-//                     createdAt: 1
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: "species",
-//                     localField: "species",
-//                     foreignField: "_id",
-//                     as: "species"
-//                 }
-//             },
-//             { $unwind: "$species" },
-//             {
-//                 $group: {
-//                     _id: { speciesName: "$species.name", date: { $dateToString: { format: "%d %b %Y", date: "$createdAt" } } },
-//                     count: { $sum: 1 }
-//                 }
-//             },
-//             {
-//                 $group: {
-//                     _id: "$_id.date",
-//                     speciesData: {
-//                         $push: {
-//                             speciesName: "$_id.speciesName",
-//                             count: "$count"
-//                         }
-//                     }
-//                 }
-//             },
-//             { $sort: { _id: 1 } } // Sort by date
-//         ]);
-
-//         // Get Monthly Data for Last 12 Months
-//         const monthlyData = await Appointment.aggregate([
-//             {
-//                 $match: {
-//                     createdAt: { $gte: twelveMonthsAgo, $lte: twelveMonthsEnd },
-//                 }
-//             },
-//             {
-//                 $project: {
-//                     species: 1,
-//                     createdAt: 1
-//                 }
-//             },
-//             {
-//                 $lookup: {
-//                     from: "species",
-//                     localField: "species",
-//                     foreignField: "_id",
-//                     as: "species"
-//                 }
-//             },
-//             { $unwind: "$species" },
-//             {
-//                 $group: {
-//                     _id: { speciesName: "$species.name", month: { $dateToString: { format: "%b-%Y", date: "$createdAt" } } },
-//                     count: { $sum: 1 }
-//                 }
-//             },
-//             {
-//                 $group: {
-//                     _id: "$_id.month",
-//                     speciesData: {
-//                         $push: {
-//                             speciesName: "$_id.speciesName",
-//                             count: "$count"
-//                         }
-//                     }
-//                 }
-//             },
-//             { $sort: { _id: 1 } } // Sort by month
-//         ]);
-
-//         // Get species list
-//         const SpeciesData = await Species.find().select("name");
-//         const speciesList = SpeciesData.map(species => species?.name);
-
-//         // Format the results into the desired structure for daily data
-//         const formattedData = SpeciesInfo.map(item => {
-//             const dateFormatted = item._id; // Date formatted as "10 Nov 2024"
-//             const speciesData = speciesList.map(species => {
-//                 // Find the species count for this date
-//                 const speciesRecord = item.speciesData.find(speciesRecord => speciesRecord.speciesName === species);
-//                 return {
-//                     [species]: speciesRecord ? speciesRecord.count : 0
-//                 };
-//             });
-//             const formattedObject = { date: dateFormatted, ...speciesData.reduce((acc, curr) => ({ ...acc, ...curr }), {}) };
-//             return formattedObject;
-//         });
-
-//         // Format the results for monthly data
-//         const formattedMonthlyData = monthlyData.map(item => {
-//             const monthFormatted = item._id; // Month formatted as "Nov-2024"
-//             const speciesData = speciesList.map(species => {
-//                 // Find the species count for this month
-//                 const speciesRecord = item.speciesData.find(speciesRecord => speciesRecord.speciesName === species);
-//                 return {
-//                     [species]: speciesRecord ? speciesRecord.count : 0
-//                 };
-//             });
-//             const formattedObject = { month: monthFormatted, ...speciesData.reduce((acc, curr) => ({ ...acc, ...curr }), {}) };
-//             return formattedObject;
-//         });
-
-//         return res.status(200).json({
-//             success: true,
-//             data: { speciesList, Species: formattedData, MonthlyData: formattedMonthlyData },
-//         });
-//     } catch (error) {
-//         console.error("Error fetching appointments:", error);
-//         return res.status(500).json({
-//             success: false,
-//             message: "Internal server error",
-//         });
-//     }
-// };
