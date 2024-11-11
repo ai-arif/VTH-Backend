@@ -505,7 +505,6 @@ export const getOverview2 = async (req, res) => {
             return formattedObject;
         });
 
-
         return res.status(200).json({
             success: true,
             data: { speciesList, Species: formattedData, monthlyData: formattedMonthlyData },
@@ -519,4 +518,134 @@ export const getOverview2 = async (req, res) => {
         });
     }
 };
+
+
+export const getMorbidityOverview = async (req, res) => {
+    const { start_date, end_date } = req.query;
+    try {
+        // Convert start and end dates to ISO format
+        const startDate = new Date(start_date);
+        const endDate = new Date(end_date);
+
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+
+        startDate.setHours(0, 0, 0, 0);
+        endDate.setHours(23, 59, 59, 999);
+
+        // for Morbidity and Fatality ===============>
+        const dailyStats = await Appointment.aggregate([
+            { $match: { createdAt: { $gte: startDate, $lte: endDate } } },
+            {
+                $group: {
+                    _id: {
+                        day: { $dayOfMonth: "$createdAt" },
+                        month: { $month: "$createdAt" },
+                        year: { $year: "$createdAt" }
+                    },
+                    totalDeadAnimals: { $sum: "$totalDeadAnimals" },
+                    totalSickAnimals: { $sum: "$totalSickAnimals" },
+                    totalAnimals: { $sum: "$totalAnimals" }
+                }
+            },
+            {
+                $project: {
+                    date: {
+                        $dateFromParts: {
+                            year: "$_id.year",
+                            month: "$_id.month",
+                            day: "$_id.day"
+                        }
+                    },
+                    totalDeadAnimals: 1,
+                    totalSickAnimals: 1,
+                    totalAnimals: 1,
+                    Morbidity: {
+                        $cond: {
+                            if: { $gt: ["$totalAnimals", 0] },
+                            then: { $round: [{ $multiply: [{ $divide: ["$totalSickAnimals", "$totalAnimals"] }, 100] }, 2] },
+                            else: 0
+                        }
+                    },
+                    Fatality: {
+                        $cond: {
+                            if: { $gt: ["$totalAnimals", 0] },
+                            then: { $round: [{ $multiply: [{ $divide: ["$totalDeadAnimals", "$totalAnimals"] }, 100] }, 2] },
+                            else: 0
+                        }
+                    },
+                    _id: 0
+                }
+            },
+            { $sort: { date: 1 } },
+
+            // Add an additional stage to calculate the overall totals
+            {
+                $facet: {
+                    daily: [],
+                    total: [
+                        {
+                            $group: {
+                                _id: null,
+                                totalDeadAnimals: { $sum: "$totalDeadAnimals" },
+                                totalSickAnimals: { $sum: "$totalSickAnimals" },
+                                totalAnimals: { $sum: "$totalAnimals" }
+                            }
+                        },
+                        {
+                            $project: {
+                                date: "Total",
+                                totalDeadAnimals: 1,
+                                totalSickAnimals: 1,
+                                totalAnimals: 1,
+                                Morbidity: {
+                                    $cond: {
+                                        if: { $gt: ["$totalAnimals", 0] },
+                                        then: { $round: [{ $multiply: [{ $divide: ["$totalSickAnimals", "$totalAnimals"] }, 100] }, 2] },
+                                        else: 0
+                                    }
+                                },
+                                Fatality: {
+                                    $cond: {
+                                        if: { $gt: ["$totalAnimals", 0] },
+                                        then: { $round: [{ $multiply: [{ $divide: ["$totalDeadAnimals", "$totalAnimals"] }, 100] }, 2] },
+                                        else: 0
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                $project: {
+                    daily: 1,
+                    total: { $arrayElemAt: ["$total", 0] }
+                }
+            }
+        ]);
+
+        const formattedDailyStats = dailyStats[0].daily.map(stat => ({
+            ...stat,
+            date: new Intl.DateTimeFormat('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            }).format(new Date(stat.date))
+        }));
+
+        const Morbidity_Fatality = { summery: dailyStats[0].total, statistics: [...formattedDailyStats] };
+
+        return res.status(200).json({
+            success: true,
+            data: Morbidity_Fatality,
+        });
+    } catch (error) {
+        console.error("Error fetching appointments:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+}
 
